@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Fluid Playground</title>
   <link rel="stylesheet" href="/styles.css">
+  <!-- Shim process so ledger.ts DEV flag evaluates to true in the browser.
+       Vite rewrites process.env.NODE_ENV member expressions but leaves the
+       bare `process` identifier undefined, so typeof process stays false.
+       This must be a plain <script>, not a module, so it runs before any
+       module import that touches the ledger. -->
+  <script>window.process = { env: { NODE_ENV: 'development' } }</script>
 </head>
 <body>
   <aside id="sidebar">

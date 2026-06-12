@@ -1,9 +1,9 @@
 export function initToolbar(navigateCurrent) {
-  // Tier — call the runtime API so already-initialised ledger updates, then
+  // Tier — call the runtime API so the already-initialised ledger updates, then
   // re-navigate so mounted components re-render at the new tier.
   // window.__FLUID_FORCE_TIER__ only takes effect on ledger init (page load);
-  // window.FluidLedger.forceTier() is the post-init API (requires DEV=true,
-  // ensured by define: { 'process.env.NODE_ENV': '"development"' } in vite.config.ts).
+  // window.FluidLedger.forceTier() is the post-init API, available because
+  // index.html shims window.process so ledger.ts DEV evaluates to true.
   document.querySelectorAll('[name="tier"]').forEach(input => {
     input.addEventListener('change', () => {
       window.__FLUID_FORCE_TIER__ = input.value
