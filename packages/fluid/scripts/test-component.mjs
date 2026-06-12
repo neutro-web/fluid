@@ -19,6 +19,7 @@ function findSpecFiles(dir) {
 }
 
 const specFiles = [
+  ...findSpecFiles('src/core'),
   ...findSpecFiles('src/components'),
   ...findSpecFiles('src/testing'),
 ]
