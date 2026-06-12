@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fluid Playground</title>
+  <link rel="stylesheet" href="/styles.css">
+  <!-- Shim process so ledger.ts DEV flag evaluates to true in the browser.
+       Vite rewrites process.env.NODE_ENV member expressions but leaves the
+       bare `process` identifier undefined, so typeof process stays false.
+       This must be a plain <script>, not a module, so it runs before any
+       module import that touches the ledger. -->
+  <script>window.process = { env: { NODE_ENV: 'development' } }</script>
+</head>
+<body>
+  <aside id="sidebar">
+    <nav id="sidebar-nav" aria-label="Components">
+      <a href="#index" data-page="index" class="nav-home">Fluid Playground</a>
+
+      <section class="nav-group">
+        <p class="nav-group-label" role="presentation">Actions</p>
+        <!-- <a href="#button" data-page="button">Button</a> -->
+        <!-- <a href="#icon-button" data-page="icon-button">Icon Button</a> -->
+      </section>
+
+      <section class="nav-group">
+        <p class="nav-group-label" role="presentation">Surface</p>
+        <!-- <a href="#card" data-page="card">Card</a> -->
+      </section>
+
+      <section class="nav-group">
+        <p class="nav-group-label" role="presentation">Layout</p>
+        <!-- <a href="#stack" data-page="stack">Stack</a> -->
+        <!-- <a href="#fieldset" data-page="fieldset">Fieldset</a> -->
+      </section>
+
+      <section class="nav-group">
+        <p class="nav-group-label" role="presentation">Feedback</p>
+        <!-- <a href="#skeleton" data-page="skeleton">Skeleton</a> -->
+        <!-- <a href="#spinner" data-page="spinner">Spinner</a> -->
+        <!-- <a href="#progress" data-page="progress">Progress</a> -->
+      </section>
+    </nav>
+  </aside>
+
+  <div id="shell-main">
+    <header id="toolbar" aria-label="Playground controls">
+      <fieldset>
+        <legend>Tier</legend>
+        <label><input type="radio" name="tier" value="matte"> Matte</label>
+        <label><input type="radio" name="tier" value="frosted" checked> Frosted</label>
+        <label><input type="radio" name="tier" value="crystalline"> Crystalline</label>
+        <label><input type="radio" name="tier" value="optical"> Optical</label>
+      </fieldset>
+      <fieldset>
+        <legend>Mode</legend>
+        <label><input type="radio" name="theme" value="light" checked> Light</label>
+        <label><input type="radio" name="theme" value="dark"> Dark</label>
+      </fieldset>
+      <fieldset>
+        <legend>Motion</legend>
+        <label><input type="radio" name="motion" value="full" checked> Full</label>
+        <label><input type="radio" name="motion" value="reduced"> Reduced</label>
+      </fieldset>
+    </header>
+
+    <main id="content" tabindex="-1">
+      <!-- router.js swaps page fragments here -->
+    </main>
+  </div>
+
+  <script type="module" src="/main.js"></script>
+</body>
+</html>

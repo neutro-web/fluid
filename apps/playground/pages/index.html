@@ -1,0 +1,46 @@
+<article class="pg-page">
+  <header class="pg-page-header">
+    <h1 class="pg-page-title">Fluid Playground</h1>
+    <p class="pg-page-desc">
+      A live inspection environment for @neutro/fluid — a physics-grounded glass
+      material system implemented as Custom Elements.
+    </p>
+  </header>
+
+  <section class="pg-section">
+    <h2>How to use</h2>
+    <p>Select a component from the sidebar. Use the toolbar to inspect how
+    components behave across rendering tiers, colour schemes, and motion preferences.</p>
+    <dl>
+      <dt>Tier</dt>
+      <dd>
+        Matte — opaque surface, CSS transition approximations, no backdrop-filter.<br>
+        Frosted — backdrop-filter blur and vibrancy, CSS spring approximations.<br>
+        Crystalline — true spring physics via WAAPI, environment-aware tinting,
+        scroll-driven parallax.<br>
+        Optical — Houdini refraction, compositor-thread springs (Chrome only).
+      </dd>
+      <dt>Mode</dt>
+      <dd>Light / Dark. Sets <code>data-theme</code> on <code>&lt;html&gt;</code>.
+      All Fluid tokens respond automatically.</dd>
+      <dt>Motion</dt>
+      <dd>Full / Reduced. Adds <code>.reduced-motion</code> to <code>&lt;html&gt;</code>,
+      suppressing CSS transitions and animations. WAAPI and JS-driven springs
+      (Crystalline and Optical tiers) are not affected — the ledger has no
+      force hook for motion preference today. Use your OS reduced-motion setting
+      to fully test those tiers.</dd>
+    </dl>
+  </section>
+
+  <section class="pg-section">
+    <h2>Adding a component page</h2>
+    <ol>
+      <li>Create <code>apps/playground/pages/[name].html</code></li>
+      <li>Uncomment the nav entry in <code>apps/playground/index.html</code></li>
+      <li>Add the Storybook story at
+        <code>apps/storybook/stories/[name].stories.ts</code></li>
+      <li>Both the playground page and the story are required for a
+        component to be considered done</li>
+    </ol>
+  </section>
+</article>
