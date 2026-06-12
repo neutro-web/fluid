@@ -855,14 +855,19 @@ abstract class FluidElement extends HTMLElement {
   protected abstract readonly material: FluidMaterial
   protected abstract readonly spring: SpringConfig
   protected readonly disposers: Array<() => void>
-  protected internals: ElementInternals
+  // _internals backing field + getter: attachInternals() throws NotSupportedError if
+  // called more than once per element instance. The ??= guard makes reconnect safe
+  // (React Strict Mode, DOM moves). Do NOT replace with a bare assignment.
+  private _internals: ElementInternals | null = null
+  protected get internals(): ElementInternals { return this._internals! }
   protected root: ShadowRoot
   private _initialized = false
 
   connectedCallback(): void {
     // DSD hydration guard
     this.root = this.shadowRoot ?? this.attachShadow({ mode: 'open' })
-    this.internals = this.attachInternals()
+    // Guard: attachInternals() throws if called twice on the same instance.
+    this._internals ??= this.attachInternals()
 
     // React Strict Mode idempotency assertion (dev only)
     if (DEV && this._initialized) {
