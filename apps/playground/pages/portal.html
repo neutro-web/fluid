@@ -1,0 +1,197 @@
+<article class="pg-page">
+  <header class="pg-page-header">
+    <h1 class="pg-page-title">fluid-portal</h1>
+    <p class="pg-page-desc">
+      Non-rendering host element that teleports its children to a
+      <code>&lt;fluid-portal-root&gt;</code> at <code>document.body</code>.
+      Inherits <code>--fluid-*</code> tokens from the nearest
+      <code>fluid-theme</code> ancestor and allocates a z-index slot from
+      <code>ZIndexAllocator</code>.
+    </p>
+  </header>
+
+  <!-- Variants ──────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Variants</h2>
+
+    <h3>Default (overlay layer)</h3>
+    <p class="pg-desc">z-index allocated in the overlay range (100–499).</p>
+    <div class="pg-example">
+      <fluid-portal id="demo-default">
+        <div class="portal-badge portal-badge--overlay">Overlay portal · bottom-right</div>
+      </fluid-portal>
+    </div>
+    <pre class="pg-code"><code>&lt;fluid-portal&gt;
+  &lt;div&gt;...&lt;/div&gt;
+&lt;/fluid-portal&gt;</code></pre>
+
+    <h3>Sheet layer</h3>
+    <p class="pg-desc">layer="sheet" targets z-index 500–999.</p>
+    <div class="pg-example">
+      <fluid-portal layer="sheet" id="demo-sheet">
+        <div class="portal-badge portal-badge--sheet">Sheet portal · top-center</div>
+      </fluid-portal>
+    </div>
+    <pre class="pg-code"><code>&lt;fluid-portal layer="sheet"&gt;
+  &lt;div&gt;...&lt;/div&gt;
+&lt;/fluid-portal&gt;</code></pre>
+
+    <h3>System layer</h3>
+    <p class="pg-desc">layer="system" targets z-index ≥ 1000.</p>
+    <div class="pg-example">
+      <fluid-portal layer="system" id="demo-system">
+        <div class="portal-badge portal-badge--system">System portal · top bar</div>
+      </fluid-portal>
+    </div>
+    <pre class="pg-code"><code>&lt;fluid-portal layer="system"&gt;
+  &lt;div&gt;...&lt;/div&gt;
+&lt;/fluid-portal&gt;</code></pre>
+  </section>
+
+  <!-- States ──────────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>States</h2>
+    <p>Toggle mount/unmount to observe lifecycle. Inspect <code>&lt;body&gt;</code> in DevTools to see <code>fluid-portal-root</code> appear and disappear.</p>
+    <button id="toggle-btn" style="margin-bottom: 12px; padding: 8px 16px; cursor: pointer; border: 1px solid #ccc; border-radius: 6px; font-family: system-ui; font-size: 0.875rem;">
+      Unmount portal
+    </button>
+    <p id="portal-status" style="font-size: 0.875rem; color: #666; margin: 0;">
+      Status: <strong>mounted</strong> — fluid-portal-root is live in &lt;body&gt;
+    </p>
+    <div id="toggle-host">
+      <fluid-portal id="demo-toggle">
+        <div class="portal-badge portal-badge--overlay" style="bottom: 140px;">
+          Toggle me via the button above
+        </div>
+      </fluid-portal>
+    </div>
+  </section>
+
+  <!-- Theme inheritance ───────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Theme inheritance</h2>
+    <p>The portal root receives <code>--fluid-*</code> tokens from the nearest <code>fluid-theme</code> ancestor. Drag the slider — the MutationObserver triggers a live re-snapshot.</p>
+    <label style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px; font-family: system-ui; font-size: 0.875rem;">
+      brand-hue
+      <input type="range" id="hue-slider" min="0" max="360" value="220" style="flex: 1; max-width: 300px;">
+      <code id="hue-val">220</code>
+    </label>
+    <fluid-theme id="demo-theme" brand-hue="220">
+      <fluid-portal id="demo-themed">
+        <div class="portal-badge portal-badge--brand">
+          Themed portal · hue from fluid-theme
+        </div>
+      </fluid-portal>
+    </fluid-theme>
+  </section>
+
+  <!-- Edge cases ──────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Edge cases</h2>
+
+    <h3>Empty portal</h3>
+    <p class="pg-desc">Portal root is appended to body but remains empty. Inspect DevTools to confirm.</p>
+    <div class="pg-example">
+      <fluid-portal id="demo-empty"></fluid-portal>
+      <p style="font-size: 0.875rem; color: #999; margin: 4px 0 0;">(No visible output — portal root exists but is empty)</p>
+    </div>
+
+    <h3>Long content</h3>
+    <p class="pg-desc">Portal does not constrain content dimensions.</p>
+    <div class="pg-example">
+      <fluid-portal id="demo-long">
+        <div class="portal-badge portal-badge--overlay" style="bottom: 200px; max-width: 360px; word-break: break-word;">
+          Long content: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA — portal root imposes no width constraint.
+        </div>
+      </fluid-portal>
+    </div>
+  </section>
+</article>
+
+<style>
+  .portal-badge {
+    display: inline-block;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-family: system-ui, sans-serif;
+    font-size: 0.85rem;
+    color: #fff;
+    box-shadow: 0 4px 14px hsl(0 0% 0% / 0.2);
+  }
+  .portal-badge--overlay {
+    position: fixed;
+    bottom: 80px;
+    right: 24px;
+    background: hsl(220 70% 52%);
+  }
+  .portal-badge--sheet {
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: hsl(0 65% 52%);
+  }
+  .portal-badge--system {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    border-radius: 0;
+    font-size: 0.8rem;
+    padding: 6px 16px;
+    background: hsl(0 0% 12%);
+    text-align: center;
+  }
+  .portal-badge--brand {
+    position: fixed;
+    bottom: 80px;
+    left: 24px;
+    background: hsl(var(--fluid-hue-brand, 220) 70% 52%);
+    transition: background 0.2s;
+  }
+  .pg-desc { font-size: 0.875rem; color: #666; margin: 4px 0 12px; }
+  .pg-example { min-height: 32px; margin: 8px 0; }
+  .pg-code {
+    background: #f5f5f5;
+    border-radius: 6px;
+    padding: 12px 16px;
+    font-size: 0.8rem;
+    overflow-x: auto;
+    margin: 8px 0 24px;
+  }
+</style>
+
+<script type="module">
+  import '@neutro/fluid/portal'
+
+  // ── Toggle demo ──────────────────────────────────────────────────
+  const btn = document.getElementById('toggle-btn')
+  const host = document.getElementById('toggle-host')
+  const status = document.getElementById('portal-status')
+  const portal = document.getElementById('demo-toggle')
+  let mounted = true
+
+  btn.addEventListener('click', () => {
+    if (mounted) {
+      portal.remove()
+      btn.textContent = 'Mount portal'
+      status.innerHTML = 'Status: <strong>unmounted</strong> — fluid-portal-root removed from &lt;body&gt;'
+    } else {
+      host.appendChild(portal)
+      btn.textContent = 'Unmount portal'
+      status.innerHTML = 'Status: <strong>mounted</strong> — fluid-portal-root is live in &lt;body&gt;'
+    }
+    mounted = !mounted
+  })
+
+  // ── Hue slider: triggers MutationObserver re-snapshot ────────────
+  const slider = document.getElementById('hue-slider')
+  const hueVal = document.getElementById('hue-val')
+  const demoTheme = document.getElementById('demo-theme')
+
+  slider.addEventListener('input', () => {
+    hueVal.textContent = slider.value
+    // Setting inline style triggers the portal's MutationObserver re-snapshot
+    demoTheme.style.setProperty('--fluid-hue-brand', slider.value)
+  })
+</script>
