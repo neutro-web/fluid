@@ -16,6 +16,14 @@
       "dependsOn": ["build"],
       "cache": false
     },
+    "test:integration": {
+      "dependsOn": ["build"],
+      "cache": false
+    },
+    "test:a11y": {
+      "dependsOn": ["build"],
+      "cache": false
+    },
     "lint": {
       "dependsOn": ["^build"]
     },

@@ -5,16 +5,36 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./src/index.ts",
-    "./core": "./src/core/index.ts",
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.cjs",
+      "source": "./src/index.ts"
+    },
+    "./core": {
+      "types": "./dist/types/core/index.d.ts",
+      "import": "./dist/esm/core/index.js",
+      "require": "./dist/cjs/core/index.cjs",
+      "source": "./src/core/index.ts"
+    },
     "./icons": "./src/icons/index.ts",
     "./theme/*": "./src/tokens/themes/*.css",
     "./adapters/react": "./src/adapters/react/index.tsx",
     "./adapters/vue": "./src/adapters/vue/index.ts",
     "./adapters/svelte": "./src/adapters/svelte/index.ts",
     "./adapters/angular": "./src/adapters/angular/index.ts",
-    "./testing": "./src/testing/index.ts",
-    "./eslint-plugin": "./src/eslint-plugin/index.ts",
+    "./testing": {
+      "types": "./dist/types/testing/index.d.ts",
+      "import": "./dist/esm/testing/index.js",
+      "require": "./dist/cjs/testing/index.cjs",
+      "source": "./src/testing/index.ts"
+    },
+    "./eslint-plugin": {
+      "types": "./dist/types/eslint-plugin/index.d.ts",
+      "import": "./dist/esm/eslint-plugin/index.js",
+      "require": "./dist/cjs/eslint-plugin/index.cjs",
+      "source": "./src/eslint-plugin/index.ts"
+    },
     "./button": "./src/components/button/index.ts",
     "./icon-button": "./src/components/icon-button/index.ts",
     "./fab": "./src/components/fab/index.ts",
@@ -117,12 +137,25 @@
     }
   ],
   "scripts": {
+    "build": "tsup",
     "test:unit": "vitest run",
+    "test:component": "node scripts/test-component.mjs",
+    "size-limit": "size-limit",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^29.0.3",
+    "@size-limit/preset-small-lib": "^11.0.0",
     "@types/node": "^20.0.0",
+    "@web/dev-server-esbuild": "^1.0.5",
+    "@web/dev-server-rollup": "^0.6.4",
+    "@web/test-runner": "^0.20.2",
+    "@web/test-runner-playwright": "^0.11.1",
+    "axe-core": "^4.12.1",
+    "fast-check": "^4.8.0",
     "lightningcss": "^1.32.0",
+    "size-limit": "^11.0.0",
+    "tsup": "^8.5.1",
     "typescript": "^5.0.0",
     "vitest": "^2.0.0"
   }

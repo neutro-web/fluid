@@ -3,5 +3,22 @@
   "version": "0.0.0",
   "description": "Fluid component playground and visual regression",
   "private": true,
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "dev": "storybook dev -p 6006",
+    "build": "storybook build",
+    "test:visual": "chromatic --exit-zero-on-changes"
+  },
+  "dependencies": {
+    "@neutro/fluid": "workspace:^"
+  },
+  "devDependencies": {
+    "@storybook/addon-essentials": "^8.0.0",
+    "@storybook/web-components": "^8.0.0",
+    "@storybook/web-components-vite": "^8.0.0",
+    "lit": "^3.3.3",
+    "storybook": "^8.0.0",
+    "typescript": "^5.0.0",
+    "vite": "^5.0.0"
+  }
 }

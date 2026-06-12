@@ -1,0 +1,8 @@
+{
+  "extends": "../../tooling/tsconfig/component.json",
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "bundler"
+  },
+  "include": [".storybook/**/*", "src/**/*"]
+}
