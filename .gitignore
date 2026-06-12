@@ -1,0 +1,14 @@
+node_modules
+dist
+.turbo
+.env
+.env.*
+*.env
+*.tsbuildinfo
+.DS_Store
+coverage
+.nyc_output
+storybook-static
+playwright-report
+test-results
+.changeset/pre.json
