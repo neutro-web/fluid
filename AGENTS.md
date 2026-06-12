@@ -90,6 +90,10 @@ The testing strategy is at: `fluid-testing-strategy.md`
 - All singletons: `Symbol.for()` — not module-level exports
 - `customElements.define()`: always guard with `if (!customElements.get(name))`
 
+**FluidRipple:**
+- Forget `overflow: hidden` on `:host` and the ripple bleeds — always set it alongside `border-radius` in component styles
+- Do not instantiate unconditionally — always check `ledger.tier !== 'matte'` and `!ledger.deviceMemoryLow` first
+
 ---
 
 ## Architecture Reference (Quick Lookup)
@@ -106,6 +110,27 @@ The testing strategy is at: `fluid-testing-strategy.md`
 | Motion catalogue | Foundation doc §II.5 |
 | ARIA patterns | Foundation doc §X |
 | Component spec template | Foundation doc §XIX |
+| Canvas ripple | `core/ripple.ts` → `FluidRipple` |
+
+---
+
+## FluidRipple Contract (all consuming components must honour this)
+
+FluidRipple is a dumb utility — it does not gate itself. Components are responsible for:
+
+1. **Instantiation gating** — only create FluidRipple when:
+   - `ledger.tier !== 'matte'` (Frosted or above)
+   - `!ledger.deviceMemoryLow`
+   If either condition fails, skip instantiation entirely. Do not create the
+   canvas. ripple.trigger() calls on a null reference must be no-ops.
+
+2. **Canvas clipping** — set `overflow: hidden` and matching `border-radius`
+   (or `clip-path`) on the shadow host `:host` CSS rule. FluidRipple positions
+   its canvas at `inset: 0` and relies entirely on the host's clip context.
+   Without this the ripple bleeds outside the component bounds.
+
+3. **Ripple reads as a wavefront** — alpha 0 at origin, peak opacity at the
+   expanding ring edge. This is the confirmed design. Do not "fix" it.
 
 ---
 
