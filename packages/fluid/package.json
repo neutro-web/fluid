@@ -107,7 +107,8 @@
     }
   ],
   "scripts": {
-    "test:unit": "vitest run"
+    "test:unit": "vitest run",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
