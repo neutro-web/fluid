@@ -97,6 +97,12 @@ interface ActiveAnimation {
 
 const activeAnimations = new WeakMap<Element, Map<string, ActiveAnimation>>()
 
+/** Test-only: returns true if the element has any active spring animations. */
+export function _hasActiveAnimations(el: Element): boolean {
+  const map = activeAnimations.get(el)
+  return map !== undefined && map.size > 0
+}
+
 function applyValue(el: Element, property: string, value: number): void {
   // TODO: unit formatting hook for px/transform consumers
   (el as HTMLElement).style.setProperty(property, String(value))
