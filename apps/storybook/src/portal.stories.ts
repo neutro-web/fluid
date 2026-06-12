@@ -116,7 +116,7 @@ export const ThemeInheritance: StoryObj = {
     </style>
     <div class="demo-theme-wrap">
       <p>fluid-theme with brand-hue="40" (orange). The portal root inherits this hue.</p>
-      <fluid-theme brand-hue="40">
+      <fluid-theme brand-hue="40" style="--fluid-hue-brand: 40">
         <fluid-portal>
           <div
             style="
@@ -124,7 +124,7 @@ export const ThemeInheritance: StoryObj = {
               bottom: 24px;
               left: 24px;
               padding: 12px 20px;
-              background: hsl(40 80% 52%);
+              background: hsl(var(--fluid-hue-brand, 40) 80% 52%);
               color: #fff;
               border-radius: 8px;
               font-family: system-ui;

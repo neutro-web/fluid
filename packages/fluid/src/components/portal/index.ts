@@ -7,6 +7,8 @@ import { SPRING_PRESETS } from '../../core/spring'
 
 const HOST_CSS = ':host { display: contents; }'
 
+// TODO: Replace with FluidTheme.snapshotTokens(el) once packages/fluid/src/components/theme/index.ts
+// is implemented. That will be the canonical snapshot path; this local copy will be removed.
 function snapshotTokens(el: Element): Record<string, string> {
   const result: Record<string, string> = {}
   const inlineStyle = (el as HTMLElement).style

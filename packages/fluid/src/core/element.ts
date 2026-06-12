@@ -154,11 +154,7 @@ export abstract class FluidElement extends HTMLElement {
     // Lifecycle event — the reliable "component is ready" signal for consumers,
     // test utilities, and composition orchestration. Dispatched AFTER onMount()
     // so springs, sampling, and context protocol are fully initialized.
-    // Queued as a microtask so that callers who add the listener immediately
-    // after an appendChild() call can still receive the event.
-    queueMicrotask(() => {
-      this.dispatchEvent(new CustomEvent('fluid:mounted', { bubbles: true, composed: true }))
-    })
+    this.dispatchEvent(new CustomEvent('fluid:mounted', { bubbles: true, composed: true }))
   }
 
   disconnectedCallback(): void {

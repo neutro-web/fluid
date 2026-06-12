@@ -68,11 +68,11 @@ describe('fluid-portal', () => {
 
       const portal = document.createElement('fluid-portal')
       portal.innerHTML = '<span>content</span>'
-      theme.appendChild(portal)
-
-      await new Promise<void>(r => {
+      const mountedP = new Promise<void>(r => {
         portal.addEventListener('fluid:mounted', () => r(), { once: true })
       })
+      theme.appendChild(portal)
+      await mountedP
 
       const root = document.body.querySelector('fluid-portal-root')!
       const hue = root.style.getPropertyValue('--fluid-hue-brand')
@@ -99,11 +99,11 @@ describe('fluid-portal', () => {
 
       const portal = document.createElement('fluid-portal')
       portal.innerHTML = '<span>content</span>'
-      theme.appendChild(portal)
-
-      await new Promise<void>(r => {
+      const mountedP = new Promise<void>(r => {
         portal.addEventListener('fluid:mounted', () => r(), { once: true })
       })
+      theme.appendChild(portal)
+      await mountedP
 
       const root = document.body.querySelector('fluid-portal-root')!
 
@@ -130,11 +130,11 @@ describe('fluid-portal', () => {
 
       const portal = document.createElement('fluid-portal')
       portal.innerHTML = '<span>content</span>'
-      theme.appendChild(portal)
-
-      await new Promise<void>(r => {
+      const mountedP = new Promise<void>(r => {
         portal.addEventListener('fluid:mounted', () => r(), { once: true })
       })
+      theme.appendChild(portal)
+      await mountedP
 
       const root = document.body.querySelector('fluid-portal-root')!
       // Token is present initially
@@ -171,11 +171,11 @@ describe('fluid-portal', () => {
 
       const portal = document.createElement('fluid-portal')
       portal.innerHTML = '<span>content</span>'
-      theme.appendChild(portal)
-
-      await new Promise<void>(r => {
+      const mountedP = new Promise<void>(r => {
         portal.addEventListener('fluid:mounted', () => r(), { once: true })
       })
+      theme.appendChild(portal)
+      await mountedP
 
       const root = document.body.querySelector('fluid-portal-root')!
 
@@ -197,7 +197,7 @@ describe('fluid-portal', () => {
   // ─── Test 6: no listener leaks ───────────────────────────────────────────
 
   describe('cleanup on disconnect', () => {
-    it('removes theme listeners on disconnect — no portal root reappears after unmount', async () => {
+    it('calls MutationObserver.disconnect() and removes fluidtheme:change listener on unmount', async () => {
       const fixture = document.createElement('div')
       document.body.appendChild(fixture)
 
@@ -205,33 +205,61 @@ describe('fluid-portal', () => {
       theme.style.setProperty('--fluid-hue-brand', '220')
       fixture.appendChild(theme)
 
+      // Spy on theme instance's removeEventListener to catch 'fluidtheme:change' removal
+      let changeListenerRemoved = false
+      const origRemoveListener = EventTarget.prototype.removeEventListener
+      theme.removeEventListener = function (
+        type: string,
+        listener: EventListenerOrEventListenerObject | null,
+        options?: EventListenerOptions | boolean
+      ) {
+        if (type === 'fluidtheme:change') changeListenerRemoved = true
+        return origRemoveListener.call(this, type, listener, options)
+      }
+
+      // Spy on MutationObserver.prototype.disconnect
+      let moDisconnects = 0
+      const origMODisconnect = MutationObserver.prototype.disconnect
+      MutationObserver.prototype.disconnect = function () {
+        moDisconnects++
+        return origMODisconnect.call(this)
+      }
+
       const portal = document.createElement('fluid-portal')
       portal.innerHTML = '<span>content</span>'
-      theme.appendChild(portal)
-
-      await new Promise<void>(r => {
+      const mountedP = new Promise<void>(r => {
         portal.addEventListener('fluid:mounted', () => r(), { once: true })
       })
+      theme.appendChild(portal)
+      await mountedP
 
-      const root = document.body.querySelector('fluid-portal-root')!
+      // Reset after mount so we only count disconnects from the unmount phase
+      moDisconnects = 0
 
       const unmountedP = waitForEvent(portal, 'fluid:unmounted')
       portal.remove()
       await unmountedP
 
-      if (document.body.contains(root)) {
-        throw new Error('portal root still in document.body after disconnect')
-      }
+      const finalMODisconnects = moDisconnects
+      const wasRemoved = changeListenerRemoved
 
-      theme.style.setProperty('--fluid-hue-brand', '999')
-      theme.dispatchEvent(new CustomEvent('fluidtheme:change', { bubbles: true }))
-      await nextFrame()
+      // Restore prototype before any further cleanup
+      MutationObserver.prototype.disconnect = origMODisconnect
 
-      const roots = document.body.querySelectorAll('fluid-portal-root')
       fixture.remove()
+      document.querySelectorAll('fluid-portal-root').forEach(el => el.remove())
 
-      if (roots.length !== 0) {
-        throw new Error(`${roots.length} orphan portal root(s) in document.body after disconnect`)
+      // Portal registers 2 MutationObservers: childObserver + themeObserver
+      if (finalMODisconnects !== 2) {
+        throw new Error(
+          `Expected exactly 2 MutationObserver.disconnect() calls on unmount ` +
+          `(childObserver + themeObserver), got ${finalMODisconnects}`
+        )
+      }
+      if (!wasRemoved) {
+        throw new Error(
+          'fluidtheme:change event listener was not removed from theme element on disconnect'
+        )
       }
     })
   })
