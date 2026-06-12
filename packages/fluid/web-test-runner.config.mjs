@@ -2,7 +2,7 @@ import { playwrightLauncher } from '@web/test-runner-playwright'
 import { esbuildPlugin } from '@web/dev-server-esbuild'
 
 export default {
-  files: ['src/components/**/*.spec.ts', 'src/testing/**/*.spec.ts'],
+  files: ['src/core/**/*.spec.ts', 'src/components/**/*.spec.ts', 'src/testing/**/*.spec.ts'],
   nodeResolve: true,
   plugins: [
     esbuildPlugin({ ts: true }),

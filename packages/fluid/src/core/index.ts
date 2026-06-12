@@ -25,6 +25,8 @@ export type { ToastOptions, ToastHandle, ToastManagerOptions } from './toast-man
 export { ToastManager, toastManager, toast } from './toast-manager'
 export { capturePointer, releasePointer, FluidGesture } from './gesture'
 export { FluidRipple } from './ripple'
+export { FluidElement } from './element'
+export type { FluidMaterial, FluidTheme } from './element'
 export type {
   DragConstraints,
   DragState,
