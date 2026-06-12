@@ -4,6 +4,11 @@ import path from 'path'
 export default defineConfig({
   root: '.',
   base: './',
+  define: {
+    // Ensures ledger.ts DEV flag is true so FluidLedger.forceTier() and
+    // window.FluidLedger are available. Vite doesn't inject process by default.
+    'process.env.NODE_ENV': '"development"'
+  },
   resolve: {
     alias: [
       {

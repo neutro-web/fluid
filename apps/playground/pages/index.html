@@ -24,9 +24,11 @@
       <dd>Light / Dark. Sets <code>data-theme</code> on <code>&lt;html&gt;</code>.
       All Fluid tokens respond automatically.</dd>
       <dt>Motion</dt>
-      <dd>Full / Reduced. Simulates <code>prefers-reduced-motion: reduce</code>
-      via <code>window.__FLUID_FORCE_REDUCED_MOTION__</code>. Springs substitute
-      opacity-only transitions at reduced.</dd>
+      <dd>Full / Reduced. Adds <code>.reduced-motion</code> to <code>&lt;html&gt;</code>,
+      suppressing CSS transitions and animations. WAAPI and JS-driven springs
+      (Crystalline and Optical tiers) are not affected — the ledger has no
+      force hook for motion preference today. Use your OS reduced-motion setting
+      to fully test those tiers.</dd>
     </dl>
   </section>
 
