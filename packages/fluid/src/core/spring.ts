@@ -20,8 +20,15 @@ export interface SpringState {
  *   x(t) = e^(−αt)[A·cos(ωdt) + B·sin(ωdt)] + x∞
  *   where α = ζω₀, ωd = ω₀√(1−ζ²), A = x₀−x∞, B = (ẋ₀+α·A)/ωd
  *
+ * Critically damped (ζ = 1):
+ *   x(t) = (A + Bt)e^(−ω₀t) + x∞
+ *   where A = x₀−x∞, B = ẋ₀ + ω₀·A
+ *
+ * Overdamped (ζ > 1):
+ *   x(t) = Ae^(r₁t) + Be^(r₂t) + x∞
+ *   where r₁ = ω₀(−ζ+γ), r₂ = ω₀(−ζ−γ), γ = √(ζ²−1)
+ *
  * dt is in real seconds — the caller provides the delta, never assume 60fps.
- * P0-T1-02 will add critically damped (ζ=1) and overdamped (ζ>1) regimes.
  */
 export function stepSpring(
   config: SpringConfig,

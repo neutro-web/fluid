@@ -6,9 +6,6 @@ import type { SpringConfig, SpringState } from './spring'
 const SNAPPY: SpringConfig = { mass: 0.5, stiffness: 400, damping: 28 }
 // bouncy: ζ ≈ 0.58, clear ~10.7% overshoot — used for underdamped overshoot verification
 const BOUNCY: SpringConfig = { mass: 1.0, stiffness: 300, damping: 20 }
-// critically damped (ζ = 1): mass=1, k=100, d=20 → ζ = 20/(2√100) = 1.0
-const CRITICAL: SpringConfig = { mass: 1, stiffness: 100, damping: 20 }
-
 function simulate(
   config: SpringConfig,
   from: number,
@@ -180,7 +177,6 @@ describe('overdamped (ζ > 1) — P0-T1-02', () => {
 
 describe('regime dispatch — P0-T1-02', () => {
   it('underdamped still overshoots after P0-T1-02 (regression)', () => {
-    const BOUNCY: SpringConfig = { mass: 1.0, stiffness: 300, damping: 20 }
     const maxValue = simulateMaxValue(BOUNCY, 0, 1, 60, 1000)
     expect(maxValue).toBeGreaterThan(1.05)
   })
