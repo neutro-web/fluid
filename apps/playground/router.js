@@ -1,4 +1,5 @@
 let currentPage = 'index'
+let navCounter = 0
 
 export function navigateCurrent() {
   navigate(currentPage)
@@ -22,24 +23,41 @@ async function reExecuteScripts(container) {
 }
 
 export async function navigate(page) {
+  const thisNav = ++navCounter
   currentPage = page
   const content = document.getElementById('content')
 
-  const res = await fetch(`/pages/${page}.html`)
-  if (!res.ok) {
-    content.innerHTML = `<p class="pg-error">Page not found: ${page}</p>`
-    return
+  function showError(msg) {
+    const el = document.createElement('p')
+    el.className = 'pg-error'
+    el.textContent = msg
+    content.replaceChildren(el)
   }
 
-  content.innerHTML = await res.text()
-  await reExecuteScripts(content)
+  try {
+    const res = await fetch(`/pages/${page}.html`)
+    if (thisNav !== navCounter) return
 
-  document.querySelectorAll('#sidebar-nav a').forEach(a =>
-    a.classList.toggle('active', a.dataset.page === page)
-  )
+    if (!res.ok) {
+      showError(`Page not found: ${page}`)
+      return
+    }
 
-  document.getElementById('content').focus()
-  history.replaceState(null, '', `#${page}`)
+    content.innerHTML = await res.text()
+    if (thisNav !== navCounter) return
+    await reExecuteScripts(content)
+    if (thisNav !== navCounter) return
+
+    document.querySelectorAll('#sidebar-nav a').forEach(a =>
+      a.classList.toggle('active', a.dataset.page === page)
+    )
+
+    document.getElementById('content').focus()
+    history.replaceState(null, '', `#${page}`)
+  } catch {
+    if (thisNav !== navCounter) return
+    showError(`Failed to load page: ${page}`)
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
