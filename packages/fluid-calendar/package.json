@@ -1,0 +1,10 @@
+{
+  "name": "@neutro/fluid-calendar",
+  "version": "0.1.0",
+  "description": "Calendar composition for @neutro/fluid",
+  "license": "MIT",
+  "type": "module",
+  "peerDependencies": {
+    "@neutro/fluid": "workspace:*"
+  }
+}

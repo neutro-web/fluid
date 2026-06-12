@@ -1,0 +1,7 @@
+{
+  "name": "@neutro/studio",
+  "version": "0.0.0",
+  "description": "Fluid Studio web application",
+  "private": true,
+  "license": "MIT"
+}

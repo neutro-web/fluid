@@ -1,0 +1,13 @@
+{
+  "name": "@neutro/fluid-icons",
+  "version": "0.1.0",
+  "description": "Icon set for @neutro/fluid",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "peerDependencies": {
+    "@neutro/fluid": "workspace:*"
+  }
+}

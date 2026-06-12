@@ -1,0 +1,10 @@
+{
+  "name": "@neutro/fluid-gantt",
+  "version": "0.1.0",
+  "description": "Gantt chart composition for @neutro/fluid (Pro)",
+  "license": "MIT",
+  "type": "module",
+  "peerDependencies": {
+    "@neutro/fluid": "workspace:*"
+  }
+}

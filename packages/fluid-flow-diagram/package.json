@@ -1,0 +1,10 @@
+{
+  "name": "@neutro/fluid-flow-diagram",
+  "version": "0.1.0",
+  "description": "Flow diagram composition for @neutro/fluid (Pro)",
+  "license": "MIT",
+  "type": "module",
+  "peerDependencies": {
+    "@neutro/fluid": "workspace:*"
+  }
+}

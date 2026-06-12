@@ -1,0 +1,10 @@
+{
+  "name": "@neutro/fluid-data-grid",
+  "version": "0.1.0",
+  "description": "High-performance data grid composition for @neutro/fluid",
+  "license": "MIT",
+  "type": "module",
+  "peerDependencies": {
+    "@neutro/fluid": "workspace:*"
+  }
+}

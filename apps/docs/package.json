@@ -1,0 +1,7 @@
+{
+  "name": "@neutro/docs",
+  "version": "0.0.0",
+  "description": "Fluid documentation site",
+  "private": true,
+  "license": "MIT"
+}
