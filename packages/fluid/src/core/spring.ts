@@ -57,6 +57,34 @@ export function stepSpring(
     return { value: newValue, velocity: newVelocity }
   }
 
-  // P0-T1-02: critically damped (ζ = 1) and overdamped (ζ > 1) — not yet implemented.
-  throw new Error(`stepSpring: underdamped only in P0-T1-01 (ζ < 1). Got ζ = ${zeta.toFixed(4)}`)
+  if (zeta === 1 || Math.abs(zeta - 1) < 1e-7) {
+    // Critically damped: x(t) = (A + Bt)e^(−ωt) + x∞
+    // A = d0, B = v0 + ω·d0 (from x′(0) = B − ω·A = v0)
+    const A = d0
+    const B = v0 + omega0 * d0
+    const decay = Math.exp(-omega0 * dt)
+
+    const newValue = (A + B * dt) * decay + target
+    const newVelocity = (B - omega0 * (A + B * dt)) * decay
+
+    return { value: newValue, velocity: newVelocity }
+  }
+
+  // Overdamped (ζ > 1): x(t) = Ae^(r₁t) + Be^(r₂t) + x∞
+  // r₁ = ω₀(−ζ+γ), r₂ = ω₀(−ζ−γ), γ = √(ζ²−1)  — both roots negative
+  const gamma = Math.sqrt(zeta * zeta - 1)
+  const r1 = omega0 * (-zeta + gamma)
+  const r2 = omega0 * (-zeta - gamma)
+  const denom = r1 - r2 // = 2·ω₀·γ > 0
+
+  const A = (v0 - r2 * d0) / denom
+  const B = (r1 * d0 - v0) / denom
+
+  const e1 = Math.exp(r1 * dt)
+  const e2 = Math.exp(r2 * dt)
+
+  const newValue = A * e1 + B * e2 + target
+  const newVelocity = r1 * A * e1 + r2 * B * e2
+
+  return { value: newValue, velocity: newVelocity }
 }

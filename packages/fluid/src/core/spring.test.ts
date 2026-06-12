@@ -121,15 +121,67 @@ describe('stepSpring — underdamped spring solver (P0-T1-01)', () => {
     })
   })
 
-  describe('ζ ≥ 1 not yet implemented (P0-T1-02)', () => {
-    it('throws for critically damped (ζ = 1)', () => {
-      // CRITICAL: m=1, k=100, d=20 → ζ = 20/(2×√100) = 1.0
-      expect(() => stepSpring(CRITICAL, { value: 0, velocity: 0 }, 1, 1 / 60)).toThrow()
-    })
+})
 
-    it('throws for overdamped (ζ > 1)', () => {
-      const overdamped: SpringConfig = { mass: 1, stiffness: 100, damping: 25 }
-      expect(() => stepSpring(overdamped, { value: 0, velocity: 0 }, 1, 1 / 60)).toThrow()
-    })
+describe('critically damped (ζ = 1) — P0-T1-02', () => {
+  // CRITICAL: m=1, k=100, d=20 → ζ = 20/(2×√100) = 1.0
+  const CRITICAL: SpringConfig = { mass: 1, stiffness: 100, damping: 20 }
+
+  it('does not overshoot target when starting from rest', () => {
+    const maxValue = simulateMaxValue(CRITICAL, 0, 1, 60, 2000)
+    expect(maxValue).toBeLessThanOrEqual(1.0001)
+  })
+
+  it('settles within 0.1% by 1000ms at 60fps', () => {
+    const result = simulate(CRITICAL, 0, 1, 60, 1000)
+    expect(Math.abs(result.value - 1)).toBeLessThan(0.001)
+  })
+
+  it('handles non-zero initial velocity without NaN', () => {
+    const state = stepSpring(CRITICAL, { value: 0, velocity: 50 }, 1, 1 / 60)
+    expect(Number.isFinite(state.value)).toBe(true)
+    expect(Number.isFinite(state.velocity)).toBe(true)
+  })
+
+  it('produces no NaN over 2000ms', () => {
+    const result = simulate(CRITICAL, 0, 1, 60, 2000)
+    expect(Number.isFinite(result.value)).toBe(true)
+    expect(Number.isFinite(result.velocity)).toBe(true)
+  })
+})
+
+describe('overdamped (ζ > 1) — P0-T1-02', () => {
+  // OVER: m=1, k=100, d=25 → ζ = 25/(2×√100) = 1.25
+  const OVER: SpringConfig = { mass: 1, stiffness: 100, damping: 25 }
+
+  it('does not overshoot target when starting from rest', () => {
+    const maxValue = simulateMaxValue(OVER, 0, 1, 60, 3000)
+    expect(maxValue).toBeLessThanOrEqual(1.0001)
+  })
+
+  it('settles within 0.1% by 2000ms at 60fps', () => {
+    // r₁ = -5, r₂ = -20 for this config; slowest mode e^(-5t) → <0.007 at 1s, <0.0001 at 2s
+    const result = simulate(OVER, 0, 1, 60, 2000)
+    expect(Math.abs(result.value - 1)).toBeLessThan(0.001)
+  })
+
+  it('handles non-zero initial velocity without NaN', () => {
+    const state = stepSpring(OVER, { value: 0, velocity: 50 }, 1, 1 / 60)
+    expect(Number.isFinite(state.value)).toBe(true)
+    expect(Number.isFinite(state.velocity)).toBe(true)
+  })
+
+  it('produces no NaN over 3000ms', () => {
+    const result = simulate(OVER, 0, 1, 60, 3000)
+    expect(Number.isFinite(result.value)).toBe(true)
+    expect(Number.isFinite(result.velocity)).toBe(true)
+  })
+})
+
+describe('regime dispatch — P0-T1-02', () => {
+  it('underdamped still overshoots after P0-T1-02 (regression)', () => {
+    const BOUNCY: SpringConfig = { mass: 1.0, stiffness: 300, damping: 20 }
+    const maxValue = simulateMaxValue(BOUNCY, 0, 1, 60, 1000)
+    expect(maxValue).toBeGreaterThan(1.05)
   })
 })
