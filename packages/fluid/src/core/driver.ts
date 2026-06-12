@@ -82,11 +82,9 @@ export class AnimationDriver {
 // Module-federation-safe singleton
 const DRIVER_KEY = Symbol.for('neutro.fluid.driver')
 if (!(globalThis as any)[DRIVER_KEY]) {
-  if (typeof document !== 'undefined' && typeof requestAnimationFrame !== 'undefined') {
-    ;(globalThis as any)[DRIVER_KEY] = new AnimationDriver()
-  }
+  ;(globalThis as any)[DRIVER_KEY] = new AnimationDriver()
 }
-export const driver: AnimationDriver = (globalThis as any)[DRIVER_KEY] ?? new AnimationDriver()
+export const driver: AnimationDriver = (globalThis as any)[DRIVER_KEY]
 
 interface ActiveAnimation {
   springState: SpringState

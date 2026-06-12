@@ -1,4 +1,4 @@
-import { stepSpring } from './spring'
+import { stepSpring, validateSpringConfig } from './spring'
 import type { SpringConfig } from './spring'
 import { SPRING_PRESETS } from './spring'
 import { AnimationDriver, driver } from './driver'
@@ -117,6 +117,6 @@ export function spring(
   preset: PresetKey | SpringConfig,
   d: AnimationDriver = driver,
 ): ReactiveSpring {
-  const config = typeof preset === 'string' ? SPRING_PRESETS[preset] : preset
+  const config = validateSpringConfig(typeof preset === 'string' ? SPRING_PRESETS[preset] : preset)
   return new ReactiveSpringImpl(initial, config, d)
 }
