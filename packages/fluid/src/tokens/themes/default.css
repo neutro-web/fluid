@@ -1,0 +1,344 @@
+/* =============================================================================
+   @neutro/fluid — Default Token File
+   All --fluid-* design tokens scoped to :root.
+   Physical (locked) tokens must never be modified by component styles.
+   ============================================================================= */
+
+/* Declare layer order — fluid.theme always wins over fluid.base regardless
+   of load order, so dark/high-contrast overrides work even if loaded first. */
+@layer fluid.base, fluid.theme;
+
+@layer fluid.base {
+
+:root {
+
+  /* ---------------------------------------------------------------------------
+     LOCKED: Physical constants — blur, optics, elasticity, scroll
+     These map to real glass physics and must never be overridden in components.
+     Override via fluid-theme element using the *-override custom attribute.
+     --------------------------------------------------------------------------- */
+
+  --fluid-blur-thin:          8px;
+  --fluid-blur-regular:       20px;
+  --fluid-blur-thick:         40px;
+
+  --fluid-vibrancy:           1.8;
+  --fluid-ior:                0.012;
+  --fluid-fresnel-strength:   0.18;
+  --fluid-dispersion:         0.4px;
+
+  --fluid-elasticity-max:     64px;
+  --fluid-scroll-friction:    0.95;
+
+
+  /* ---------------------------------------------------------------------------
+     LOCKED: Spring presets — mass / stiffness / damping triplets (CSS props)
+     JS consumer: import { SPRING_PRESETS } from '@neutro/fluid/core'
+     --------------------------------------------------------------------------- */
+
+  --fluid-spring-snappy-mass:      0.5;
+  --fluid-spring-snappy-stiffness: 400;
+  --fluid-spring-snappy-damping:   28;
+
+  --fluid-spring-bouncy-mass:      1.0;
+  --fluid-spring-bouncy-stiffness: 300;
+  --fluid-spring-bouncy-damping:   20;
+
+  --fluid-spring-gentle-mass:      1.0;
+  --fluid-spring-gentle-stiffness: 120;
+  --fluid-spring-gentle-damping:   20;
+
+  --fluid-spring-smooth-mass:      1.0;
+  --fluid-spring-smooth-stiffness: 200;
+  --fluid-spring-smooth-damping:   26;
+
+  --fluid-spring-precise-mass:     0.8;
+  --fluid-spring-precise-stiffness: 500;
+  --fluid-spring-precise-damping:  32;
+
+
+  /* ---------------------------------------------------------------------------
+     FREE: Tint tokens — glass surface tinting
+     tint-alpha is the per-component free dial; themes override via fluid-theme.
+     --------------------------------------------------------------------------- */
+
+  --fluid-tint-light:         hsl(0 0% 100% / 0.55);
+  --fluid-tint-dark:          hsl(0 0% 0% / 0.35);
+  --fluid-tint-alpha:         0.55;
+  --fluid-tint-saturate:      1.4;
+
+
+  /* ---------------------------------------------------------------------------
+     FREE: Color tokens — Brand
+     Hue/sat primitives allow single-value re-branding via fluid-theme[brand-hue].
+     HSL scale: fallback for all browsers (Frosted tier and above).
+     --------------------------------------------------------------------------- */
+
+  --fluid-hue-brand:   220;
+  --fluid-sat-brand:   80%;
+  --fluid-color-brand: hsl(var(--fluid-hue-brand) var(--fluid-sat-brand) 52%);
+
+  --fluid-color-brand-50:  hsl(var(--fluid-hue-brand) calc(var(--fluid-sat-brand) * 0.30) 97%);
+  --fluid-color-brand-100: hsl(var(--fluid-hue-brand) calc(var(--fluid-sat-brand) * 0.50) 93%);
+  --fluid-color-brand-200: hsl(var(--fluid-hue-brand) calc(var(--fluid-sat-brand) * 0.65) 88%);
+  --fluid-color-brand-300: hsl(var(--fluid-hue-brand) calc(var(--fluid-sat-brand) * 0.80) 78%);
+  --fluid-color-brand-400: hsl(var(--fluid-hue-brand) calc(var(--fluid-sat-brand) * 0.90) 65%);
+  --fluid-color-brand-500: var(--fluid-color-brand);
+  --fluid-color-brand-600: hsl(var(--fluid-hue-brand) calc(var(--fluid-sat-brand) * 0.95) 45%);
+  --fluid-color-brand-700: hsl(var(--fluid-hue-brand) calc(var(--fluid-sat-brand) * 0.90) 38%);
+  --fluid-color-brand-800: hsl(var(--fluid-hue-brand) calc(var(--fluid-sat-brand) * 0.80) 28%);
+  --fluid-color-brand-900: hsl(var(--fluid-hue-brand) calc(var(--fluid-sat-brand) * 0.65) 18%);
+
+  /* Semantic brand aliases — components use these, never the raw scale */
+  --fluid-color-brand-subtle:     var(--fluid-color-brand-100);
+  --fluid-color-brand-strong:     var(--fluid-color-brand-700);
+  --fluid-color-brand-on-surface: var(--fluid-color-brand-900);
+
+
+  /* ---------------------------------------------------------------------------
+     FREE: Color tokens — Neutral
+     --------------------------------------------------------------------------- */
+
+  --fluid-hue-neutral:   220;
+  --fluid-sat-neutral:   10%;
+  --fluid-color-neutral: hsl(var(--fluid-hue-neutral) var(--fluid-sat-neutral) 46%);
+
+  --fluid-color-neutral-50:  hsl(var(--fluid-hue-neutral) calc(var(--fluid-sat-neutral) * 0.30) 97%);
+  --fluid-color-neutral-100: hsl(var(--fluid-hue-neutral) calc(var(--fluid-sat-neutral) * 0.50) 93%);
+  --fluid-color-neutral-200: hsl(var(--fluid-hue-neutral) calc(var(--fluid-sat-neutral) * 0.65) 88%);
+  --fluid-color-neutral-300: hsl(var(--fluid-hue-neutral) calc(var(--fluid-sat-neutral) * 0.80) 78%);
+  --fluid-color-neutral-400: hsl(var(--fluid-hue-neutral) calc(var(--fluid-sat-neutral) * 0.90) 65%);
+  --fluid-color-neutral-500: var(--fluid-color-neutral);
+  --fluid-color-neutral-600: hsl(var(--fluid-hue-neutral) calc(var(--fluid-sat-neutral) * 0.95) 38%);
+  --fluid-color-neutral-700: hsl(var(--fluid-hue-neutral) calc(var(--fluid-sat-neutral) * 0.90) 30%);
+  --fluid-color-neutral-800: hsl(var(--fluid-hue-neutral) calc(var(--fluid-sat-neutral) * 0.80) 20%);
+  --fluid-color-neutral-900: hsl(var(--fluid-hue-neutral) calc(var(--fluid-sat-neutral) * 0.65) 12%);
+
+  --fluid-color-neutral-subtle:     var(--fluid-color-neutral-100);
+  --fluid-color-neutral-strong:     var(--fluid-color-neutral-700);
+  --fluid-color-neutral-on-surface: var(--fluid-color-neutral-900);
+
+
+  /* ---------------------------------------------------------------------------
+     FREE: Color tokens — Destructive (error / danger)
+     --------------------------------------------------------------------------- */
+
+  --fluid-hue-destructive:   0;
+  --fluid-sat-destructive:   90%;
+  --fluid-color-destructive: hsl(var(--fluid-hue-destructive) var(--fluid-sat-destructive) 50%);
+
+  --fluid-color-destructive-50:  hsl(var(--fluid-hue-destructive) calc(var(--fluid-sat-destructive) * 0.30) 97%);
+  --fluid-color-destructive-100: hsl(var(--fluid-hue-destructive) calc(var(--fluid-sat-destructive) * 0.50) 93%);
+  --fluid-color-destructive-200: hsl(var(--fluid-hue-destructive) calc(var(--fluid-sat-destructive) * 0.65) 88%);
+  --fluid-color-destructive-300: hsl(var(--fluid-hue-destructive) calc(var(--fluid-sat-destructive) * 0.80) 78%);
+  --fluid-color-destructive-400: hsl(var(--fluid-hue-destructive) calc(var(--fluid-sat-destructive) * 0.90) 65%);
+  --fluid-color-destructive-500: var(--fluid-color-destructive);
+  --fluid-color-destructive-600: hsl(var(--fluid-hue-destructive) calc(var(--fluid-sat-destructive) * 0.95) 42%);
+  --fluid-color-destructive-700: hsl(var(--fluid-hue-destructive) calc(var(--fluid-sat-destructive) * 0.90) 35%);
+  --fluid-color-destructive-800: hsl(var(--fluid-hue-destructive) calc(var(--fluid-sat-destructive) * 0.80) 25%);
+  --fluid-color-destructive-900: hsl(var(--fluid-hue-destructive) calc(var(--fluid-sat-destructive) * 0.65) 16%);
+
+  --fluid-color-destructive-subtle:     var(--fluid-color-destructive-100);
+  --fluid-color-destructive-strong:     var(--fluid-color-destructive-700);
+  --fluid-color-destructive-on-surface: var(--fluid-color-destructive-900);
+
+
+  /* ---------------------------------------------------------------------------
+     FREE: Color tokens — Success
+     --------------------------------------------------------------------------- */
+
+  --fluid-hue-success:   145;
+  --fluid-sat-success:   70%;
+  --fluid-color-success: hsl(var(--fluid-hue-success) var(--fluid-sat-success) 40%);
+
+  --fluid-color-success-50:  hsl(var(--fluid-hue-success) calc(var(--fluid-sat-success) * 0.30) 97%);
+  --fluid-color-success-100: hsl(var(--fluid-hue-success) calc(var(--fluid-sat-success) * 0.50) 93%);
+  --fluid-color-success-200: hsl(var(--fluid-hue-success) calc(var(--fluid-sat-success) * 0.65) 88%);
+  --fluid-color-success-300: hsl(var(--fluid-hue-success) calc(var(--fluid-sat-success) * 0.80) 78%);
+  --fluid-color-success-400: hsl(var(--fluid-hue-success) calc(var(--fluid-sat-success) * 0.90) 60%);
+  --fluid-color-success-500: var(--fluid-color-success);
+  --fluid-color-success-600: hsl(var(--fluid-hue-success) calc(var(--fluid-sat-success) * 0.95) 34%);
+  --fluid-color-success-700: hsl(var(--fluid-hue-success) calc(var(--fluid-sat-success) * 0.90) 27%);
+  --fluid-color-success-800: hsl(var(--fluid-hue-success) calc(var(--fluid-sat-success) * 0.80) 19%);
+  --fluid-color-success-900: hsl(var(--fluid-hue-success) calc(var(--fluid-sat-success) * 0.65) 12%);
+
+  --fluid-color-success-subtle:     var(--fluid-color-success-100);
+  --fluid-color-success-strong:     var(--fluid-color-success-700);
+  --fluid-color-success-on-surface: var(--fluid-color-success-900);
+
+
+  /* ---------------------------------------------------------------------------
+     FREE: Color tokens — Caution (warning / amber)
+     --------------------------------------------------------------------------- */
+
+  --fluid-hue-caution:   45;
+  --fluid-sat-caution:   95%;
+  --fluid-color-caution: hsl(var(--fluid-hue-caution) var(--fluid-sat-caution) 48%);
+
+  --fluid-color-caution-50:  hsl(var(--fluid-hue-caution) calc(var(--fluid-sat-caution) * 0.30) 97%);
+  --fluid-color-caution-100: hsl(var(--fluid-hue-caution) calc(var(--fluid-sat-caution) * 0.50) 93%);
+  --fluid-color-caution-200: hsl(var(--fluid-hue-caution) calc(var(--fluid-sat-caution) * 0.65) 88%);
+  --fluid-color-caution-300: hsl(var(--fluid-hue-caution) calc(var(--fluid-sat-caution) * 0.80) 78%);
+  --fluid-color-caution-400: hsl(var(--fluid-hue-caution) calc(var(--fluid-sat-caution) * 0.90) 62%);
+  --fluid-color-caution-500: var(--fluid-color-caution);
+  --fluid-color-caution-600: hsl(var(--fluid-hue-caution) calc(var(--fluid-sat-caution) * 0.95) 40%);
+  --fluid-color-caution-700: hsl(var(--fluid-hue-caution) calc(var(--fluid-sat-caution) * 0.90) 32%);
+  --fluid-color-caution-800: hsl(var(--fluid-hue-caution) calc(var(--fluid-sat-caution) * 0.80) 22%);
+  --fluid-color-caution-900: hsl(var(--fluid-hue-caution) calc(var(--fluid-sat-caution) * 0.65) 14%);
+
+  --fluid-color-caution-subtle:     var(--fluid-color-caution-100);
+  --fluid-color-caution-strong:     var(--fluid-color-caution-700);
+  --fluid-color-caution-on-surface: var(--fluid-color-caution-900);
+
+
+  /* ---------------------------------------------------------------------------
+     FREE: Depth / shadow tokens
+     Layer shadow values derived from z-index range and physical depth model.
+     --------------------------------------------------------------------------- */
+
+  --fluid-shadow-surface: 0 1px 3px hsl(0 0% 0% / 0.08), 0 1px 2px hsl(0 0% 0% / 0.06);
+  --fluid-shadow-raised:  0 4px 6px hsl(0 0% 0% / 0.10), 0 2px 4px hsl(0 0% 0% / 0.08);
+  --fluid-shadow-overlay: 0 10px 15px hsl(0 0% 0% / 0.12), 0 4px 6px hsl(0 0% 0% / 0.10);
+  --fluid-shadow-sheet:   0 20px 25px hsl(0 0% 0% / 0.15), 0 10px 10px hsl(0 0% 0% / 0.10);
+
+
+  /* ---------------------------------------------------------------------------
+     FREE: Typography tokens
+     --fluid-font-weight-on-glass: dynamic — set by glass material mixin (§III.4)
+     --fluid-dir: RTL multiplier, 1 = LTR, -1 = RTL (managed by fluid-theme)
+     --------------------------------------------------------------------------- */
+
+  --fluid-font-family:          system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --fluid-font-family-mono:     ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;
+
+  --fluid-font-size-xs:         0.75rem;   /* 12px */
+  --fluid-font-size-sm:         0.875rem;  /* 14px */
+  --fluid-font-size-base:       1rem;      /* 16px */
+  --fluid-font-size-md:         1.125rem;  /* 18px */
+  --fluid-font-size-lg:         1.25rem;   /* 20px */
+  --fluid-font-size-xl:         1.5rem;    /* 24px */
+  --fluid-font-size-2xl:        1.875rem;  /* 30px */
+  --fluid-font-size-3xl:        2.25rem;   /* 36px */
+
+  --fluid-font-weight-light:    300;
+  --fluid-font-weight-regular:  400;
+  --fluid-font-weight-medium:   500;
+  --fluid-font-weight-semibold: 600;
+  --fluid-font-weight-bold:     700;
+
+  /* Glass weight compensation — raised by glass material mixin when blur is active */
+  --fluid-font-weight-on-glass: var(--fluid-font-weight-medium);
+
+  --fluid-line-height-tight:   1.2;
+  --fluid-line-height-snug:    1.375;
+  --fluid-line-height-normal:  1.5;
+  --fluid-line-height-relaxed: 1.625;
+
+  --fluid-letter-spacing-tight:  -0.025em;
+  --fluid-letter-spacing-normal:  0em;
+  --fluid-letter-spacing-wide:    0.025em;
+  --fluid-letter-spacing-wider:   0.05em;
+
+  /* RTL multiplier — flip directional values in LTR/RTL contexts */
+  --fluid-dir: 1;
+
+
+  /* ---------------------------------------------------------------------------
+     FREE: Geometry tokens — radii and spacing
+     --------------------------------------------------------------------------- */
+
+  --fluid-radius-sm:   4px;
+  --fluid-radius-md:   8px;
+  --fluid-radius-lg:   12px;
+  --fluid-radius-xl:   16px;
+  --fluid-radius-2xl:  24px;
+  --fluid-radius-full: 9999px;
+
+  --fluid-space-1:  0.25rem;   /* 4px  */
+  --fluid-space-2:  0.5rem;    /* 8px  */
+  --fluid-space-3:  0.75rem;   /* 12px */
+  --fluid-space-4:  1rem;      /* 16px */
+  --fluid-space-5:  1.25rem;   /* 20px */
+  --fluid-space-6:  1.5rem;    /* 24px */
+  --fluid-space-8:  2rem;      /* 32px */
+  --fluid-space-10: 2.5rem;    /* 40px */
+  --fluid-space-12: 3rem;      /* 48px */
+  --fluid-space-16: 4rem;      /* 64px */
+
+  /* Focus ring */
+  --fluid-focus-ring-color: var(--fluid-color-brand);
+  --fluid-focus-ring-width: 2px;
+  --fluid-focus-ring-offset: 2px;
+
+}
+
+
+/* =============================================================================
+   Tier-aware color enhancement — oklch relative color scale
+   @supports block targets Crystalline+ browsers only.
+   HSL scale above remains the universal fallback (Frosted tier and above).
+   ============================================================================= */
+
+@supports (color: oklch(from red 1 1 1)) {
+  :root {
+
+    /* Brand — perceptually uniform oklch scale */
+    --fluid-color-brand-50:  oklch(from var(--fluid-color-brand) 0.97 calc(c * 0.25) h);
+    --fluid-color-brand-100: oklch(from var(--fluid-color-brand) 0.93 calc(c * 0.40) h);
+    --fluid-color-brand-200: oklch(from var(--fluid-color-brand) 0.88 calc(c * 0.55) h);
+    --fluid-color-brand-300: oklch(from var(--fluid-color-brand) 0.80 calc(c * 0.70) h);
+    --fluid-color-brand-400: oklch(from var(--fluid-color-brand) 0.70 calc(c * 0.85) h);
+    /* 500 = base — alias already set above, stays as-is */
+    --fluid-color-brand-600: oklch(from var(--fluid-color-brand) 0.58 calc(c * 0.95) h);
+    --fluid-color-brand-700: oklch(from var(--fluid-color-brand) 0.48 calc(c * 0.90) h);
+    --fluid-color-brand-800: oklch(from var(--fluid-color-brand) 0.36 calc(c * 0.80) h);
+    --fluid-color-brand-900: oklch(from var(--fluid-color-brand) 0.24 calc(c * 0.65) h);
+
+    /* Neutral — oklch scale */
+    --fluid-color-neutral-50:  oklch(from var(--fluid-color-neutral) 0.97 calc(c * 0.25) h);
+    --fluid-color-neutral-100: oklch(from var(--fluid-color-neutral) 0.93 calc(c * 0.40) h);
+    --fluid-color-neutral-200: oklch(from var(--fluid-color-neutral) 0.88 calc(c * 0.55) h);
+    --fluid-color-neutral-300: oklch(from var(--fluid-color-neutral) 0.80 calc(c * 0.70) h);
+    --fluid-color-neutral-400: oklch(from var(--fluid-color-neutral) 0.70 calc(c * 0.85) h);
+    --fluid-color-neutral-600: oklch(from var(--fluid-color-neutral) 0.50 calc(c * 0.95) h);
+    --fluid-color-neutral-700: oklch(from var(--fluid-color-neutral) 0.40 calc(c * 0.90) h);
+    --fluid-color-neutral-800: oklch(from var(--fluid-color-neutral) 0.28 calc(c * 0.80) h);
+    --fluid-color-neutral-900: oklch(from var(--fluid-color-neutral) 0.16 calc(c * 0.65) h);
+
+    /* Destructive — oklch scale */
+    --fluid-color-destructive-50:  oklch(from var(--fluid-color-destructive) 0.97 calc(c * 0.25) h);
+    --fluid-color-destructive-100: oklch(from var(--fluid-color-destructive) 0.93 calc(c * 0.40) h);
+    --fluid-color-destructive-200: oklch(from var(--fluid-color-destructive) 0.88 calc(c * 0.55) h);
+    --fluid-color-destructive-300: oklch(from var(--fluid-color-destructive) 0.80 calc(c * 0.70) h);
+    --fluid-color-destructive-400: oklch(from var(--fluid-color-destructive) 0.70 calc(c * 0.85) h);
+    --fluid-color-destructive-600: oklch(from var(--fluid-color-destructive) 0.55 calc(c * 0.95) h);
+    --fluid-color-destructive-700: oklch(from var(--fluid-color-destructive) 0.44 calc(c * 0.90) h);
+    --fluid-color-destructive-800: oklch(from var(--fluid-color-destructive) 0.32 calc(c * 0.80) h);
+    --fluid-color-destructive-900: oklch(from var(--fluid-color-destructive) 0.20 calc(c * 0.65) h);
+
+    /* Success — oklch scale */
+    --fluid-color-success-50:  oklch(from var(--fluid-color-success) 0.97 calc(c * 0.25) h);
+    --fluid-color-success-100: oklch(from var(--fluid-color-success) 0.93 calc(c * 0.40) h);
+    --fluid-color-success-200: oklch(from var(--fluid-color-success) 0.88 calc(c * 0.55) h);
+    --fluid-color-success-300: oklch(from var(--fluid-color-success) 0.80 calc(c * 0.70) h);
+    --fluid-color-success-400: oklch(from var(--fluid-color-success) 0.70 calc(c * 0.85) h);
+    --fluid-color-success-600: oklch(from var(--fluid-color-success) 0.50 calc(c * 0.95) h);
+    --fluid-color-success-700: oklch(from var(--fluid-color-success) 0.40 calc(c * 0.90) h);
+    --fluid-color-success-800: oklch(from var(--fluid-color-success) 0.28 calc(c * 0.80) h);
+    --fluid-color-success-900: oklch(from var(--fluid-color-success) 0.16 calc(c * 0.65) h);
+
+    /* Caution — oklch scale */
+    --fluid-color-caution-50:  oklch(from var(--fluid-color-caution) 0.97 calc(c * 0.25) h);
+    --fluid-color-caution-100: oklch(from var(--fluid-color-caution) 0.93 calc(c * 0.40) h);
+    --fluid-color-caution-200: oklch(from var(--fluid-color-caution) 0.88 calc(c * 0.55) h);
+    --fluid-color-caution-300: oklch(from var(--fluid-color-caution) 0.80 calc(c * 0.70) h);
+    --fluid-color-caution-400: oklch(from var(--fluid-color-caution) 0.70 calc(c * 0.85) h);
+    --fluid-color-caution-600: oklch(from var(--fluid-color-caution) 0.53 calc(c * 0.95) h);
+    --fluid-color-caution-700: oklch(from var(--fluid-color-caution) 0.42 calc(c * 0.90) h);
+    --fluid-color-caution-800: oklch(from var(--fluid-color-caution) 0.30 calc(c * 0.80) h);
+    --fluid-color-caution-900: oklch(from var(--fluid-color-caution) 0.18 calc(c * 0.65) h);
+
+  }
+}
+
+} /* @layer fluid.base */

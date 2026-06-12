@@ -1,0 +1,114 @@
+/* =============================================================================
+   @neutro/fluid — Print Stylesheet
+   Global document-level print resets. All glass surfaces become flat,
+   print-safe renderings: no backdrop blur, white background, no shadow,
+   solid border, black text.
+   Import as a global stylesheet alongside default.css.
+   Shadow-root per-component print rules are also defined in each component.
+   ============================================================================= */
+
+@media print {
+
+  /* All Fluid glass component hosts — flatten glass for print */
+  fluid-button,
+  fluid-icon-button,
+  fluid-fab,
+  fluid-card,
+  fluid-section,
+  fluid-divider,
+  fluid-theme,
+  fluid-fieldset,
+  fluid-stack,
+  fluid-spacer,
+  fluid-visually-hidden,
+  fluid-empty-state,
+  fluid-skeleton,
+  fluid-spinner,
+  fluid-progress,
+  fluid-nav-bar,
+  fluid-tab-bar,
+  fluid-tabs,
+  fluid-tab,
+  fluid-tab-panel,
+  fluid-sidebar,
+  fluid-breadcrumb,
+  fluid-back-button,
+  fluid-scroll-view,
+  fluid-parallax-layer,
+  fluid-depth-stage,
+  fluid-portal,
+  fluid-morphing-icon,
+  fluid-frosted-panel,
+  fluid-spotlight,
+  fluid-image,
+  fluid-code-block,
+  fluid-switch,
+  fluid-checkbox,
+  fluid-radio,
+  fluid-text-field,
+  fluid-slider,
+  fluid-stepper,
+  fluid-select,
+  fluid-option,
+  fluid-accordion,
+  fluid-accordion-item,
+  fluid-form,
+  fluid-search-bar,
+  fluid-autocomplete,
+  fluid-otp-input,
+  fluid-number-input,
+  fluid-date-picker,
+  fluid-color-picker,
+  fluid-file-upload,
+  fluid-rating,
+  fluid-text-area,
+  fluid-list,
+  fluid-virtual-list,
+  fluid-table,
+  fluid-avatar,
+  fluid-badge,
+  fluid-chip,
+  fluid-tree-view,
+  fluid-timeline,
+  fluid-toast,
+  fluid-alert-banner,
+  fluid-live-activity,
+  fluid-dropdown,
+  fluid-context-menu,
+  fluid-popover,
+  fluid-dialog,
+  fluid-sheet,
+  fluid-drawer {
+    backdrop-filter: none !important;
+    background: white !important;
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+    color: black !important;
+    opacity: 1 !important;
+  }
+
+  /* Overlays — hide from print output entirely */
+  fluid-dialog,
+  fluid-sheet,
+  fluid-drawer,
+  fluid-toast,
+  fluid-popover,
+  fluid-context-menu,
+  fluid-dropdown,
+  fluid-live-activity {
+    display: none !important;
+  }
+
+  /* Document-level glass token overrides for print */
+  :root {
+    --fluid-tint-light: hsl(0 0% 100% / 1);
+    --fluid-tint-dark:  hsl(0 0% 0% / 0);
+    --fluid-tint-alpha: 1;
+
+    --fluid-shadow-surface: none;
+    --fluid-shadow-raised:  none;
+    --fluid-shadow-overlay: none;
+    --fluid-shadow-sheet:   none;
+  }
+
+}
