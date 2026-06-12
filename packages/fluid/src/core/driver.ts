@@ -94,6 +94,7 @@ interface ActiveAnimation {
   property: string
   config: SpringConfig
   settle: () => void
+  id: symbol
 }
 
 const activeAnimations = new WeakMap<Element, Map<string, ActiveAnimation>>()
@@ -104,7 +105,8 @@ function applyValue(el: Element, property: string, value: number): void {
 
 function parseCurrentValue(el: Element, property: string): number {
   const raw = (el as HTMLElement).style.getPropertyValue(property)
-  return parseFloat(raw) || 0
+  const n = parseFloat(raw)
+  return Number.isFinite(n) ? n : 0
 }
 
 export function startSpring(
@@ -121,15 +123,26 @@ export function startSpring(
   const cfg = validateSpringConfig(config)
   const existing = activeAnimations.get(el)?.get(property)
 
+  // Read velocity and value from interrupted animation FIRST, then deregister it
   let initialVelocity = existing?.springState.velocity ?? 0
   const maxV = options?.maxVelocity ?? 2000
   initialVelocity = Math.max(-maxV, Math.min(maxV, initialVelocity))
-  if (options?.velocityScale) initialVelocity *= options.velocityScale
+  if (options?.velocityScale !== undefined && !Number.isNaN(options.velocityScale)) {
+    initialVelocity *= options.velocityScale
+  }
 
   const initialValue = existing?.springState.value ?? parseCurrentValue(el, property)
 
+  // Deregister old task (if interrupting) — after reading velocity/value from it
+  if (existing) {
+    d.deregister(existing.id)
+    WillChangeManager.release(el)
+  }
+
   let resolve!: () => void
   const settled = new Promise<void>(r => { resolve = r })
+
+  const id = Symbol()
 
   const animation: ActiveAnimation = {
     springState: { value: initialValue, velocity: initialVelocity },
@@ -137,6 +150,7 @@ export function startSpring(
     property,
     config: cfg,
     settle: resolve,
+    id,
   }
 
   if (!activeAnimations.has(el)) activeAnimations.set(el, new Map())
@@ -144,9 +158,8 @@ export function startSpring(
 
   WillChangeManager.acquire(el)
 
-  const id = Symbol()
   const range = Math.abs(target - initialValue) || 1
-  const posThreshold = Math.min(Math.max(range * 0.001, 0.0001), 0.5)
+  const posThreshold = Math.max(range * 0.001, 0.0001)
   const velThreshold = posThreshold * 2
 
   d.register(id, {

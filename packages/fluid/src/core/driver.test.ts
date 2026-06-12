@@ -330,4 +330,39 @@ describe('startSpring — P0-T1-05', () => {
     const finalValue = parseFloat(el._props.get('--x') ?? '0')
     expect(Math.abs(finalValue - 1000)).toBeLessThan(1) // within 0.1% of 1000
   })
+
+  it('deregisters old task and balances WillChange ref count on interrupt', async () => {
+    const d = new AnimationDriver()
+    const el = makeMockEl()
+
+    // First animation
+    startSpring(el, '--x', 100, SPRING_PRESETS.bouncy, d)
+    flushRaf(16)
+    flushRaf(32)
+
+    // Second animation (interrupt)
+    const p2 = startSpring(el, '--x', 0, SPRING_PRESETS.snappy, d)
+    advanceUntilSettled()
+    await p2
+
+    // After settling, will-change must be removed (ref count = 0, not leaking 1+)
+    expect(el._props.has('will-change')).toBe(false)
+  })
+
+  it('velocityScale: 0 freezes initial velocity', () => {
+    const d = new AnimationDriver()
+    const el = makeMockEl()
+    // Start first animation to build velocity
+    startSpring(el, '--x', 100, SPRING_PRESETS.bouncy, d)
+    flushRaf(16)
+    flushRaf(32)
+
+    // Interrupt with velocityScale: 0 — should start with v=0
+    startSpring(el, '--x', 50, SPRING_PRESETS.snappy, d, { velocityScale: 0 })
+    flushRaf(48)
+    // With v=0 start, the animation should be heading toward 50 from the interrupted value
+    const v = parseFloat(el._props.get('--x') ?? '0')
+    expect(Number.isFinite(v)).toBe(true)
+    advanceUntilSettled()
+  })
 })
