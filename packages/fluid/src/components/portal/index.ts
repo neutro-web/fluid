@@ -37,10 +37,6 @@ export class FluidPortal extends FluidElement {
   private portalRoot: HTMLElement | null = null
   private _allocatedLayer: FluidLayer | null = null
 
-  static get observedAttributes(): string[] {
-    return ['layer']
-  }
-
   protected override onMount(): void {
     if (!this.root.querySelector('style')) {
       const styleEl = document.createElement('style')
@@ -103,9 +99,20 @@ export class FluidPortal extends FluidElement {
 
   private _applyTokens(themeEl: HTMLElement): void {
     if (!this.portalRoot) return
+    const style = this.portalRoot.style
+    // Collect current --fluid-* props before overwriting (to detect removals)
+    const before = new Set<string>()
+    for (let i = 0; i < style.length; i++) {
+      const name = style.item(i)
+      if (name.startsWith('--fluid-')) before.add(name)
+    }
     const tokens = snapshotTokens(themeEl)
     for (const [k, v] of Object.entries(tokens)) {
-      this.portalRoot.style.setProperty(k, v)
+      style.setProperty(k, v)
+    }
+    // Remove stale tokens that disappeared from the theme
+    for (const name of before) {
+      if (!(name in tokens)) style.removeProperty(name)
     }
   }
 }

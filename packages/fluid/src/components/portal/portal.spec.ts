@@ -119,6 +119,43 @@ describe('fluid-portal', () => {
         throw new Error(`Expected --fluid-hue-brand: 300 after setProperty, got: "${hue}"`)
       }
     })
+
+    it('removes stale --fluid-* tokens from portal root when they are removed from fluid-theme', async () => {
+      const fixture = document.createElement('div')
+      document.body.appendChild(fixture)
+
+      const theme = document.createElement('fluid-theme')
+      theme.style.setProperty('--fluid-hue-brand', '220')
+      fixture.appendChild(theme)
+
+      const portal = document.createElement('fluid-portal')
+      portal.innerHTML = '<span>content</span>'
+      theme.appendChild(portal)
+
+      await new Promise<void>(r => {
+        portal.addEventListener('fluid:mounted', () => r(), { once: true })
+      })
+
+      const root = document.body.querySelector('fluid-portal-root')!
+      // Token is present initially
+      if (!root.style.getPropertyValue('--fluid-hue-brand')) {
+        fixture.remove()
+        document.querySelectorAll('fluid-portal-root').forEach(el => el.remove())
+        throw new Error('Expected --fluid-hue-brand to be set initially')
+      }
+
+      // Remove the token from the theme
+      theme.style.removeProperty('--fluid-hue-brand')
+      await nextFrame()
+
+      const hue = root.style.getPropertyValue('--fluid-hue-brand')
+      fixture.remove()
+      document.querySelectorAll('fluid-portal-root').forEach(el => el.remove())
+
+      if (hue !== '') {
+        throw new Error(`Expected --fluid-hue-brand to be removed from portal root, got: "${hue}"`)
+      }
+    })
   })
 
   // ─── Test 5: fluidtheme:change re-snapshot ───────────────────────────────
