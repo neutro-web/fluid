@@ -15,3 +15,16 @@ export type { TooltipLike, TooltipManagerOptions } from './tooltip-manager'
 export { TooltipManager, tooltipManager } from './tooltip-manager'
 export type { ToastOptions, ToastHandle, ToastManagerOptions } from './toast-manager'
 export { ToastManager, toastManager, toast } from './toast-manager'
+export { capturePointer, releasePointer, FluidGesture } from './gesture'
+export type {
+  DragConstraints,
+  DragState,
+  PressOptions,
+  HoverOptions,
+  DragOptions,
+  SwipeState,
+  SwipeOptions,
+  PinchState,
+  PinchOptions,
+  LongPressOptions,
+} from './gesture'
