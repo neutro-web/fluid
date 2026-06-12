@@ -171,7 +171,6 @@ Persistent frame — never reloads.
   </div>
 
   <script type="module" src="/main.js"></script>
-  <script type="module" src="/router.js"></script>
 </body>
 </html>
 ```
@@ -195,7 +194,7 @@ async function reExecuteScripts(container) {
     else fresh.textContent = old.textContent
     fresh.type = old.type || 'module'
     old.replaceWith(fresh)
-    if (fresh.type === 'module') {
+    if (fresh.type === 'module' && fresh.src) {
       await new Promise(resolve => {
         fresh.addEventListener('load', resolve, { once: true })
         fresh.addEventListener('error', resolve, { once: true })
