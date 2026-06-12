@@ -9,7 +9,11 @@ export const WillChangeManager = {
 
   release(el: Element): void {
     const count = Math.max((willChangeRefs.get(el) ?? 1) - 1, 0)
-    willChangeRefs.set(el, count)
-    if (count === 0) (el as HTMLElement).style.removeProperty('will-change')
+    if (count === 0) {
+      willChangeRefs.delete(el)
+      ;(el as HTMLElement).style.removeProperty('will-change')
+    } else {
+      willChangeRefs.set(el, count)
+    }
   },
 }
