@@ -43,6 +43,18 @@ export class AnimationDriver {
     }
   }
 
+  destroy(): void {
+    if (this.rafId !== null) {
+      cancelAnimationFrame(this.rafId)
+      this.rafId = null
+    }
+    this.active.clear()
+    this.lastTimestamp = null
+    if (typeof document !== 'undefined') {
+      document.removeEventListener('visibilitychange', this.onVisibilityChange)
+    }
+  }
+
   private tick = (timestamp: number): void => {
     const dt = this.lastTimestamp !== null
       ? Math.min((timestamp - this.lastTimestamp) / 1000, 0.064)
@@ -66,7 +78,7 @@ export class AnimationDriver {
 // Module-federation-safe singleton
 const DRIVER_KEY = Symbol.for('neutro.fluid.driver')
 if (!(globalThis as any)[DRIVER_KEY]) {
-  if (typeof document !== 'undefined' || typeof requestAnimationFrame !== 'undefined') {
+  if (typeof document !== 'undefined' && typeof requestAnimationFrame !== 'undefined') {
     ;(globalThis as any)[DRIVER_KEY] = new AnimationDriver()
   }
 }

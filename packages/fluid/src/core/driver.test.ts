@@ -25,7 +25,7 @@ function setupMockDocument(hidden = false) {
     addEventListener(event: string, handler: EventListenerOrEventListenerObject) {
       listeners.set(event, handler)
     },
-    removeEventListener() {},
+    removeEventListener: vi.fn(),
     _listeners: listeners,
   }
   vi.stubGlobal('document', doc)
@@ -211,6 +211,30 @@ describe('AnimationDriver — P0-T1-04', () => {
       flushRaf(32)
       expect(t1.advance).toHaveBeenCalledOnce() // only called once, then removed
       expect(t2.advance).toHaveBeenCalledTimes(2)
+    })
+  })
+
+  describe('destroy()', () => {
+    it('cancels rAF and clears active tasks', () => {
+      const d = new AnimationDriver()
+      const task = { advance: vi.fn().mockReturnValue(false) }
+      d.register(Symbol(), task)
+      expect(pendingRaf).not.toBeNull()
+      d.destroy()
+      expect(pendingRaf).toBeNull()
+    })
+
+    it('removes visibilitychange listener', () => {
+      const mockDoc = setupMockDocument()
+      const d = new AnimationDriver()
+      const removeSpy = vi.spyOn(mockDoc, 'removeEventListener')
+      d.destroy()
+      expect(removeSpy).toHaveBeenCalledWith('visibilitychange', expect.any(Function))
+    })
+
+    it('is safe to call when no tasks are registered', () => {
+      const d = new AnimationDriver()
+      expect(() => d.destroy()).not.toThrow()
     })
   })
 })
