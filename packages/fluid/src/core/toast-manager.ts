@@ -1,6 +1,8 @@
 export interface ToastOptions {
+  /** Reserved for the fluid-toast component layer — not consumed by ToastManager itself. */
   variant?: 'default' | 'info' | 'destructive' | 'success'
   duration?: number
+  /** Reserved for the fluid-toast component layer — not consumed by ToastManager itself. */
   action?: { label: string; onActivate: () => void }
 }
 
@@ -10,8 +12,8 @@ export interface ToastHandle {
 }
 
 export interface ToastManagerOptions {
-  maxSimultaneous?: number
   announcementGap?: number
+  /** Test seam: called instead of updating an aria-live DOM region. */
   onAnnounce?: (message: string) => void
 }
 
@@ -23,7 +25,7 @@ interface ToastEntry {
 
 export class ToastManager {
   private readonly announcementGap: number
-  private readonly onAnnounce?: (message: string) => void
+  private readonly onAnnounce: ((message: string) => void) | undefined
   private queue: ToastEntry[] = []
   private active: ToastEntry | null = null
   private durationTimer: ReturnType<typeof setTimeout> | null = null
@@ -101,7 +103,7 @@ export class ToastManager {
 
 const TOAST_KEY = Symbol.for('neutro.fluid.toastmanager')
 if (!(globalThis as any)[TOAST_KEY]) {
-  (globalThis as any)[TOAST_KEY] = new ToastManager({ maxSimultaneous: 1, announcementGap: 200 })
+  (globalThis as any)[TOAST_KEY] = new ToastManager({ announcementGap: 200 })
 }
 export const toastManager: ToastManager = (globalThis as any)[TOAST_KEY]
 

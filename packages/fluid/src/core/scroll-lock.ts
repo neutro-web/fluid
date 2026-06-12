@@ -13,11 +13,9 @@ export class ScrollLockManager {
   lock(): void {
     this.lockCount++
     if (this.lockCount > 1) return
+    if (typeof window === 'undefined' || typeof document === 'undefined') return
 
-    const scrollbarWidth =
-      typeof window !== 'undefined' && typeof document !== 'undefined'
-        ? window.innerWidth - document.documentElement.clientWidth
-        : 0
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
 
     this.savedPaddingRight = document.body.style.paddingRight
     this.savedOverflow = document.body.style.overflow
@@ -38,6 +36,7 @@ export class ScrollLockManager {
     if (this.lockCount <= 0) return
     this.lockCount--
     if (this.lockCount > 0) return
+    if (typeof window === 'undefined' || typeof document === 'undefined') return
 
     if (isIOS()) {
       document.body.style.top = this.savedTop

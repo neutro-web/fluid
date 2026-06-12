@@ -11,14 +11,15 @@ function getElementPath(el: Element): string {
   const parts: string[] = []
   let current: Element | null = el
   while (current) {
-    const parent = current.parentElement
+    const parent: Element | null = current.parentElement
     const tag = current.tagName.toLowerCase()
     if (!parent) {
       parts.unshift(tag)
       break
     }
-    const sameTag = Array.from(parent.children).filter(c => c.tagName === current!.tagName)
-    const index = sameTag.indexOf(current)
+    const self: Element = current
+    const sameTag = Array.from(parent.children).filter(c => c.tagName === self.tagName)
+    const index = sameTag.indexOf(self)
     parts.unshift(index > 0 ? `${tag}:${index}` : tag)
     current = parent
   }
