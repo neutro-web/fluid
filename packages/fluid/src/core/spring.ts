@@ -25,7 +25,10 @@ function _warnOnce(key: string, msg: string): void {
  * Production: clamps invalid values silently, warns once per violation type.
  */
 export function validateSpringConfig(cfg: SpringConfig): SpringConfig {
-  const isDev = typeof process === 'undefined' || process.env.NODE_ENV !== 'production'
+  const isDev =
+    typeof process !== 'undefined'
+      ? process.env.NODE_ENV !== 'production'
+      : false
 
   if (isDev) {
     if (cfg.mass <= 0) throw new FluidError('mass must be > 0')
@@ -38,11 +41,11 @@ export function validateSpringConfig(cfg: SpringConfig): SpringConfig {
   let { mass, stiffness, damping } = cfg
   if (mass <= 0) {
     _warnOnce('mass', 'mass must be > 0; clamped to ε')
-    mass = Number.EPSILON
+    mass = 1e-4
   }
   if (stiffness <= 0) {
     _warnOnce('stiffness', 'stiffness must be > 0; clamped to ε')
-    stiffness = Number.EPSILON
+    stiffness = 1e-4
   }
   if (damping < 0) {
     _warnOnce('damping', 'damping must be >= 0; clamped to 0')
