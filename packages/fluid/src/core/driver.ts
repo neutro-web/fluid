@@ -98,6 +98,7 @@ interface ActiveAnimation {
 const activeAnimations = new WeakMap<Element, Map<string, ActiveAnimation>>()
 
 function applyValue(el: Element, property: string, value: number): void {
+  // TODO: unit formatting hook for px/transform consumers
   (el as HTMLElement).style.setProperty(property, String(value))
 }
 
@@ -135,7 +136,7 @@ export function startSpring(
   // Deregister old task (if interrupting) — after reading velocity/value from it
   if (existing) {
     d.deregister(existing.id)
-    WillChangeManager.release(el)
+    // Skip release+acquire: will-change ref count stays at 1 across the interrupt
   }
 
   let resolve!: () => void
@@ -155,7 +156,7 @@ export function startSpring(
   if (!activeAnimations.has(el)) activeAnimations.set(el, new Map())
   activeAnimations.get(el)!.set(property, animation)
 
-  WillChangeManager.acquire(el)
+  if (!existing) WillChangeManager.acquire(el)
 
   const range = Math.abs(target - initialValue) || 1
   const posThreshold = Math.max(range * 0.001, 0.0001)

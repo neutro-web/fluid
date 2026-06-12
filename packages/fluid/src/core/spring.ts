@@ -121,7 +121,7 @@ export function stepSpring(
     return { value: newValue, velocity: newVelocity }
   }
 
-  if (zeta === 1 || Math.abs(zeta - 1) < 1e-7) {
+  if (Math.abs(zeta - 1) < 1e-4) {
     // Critically damped: x(t) = (A + Bt)e^(−ωt) + x∞
     // A = d0, B = v0 + ω·d0 (from x′(0) = B − ω·A = v0)
     const A = d0
