@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { AnimationDriver } from './driver'
+import { AnimationDriver, startSpring } from './driver'
+import { SPRING_PRESETS } from './spring'
 
 let pendingRaf: ((ts: number) => void) | null = null
 let rafCounter = 0
@@ -38,6 +39,28 @@ function flushRaf(ts: number): boolean {
   pendingRaf = null
   cb(ts)
   return true
+}
+
+type MockEl = HTMLElement & { _props: Map<string, string> }
+
+function makeMockEl(): MockEl {
+  const props = new Map<string, string>()
+  return {
+    style: {
+      setProperty(k: string, v: string) { props.set(k, v) },
+      getPropertyValue(k: string) { return props.get(k) ?? '' },
+      removeProperty(k: string) { props.delete(k) },
+    },
+    _props: props,
+  } as unknown as MockEl
+}
+
+function advanceUntilSettled(maxFrames = 600, dtMs = 16): void {
+  let ts = 0
+  for (let i = 0; i < maxFrames; i++) {
+    ts += dtMs
+    if (!flushRaf(ts)) break
+  }
 }
 
 beforeEach(() => {
@@ -236,5 +259,75 @@ describe('AnimationDriver — P0-T1-04', () => {
       const d = new AnimationDriver()
       expect(() => d.destroy()).not.toThrow()
     })
+  })
+})
+
+describe('startSpring — P0-T1-05', () => {
+  it('applies value to element style on each frame', async () => {
+    const d = new AnimationDriver()
+    const el = makeMockEl()
+    const p = startSpring(el, '--opacity', 1, SPRING_PRESETS.snappy, d)
+    flushRaf(16)
+    const v = parseFloat(el._props.get('--opacity') ?? '')
+    expect(v).toBeGreaterThan(0)
+    expect(v).toBeLessThanOrEqual(1)
+    advanceUntilSettled()
+    await p
+  })
+
+  it('resolves the returned promise when spring settles', async () => {
+    const d = new AnimationDriver()
+    const el = makeMockEl()
+    const p = startSpring(el, '--x', 100, SPRING_PRESETS.snappy, d)
+    advanceUntilSettled()
+    await expect(p).resolves.toBeUndefined()
+  })
+
+  it('sets will-change on start', () => {
+    const d = new AnimationDriver()
+    const el = makeMockEl()
+    startSpring(el, '--x', 1, SPRING_PRESETS.snappy, d)
+    expect(el._props.get('will-change')).toBe('transform, opacity')
+    advanceUntilSettled()
+  })
+
+  it('removes will-change after settling', async () => {
+    const d = new AnimationDriver()
+    const el = makeMockEl()
+    const p = startSpring(el, '--x', 1, SPRING_PRESETS.snappy, d)
+    advanceUntilSettled()
+    await p
+    expect(el._props.has('will-change')).toBe(false)
+  })
+
+  it('preserves velocity from interrupted animation', () => {
+    const d = new AnimationDriver()
+    const el = makeMockEl()
+    // Start first animation, advance a few frames to build velocity
+    startSpring(el, '--x', 100, SPRING_PRESETS.bouncy, d)
+    flushRaf(16)
+    flushRaf(32)
+    flushRaf(48)
+    const midValue = parseFloat(el._props.get('--x') ?? '0')
+    expect(midValue).toBeGreaterThan(0)
+
+    // Interrupt — new animation should carry forward velocity
+    startSpring(el, '--x', 0, SPRING_PRESETS.bouncy, d)
+    flushRaf(64)
+    const afterInterrupt = parseFloat(el._props.get('--x') ?? '0')
+    // Value should not have snapped to 0 instantly (velocity was preserved)
+    expect(afterInterrupt).toBeGreaterThan(0)
+    advanceUntilSettled()
+  })
+
+  it('uses relative settling threshold (range * 0.001)', async () => {
+    const d = new AnimationDriver()
+    const el = makeMockEl()
+    // Large range — threshold must scale with range, not use absolute 0.001
+    const p = startSpring(el, '--x', 1000, SPRING_PRESETS.snappy, d)
+    advanceUntilSettled(1200)
+    await p
+    const finalValue = parseFloat(el._props.get('--x') ?? '0')
+    expect(Math.abs(finalValue - 1000)).toBeLessThan(1) // within 0.1% of 1000
   })
 })

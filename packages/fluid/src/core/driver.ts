@@ -1,3 +1,7 @@
+import { stepSpring, validateSpringConfig } from './spring'
+import type { SpringConfig, SpringState } from './spring'
+import { WillChangeManager } from './will-change'
+
 export interface SpringTask {
   advance(dt: number): boolean
 }
@@ -83,3 +87,87 @@ if (!(globalThis as any)[DRIVER_KEY]) {
   }
 }
 export const driver: AnimationDriver = (globalThis as any)[DRIVER_KEY] ?? new AnimationDriver()
+
+interface ActiveAnimation {
+  springState: SpringState
+  target: number
+  property: string
+  config: SpringConfig
+  settle: () => void
+}
+
+const activeAnimations = new WeakMap<Element, Map<string, ActiveAnimation>>()
+
+function applyValue(el: Element, property: string, value: number): void {
+  (el as HTMLElement).style.setProperty(property, String(value))
+}
+
+function parseCurrentValue(el: Element, property: string): number {
+  const raw = (el as HTMLElement).style.getPropertyValue(property)
+  return parseFloat(raw) || 0
+}
+
+export function startSpring(
+  el: Element,
+  property: string,
+  target: number,
+  config: SpringConfig,
+  d: AnimationDriver = driver,
+  options?: {
+    velocityScale?: number
+    maxVelocity?: number
+  },
+): Promise<void> {
+  const cfg = validateSpringConfig(config)
+  const existing = activeAnimations.get(el)?.get(property)
+
+  let initialVelocity = existing?.springState.velocity ?? 0
+  const maxV = options?.maxVelocity ?? 2000
+  initialVelocity = Math.max(-maxV, Math.min(maxV, initialVelocity))
+  if (options?.velocityScale) initialVelocity *= options.velocityScale
+
+  const initialValue = existing?.springState.value ?? parseCurrentValue(el, property)
+
+  let resolve!: () => void
+  const settled = new Promise<void>(r => { resolve = r })
+
+  const animation: ActiveAnimation = {
+    springState: { value: initialValue, velocity: initialVelocity },
+    target,
+    property,
+    config: cfg,
+    settle: resolve,
+  }
+
+  if (!activeAnimations.has(el)) activeAnimations.set(el, new Map())
+  activeAnimations.get(el)!.set(property, animation)
+
+  WillChangeManager.acquire(el)
+
+  const id = Symbol()
+  const range = Math.abs(target - initialValue) || 1
+  const posThreshold = Math.min(Math.max(range * 0.001, 0.0001), 0.5)
+  const velThreshold = posThreshold * 2
+
+  d.register(id, {
+    advance(dt: number): boolean {
+      animation.springState = stepSpring(cfg, animation.springState, target, dt)
+      applyValue(el, property, animation.springState.value)
+
+      const isSettled =
+        Math.abs(animation.springState.value - target) < posThreshold &&
+        Math.abs(animation.springState.velocity) < velThreshold
+
+      if (isSettled) {
+        applyValue(el, property, target)
+        WillChangeManager.release(el)
+        animation.settle()
+        activeAnimations.get(el)?.delete(property)
+      }
+
+      return isSettled
+    },
+  })
+
+  return settled
+}
