@@ -9,11 +9,14 @@
     "test": "turbo test",
     "test:unit": "turbo test:unit",
     "test:component": "turbo test:component",
+    "test:integration": "playwright test",
+    "test:a11y": "playwright test --project=chromium",
     "lint": "turbo lint",
     "typecheck": "turbo typecheck"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.0",
+    "@playwright/test": "^1.60.0",
     "turbo": "^2.0.0",
     "typescript": "^5.0.0"
   },
