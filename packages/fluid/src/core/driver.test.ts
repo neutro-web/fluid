@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { AnimationDriver, startSpring } from './driver'
-import { SPRING_PRESETS } from './spring'
+import { AnimationDriver, driver, startSpring } from './driver'
+import { FluidError, SPRING_PRESETS } from './spring'
 
 let pendingRaf: ((ts: number) => void) | null = null
 let rafCounter = 0
@@ -266,7 +266,7 @@ describe('startSpring — P0-T1-05', () => {
   it('applies value to element style on each frame', async () => {
     const d = new AnimationDriver()
     const el = makeMockEl()
-    const p = startSpring(el, '--opacity', 1, SPRING_PRESETS.snappy, d)
+    const p = startSpring(el, '--opacity', 1, SPRING_PRESETS.snappy, { driver: d })
     flushRaf(16)
     const v = parseFloat(el._props.get('--opacity') ?? '')
     expect(v).toBeGreaterThan(0)
@@ -278,7 +278,7 @@ describe('startSpring — P0-T1-05', () => {
   it('resolves the returned promise when spring settles', async () => {
     const d = new AnimationDriver()
     const el = makeMockEl()
-    const p = startSpring(el, '--x', 100, SPRING_PRESETS.snappy, d)
+    const p = startSpring(el, '--x', 100, SPRING_PRESETS.snappy, { driver: d })
     advanceUntilSettled()
     await expect(p).resolves.toBeUndefined()
   })
@@ -286,7 +286,7 @@ describe('startSpring — P0-T1-05', () => {
   it('sets will-change on start', () => {
     const d = new AnimationDriver()
     const el = makeMockEl()
-    startSpring(el, '--x', 1, SPRING_PRESETS.snappy, d)
+    startSpring(el, '--x', 1, SPRING_PRESETS.snappy, { driver: d })
     expect(el._props.get('will-change')).toBe('transform, opacity')
     advanceUntilSettled()
   })
@@ -294,7 +294,7 @@ describe('startSpring — P0-T1-05', () => {
   it('removes will-change after settling', async () => {
     const d = new AnimationDriver()
     const el = makeMockEl()
-    const p = startSpring(el, '--x', 1, SPRING_PRESETS.snappy, d)
+    const p = startSpring(el, '--x', 1, SPRING_PRESETS.snappy, { driver: d })
     advanceUntilSettled()
     await p
     expect(el._props.has('will-change')).toBe(false)
@@ -304,7 +304,7 @@ describe('startSpring — P0-T1-05', () => {
     const d = new AnimationDriver()
     const el = makeMockEl()
     // Start first animation, advance a few frames to build velocity
-    startSpring(el, '--x', 100, SPRING_PRESETS.bouncy, d)
+    startSpring(el, '--x', 100, SPRING_PRESETS.bouncy, { driver: d })
     flushRaf(16)
     flushRaf(32)
     flushRaf(48)
@@ -312,7 +312,7 @@ describe('startSpring — P0-T1-05', () => {
     expect(midValue).toBeGreaterThan(0)
 
     // Interrupt — new animation should carry forward velocity
-    startSpring(el, '--x', 0, SPRING_PRESETS.bouncy, d)
+    startSpring(el, '--x', 0, SPRING_PRESETS.bouncy, { driver: d })
     flushRaf(64)
     const afterInterrupt = parseFloat(el._props.get('--x') ?? '0')
     // Value should not have snapped to 0 instantly (velocity was preserved)
@@ -324,7 +324,7 @@ describe('startSpring — P0-T1-05', () => {
     const d = new AnimationDriver()
     const el = makeMockEl()
     // Large range — threshold must scale with range, not use absolute 0.001
-    const p = startSpring(el, '--x', 1000, SPRING_PRESETS.snappy, d)
+    const p = startSpring(el, '--x', 1000, SPRING_PRESETS.snappy, { driver: d })
     advanceUntilSettled(1200)
     await p
     const finalValue = parseFloat(el._props.get('--x') ?? '0')
@@ -336,12 +336,12 @@ describe('startSpring — P0-T1-05', () => {
     const el = makeMockEl()
 
     // First animation
-    startSpring(el, '--x', 100, SPRING_PRESETS.bouncy, d)
+    startSpring(el, '--x', 100, SPRING_PRESETS.bouncy, { driver: d })
     flushRaf(16)
     flushRaf(32)
 
     // Second animation (interrupt)
-    const p2 = startSpring(el, '--x', 0, SPRING_PRESETS.snappy, d)
+    const p2 = startSpring(el, '--x', 0, SPRING_PRESETS.snappy, { driver: d })
     advanceUntilSettled()
     await p2
 
@@ -353,16 +353,82 @@ describe('startSpring — P0-T1-05', () => {
     const d = new AnimationDriver()
     const el = makeMockEl()
     // Start first animation to build velocity
-    startSpring(el, '--x', 100, SPRING_PRESETS.bouncy, d)
+    startSpring(el, '--x', 100, SPRING_PRESETS.bouncy, { driver: d })
     flushRaf(16)
     flushRaf(32)
 
     // Interrupt with velocityScale: 0 — should start with v=0
-    startSpring(el, '--x', 50, SPRING_PRESETS.snappy, d, { velocityScale: 0 })
+    startSpring(el, '--x', 50, SPRING_PRESETS.snappy, { driver: d, velocityScale: 0 })
     flushRaf(48)
     // With v=0 start, the animation should be heading toward 50 from the interrupted value
     const v = parseFloat(el._props.get('--x') ?? '0')
     expect(Number.isFinite(v)).toBe(true)
     advanceUntilSettled()
+  })
+
+  it('public 5-arg signature: options as 5th arg is parsed (not mistaken for driver)', async () => {
+    // Regression: before the fix, passing options as 5th arg bound the object to `d`,
+    // causing d.register() → TypeError at runtime.
+    const d = new AnimationDriver()
+    const el = makeMockEl()
+    startSpring(el, '--x', 100, SPRING_PRESETS.bouncy, { driver: d })
+    flushRaf(16); flushRaf(32)
+
+    // Call with options object (documented public shape) — must not throw
+    const p = startSpring(el, '--x', 0, SPRING_PRESETS.snappy, { driver: d, velocityScale: 0 })
+    advanceUntilSettled()
+    await expect(p).resolves.toBeUndefined()
+  })
+
+  it('clamps carried velocity to maxVelocity on interrupt', () => {
+    // Scenario A: uncapped (high velocity) — positive velocity overshoots toward 1000
+    // before spring reverses it → value stays high after one frame
+    const dA = new AnimationDriver()
+    const elA = makeMockEl()
+    startSpring(elA, '--x', 1000, SPRING_PRESETS.bouncy, { driver: dA })
+    for (let i = 1; i <= 5; i++) flushRaf(i * 16)
+    const interruptA = parseFloat(elA._props.get('--x') ?? '0')
+    startSpring(elA, '--x', 0, SPRING_PRESETS.bouncy, { driver: dA, maxVelocity: 10000 })
+    flushRaf(96)
+    const afterA = parseFloat(elA._props.get('--x') ?? '0')
+    advanceUntilSettled()
+
+    setupMockRaf() // reset rAF state for scenario B
+
+    // Scenario B: cap at 1 px/s — spring force immediately dominates, falls toward 0
+    const dB = new AnimationDriver()
+    const elB = makeMockEl()
+    startSpring(elB, '--x', 1000, SPRING_PRESETS.bouncy, { driver: dB })
+    for (let i = 1; i <= 5; i++) flushRaf(i * 16)
+    const interruptB = parseFloat(elB._props.get('--x') ?? '0')
+    startSpring(elB, '--x', 0, SPRING_PRESETS.bouncy, { driver: dB, maxVelocity: 1 })
+    flushRaf(96)
+    const afterB = parseFloat(elB._props.get('--x') ?? '0')
+    advanceUntilSettled()
+
+    expect(interruptA).toBeCloseTo(interruptB, 0) // same interrupt position
+    expect(afterA).toBeGreaterThan(afterB) // uncapped stays higher (velocity fights spring)
+  })
+
+  it('throws FluidError for invalid config in dev mode', () => {
+    const d = new AnimationDriver()
+    const el = makeMockEl()
+    expect(() =>
+      startSpring(el, '--x', 1, { mass: 0, stiffness: 100, damping: 10 }, { driver: d })
+    ).toThrow(FluidError)
+  })
+})
+
+describe('AnimationDriver — singleton', () => {
+  it('driver export is the globalThis Symbol.for instance', () => {
+    const key = Symbol.for('neutro.fluid.driver')
+    expect(driver).toBe((globalThis as any)[key])
+  })
+})
+
+describe('AnimationDriver — SSR', () => {
+  it('constructs without error when document is undefined', () => {
+    vi.stubGlobal('document', undefined)
+    expect(() => new AnimationDriver()).not.toThrow()
   })
 })

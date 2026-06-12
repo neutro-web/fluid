@@ -112,12 +112,13 @@ export function startSpring(
   property: string,
   target: number,
   config: SpringConfig,
-  d: AnimationDriver = driver,
   options?: {
     velocityScale?: number
     maxVelocity?: number
+    driver?: AnimationDriver
   },
 ): Promise<void> {
+  const d = options?.driver ?? driver
   const cfg = validateSpringConfig(config)
   const existing = activeAnimations.get(el)?.get(property)
 
