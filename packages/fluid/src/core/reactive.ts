@@ -15,7 +15,6 @@ export interface ReactiveSpring {
 class ReactiveSpringImpl implements ReactiveSpring {
   /** @internal */ _value: number
   /** @internal */ _velocity: number = 0
-  private _target: number
   private _config: SpringConfig
   private _driver: AnimationDriver
   private _taskId: symbol | null = null
@@ -25,13 +24,11 @@ class ReactiveSpringImpl implements ReactiveSpring {
 
   constructor(initial: number, config: SpringConfig, d: AnimationDriver) {
     this._value = initial
-    this._target = initial
     this._config = config
     this._driver = d
   }
 
   to(target: number): void {
-    this._target = target
     const maxV = 2000
     this._velocity = Math.max(-maxV, Math.min(maxV, this._velocity))
 
@@ -66,8 +63,6 @@ class ReactiveSpringImpl implements ReactiveSpring {
         this._value = state.value
         this._velocity = state.velocity
 
-        for (const fn of this._subscribers) fn(this._value)
-
         const isSettled =
           Math.abs(state.value - target) < posThreshold &&
           Math.abs(state.velocity) < velThreshold
@@ -76,7 +71,11 @@ class ReactiveSpringImpl implements ReactiveSpring {
           this._value = target
           this._velocity = 0
           this._taskId = null
-          for (const fn of this._subscribers) fn(this._value)
+        }
+
+        for (const fn of this._subscribers) fn(this._value)
+
+        if (isSettled) {
           resolve()
           this._settleResolve = null
         }
