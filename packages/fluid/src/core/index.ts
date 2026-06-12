@@ -24,6 +24,7 @@ export { TooltipManager, tooltipManager } from './tooltip-manager'
 export type { ToastOptions, ToastHandle, ToastManagerOptions } from './toast-manager'
 export { ToastManager, toastManager, toast } from './toast-manager'
 export { capturePointer, releasePointer, FluidGesture } from './gesture'
+export { FluidRipple } from './ripple'
 export type {
   DragConstraints,
   DragState,
