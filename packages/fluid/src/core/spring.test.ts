@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest'
-import { stepSpring } from './spring'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import { stepSpring, validateSpringConfig, FluidError, _resetValidationWarnings } from './spring'
 import type { SpringConfig, SpringState } from './spring'
 
 // Golden values from docs/fluid-roadmap.md P0-T1-01 and docs/fluid-foundation-v5.md §II.4
@@ -179,5 +179,96 @@ describe('regime dispatch — P0-T1-02', () => {
   it('underdamped still overshoots after P0-T1-02 (regression)', () => {
     const maxValue = simulateMaxValue(BOUNCY, 0, 1, 60, 1000)
     expect(maxValue).toBeGreaterThan(1.05)
+  })
+})
+
+describe('FluidError — P0-T1-03', () => {
+  it('is an instance of Error', () => {
+    const err = new FluidError('test')
+    expect(err).toBeInstanceOf(Error)
+  })
+
+  it('has name "FluidError"', () => {
+    const err = new FluidError('test')
+    expect(err.name).toBe('FluidError')
+  })
+
+  it('message includes the provided text', () => {
+    const err = new FluidError('mass must be > 0')
+    expect(err.message).toContain('mass must be > 0')
+  })
+})
+
+describe('validateSpringConfig — dev mode (NODE_ENV = test) — P0-T1-03', () => {
+  it('throws FluidError when mass <= 0', () => {
+    expect(() => validateSpringConfig({ mass: 0, stiffness: 100, damping: 10 }))
+      .toThrow(FluidError)
+  })
+
+  it('throws FluidError when mass is negative', () => {
+    expect(() => validateSpringConfig({ mass: -1, stiffness: 100, damping: 10 }))
+      .toThrow(FluidError)
+  })
+
+  it('throws FluidError when stiffness <= 0', () => {
+    expect(() => validateSpringConfig({ mass: 1, stiffness: 0, damping: 10 }))
+      .toThrow(FluidError)
+  })
+
+  it('throws FluidError when damping < 0', () => {
+    expect(() => validateSpringConfig({ mass: 1, stiffness: 100, damping: -1 }))
+      .toThrow(FluidError)
+  })
+
+  it('returns the same config object for valid input', () => {
+    const cfg: SpringConfig = { mass: 1, stiffness: 200, damping: 20 }
+    expect(validateSpringConfig(cfg)).toBe(cfg)
+  })
+
+  it('does not throw when damping = 0 (undamped is valid)', () => {
+    expect(() => validateSpringConfig({ mass: 1, stiffness: 100, damping: 0 }))
+      .not.toThrow()
+  })
+})
+
+describe('validateSpringConfig — production mode — P0-T1-03', () => {
+  beforeEach(() => {
+    process.env.NODE_ENV = 'production'
+    _resetValidationWarnings()
+  })
+  afterEach(() => {
+    process.env.NODE_ENV = 'test'
+    _resetValidationWarnings()
+  })
+
+  it('does not throw for mass <= 0, returns clamped config', () => {
+    const result = validateSpringConfig({ mass: 0, stiffness: 100, damping: 10 })
+    expect(result.mass).toBeGreaterThan(0)
+    expect(result.stiffness).toBe(100)
+  })
+
+  it('does not throw for stiffness <= 0, returns clamped config', () => {
+    const result = validateSpringConfig({ mass: 1, stiffness: -5, damping: 10 })
+    expect(result.stiffness).toBeGreaterThan(0)
+  })
+
+  it('does not throw for damping < 0, clamps to 0', () => {
+    const result = validateSpringConfig({ mass: 1, stiffness: 100, damping: -5 })
+    expect(result.damping).toBe(0)
+  })
+
+  it('logs a console.warn for mass violation', () => {
+    const spy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    validateSpringConfig({ mass: 0, stiffness: 100, damping: 10 })
+    expect(spy).toHaveBeenCalledOnce()
+    spy.mockRestore()
+  })
+
+  it('only logs once for repeated identical violation', () => {
+    const spy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    validateSpringConfig({ mass: 0, stiffness: 100, damping: 10 })
+    validateSpringConfig({ mass: 0, stiffness: 100, damping: 10 })
+    expect(spy).toHaveBeenCalledOnce()
+    spy.mockRestore()
   })
 })

@@ -1,3 +1,57 @@
+export class FluidError extends Error {
+  constructor(message: string) {
+    super(`[fluid] ${message}`)
+    this.name = 'FluidError'
+  }
+}
+
+const _warnedOnce = new Set<string>()
+
+/** Test-only: resets the "warn once" state between test cases. */
+export function _resetValidationWarnings(): void {
+  _warnedOnce.clear()
+}
+
+function _warnOnce(key: string, msg: string): void {
+  if (!_warnedOnce.has(key)) {
+    _warnedOnce.add(key)
+    console.warn(`[fluid] ${msg}`)
+  }
+}
+
+/**
+ * Validates a SpringConfig.
+ * Dev (NODE_ENV !== 'production'): throws FluidError immediately.
+ * Production: clamps invalid values silently, warns once per violation type.
+ */
+export function validateSpringConfig(cfg: SpringConfig): SpringConfig {
+  const isDev = typeof process === 'undefined' || process.env.NODE_ENV !== 'production'
+
+  if (isDev) {
+    if (cfg.mass <= 0) throw new FluidError('mass must be > 0')
+    if (cfg.stiffness <= 0) throw new FluidError('stiffness must be > 0')
+    if (cfg.damping < 0) throw new FluidError('damping must be >= 0')
+    return cfg
+  }
+
+  // Production: clamp + warn once
+  let { mass, stiffness, damping } = cfg
+  if (mass <= 0) {
+    _warnOnce('mass', 'mass must be > 0; clamped to ε')
+    mass = Number.EPSILON
+  }
+  if (stiffness <= 0) {
+    _warnOnce('stiffness', 'stiffness must be > 0; clamped to ε')
+    stiffness = Number.EPSILON
+  }
+  if (damping < 0) {
+    _warnOnce('damping', 'damping must be >= 0; clamped to 0')
+    damping = 0
+  }
+  if (mass === cfg.mass && stiffness === cfg.stiffness && damping === cfg.damping) return cfg
+  return { mass, stiffness, damping }
+}
+
 export interface SpringConfig {
   mass: number
   stiffness: number
