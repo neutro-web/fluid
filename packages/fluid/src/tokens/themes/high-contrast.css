@@ -1,0 +1,85 @@
+/* =============================================================================
+   @neutro/fluid — High Contrast Token Overrides
+   Scoped to prefers-contrast: more.
+   Raises tint alphas to near-opaque so glass surfaces remain legible.
+   Borders and contrast corrections are applied in component shadow roots.
+   ============================================================================= */
+
+@layer fluid.theme {
+
+@media (prefers-contrast: more) {
+  :root {
+    /* Tint — near-opaque for maximum contrast on glass surfaces */
+    --fluid-tint-light: hsl(0 0% 100% / 0.95);
+    --fluid-tint-dark:  hsl(0 0% 0% / 0.95);
+    --fluid-tint-alpha: 0.95;
+
+    /* Brand scale — maximum contrast steps */
+    --fluid-color-brand-50:  hsl(var(--fluid-hue-brand) calc(var(--fluid-sat-brand) * 0.20) 98%);
+    --fluid-color-brand-100: hsl(var(--fluid-hue-brand) calc(var(--fluid-sat-brand) * 0.40) 94%);
+    --fluid-color-brand-200: hsl(var(--fluid-hue-brand) calc(var(--fluid-sat-brand) * 0.60) 88%);
+    --fluid-color-brand-300: hsl(var(--fluid-hue-brand) calc(var(--fluid-sat-brand) * 0.80) 76%);
+    --fluid-color-brand-400: hsl(var(--fluid-hue-brand) calc(var(--fluid-sat-brand) * 0.90) 62%);
+    --fluid-color-brand-500: var(--fluid-color-brand);
+    --fluid-color-brand-600: hsl(var(--fluid-hue-brand) var(--fluid-sat-brand) 38%);
+    --fluid-color-brand-700: hsl(var(--fluid-hue-brand) var(--fluid-sat-brand) 28%);
+    --fluid-color-brand-800: hsl(var(--fluid-hue-brand) var(--fluid-sat-brand) 18%);
+    --fluid-color-brand-900: hsl(var(--fluid-hue-brand) var(--fluid-sat-brand) 8%);
+
+    /* Neutral scale — higher contrast steps */
+    --fluid-color-neutral-50:  hsl(var(--fluid-hue-neutral) calc(var(--fluid-sat-neutral) * 0.20) 98%);
+    --fluid-color-neutral-100: hsl(var(--fluid-hue-neutral) calc(var(--fluid-sat-neutral) * 0.40) 94%);
+    --fluid-color-neutral-200: hsl(var(--fluid-hue-neutral) calc(var(--fluid-sat-neutral) * 0.60) 88%);
+    --fluid-color-neutral-300: hsl(var(--fluid-hue-neutral) calc(var(--fluid-sat-neutral) * 0.80) 76%);
+    --fluid-color-neutral-400: hsl(var(--fluid-hue-neutral) calc(var(--fluid-sat-neutral) * 0.90) 60%);
+    --fluid-color-neutral-500: var(--fluid-color-neutral);
+    --fluid-color-neutral-600: hsl(var(--fluid-hue-neutral) var(--fluid-sat-neutral) 32%);
+    --fluid-color-neutral-700: hsl(var(--fluid-hue-neutral) var(--fluid-sat-neutral) 22%);
+    --fluid-color-neutral-800: hsl(var(--fluid-hue-neutral) var(--fluid-sat-neutral) 12%);
+    --fluid-color-neutral-900: hsl(var(--fluid-hue-neutral) var(--fluid-sat-neutral) 4%);
+
+    /* Destructive scale — complete 50-900 */
+    --fluid-color-destructive-50:  hsl(var(--fluid-hue-destructive) calc(var(--fluid-sat-destructive) * 0.20) 98%);
+    --fluid-color-destructive-100: hsl(var(--fluid-hue-destructive) calc(var(--fluid-sat-destructive) * 0.40) 94%);
+    --fluid-color-destructive-200: hsl(var(--fluid-hue-destructive) calc(var(--fluid-sat-destructive) * 0.60) 88%);
+    --fluid-color-destructive-300: hsl(var(--fluid-hue-destructive) calc(var(--fluid-sat-destructive) * 0.80) 76%);
+    --fluid-color-destructive-400: hsl(var(--fluid-hue-destructive) calc(var(--fluid-sat-destructive) * 0.90) 62%);
+    --fluid-color-destructive-500: var(--fluid-color-destructive);
+    --fluid-color-destructive-600: hsl(var(--fluid-hue-destructive) var(--fluid-sat-destructive) 35%);
+    --fluid-color-destructive-700: hsl(var(--fluid-hue-destructive) var(--fluid-sat-destructive) 25%);
+    --fluid-color-destructive-800: hsl(var(--fluid-hue-destructive) var(--fluid-sat-destructive) 15%);
+    --fluid-color-destructive-900: hsl(var(--fluid-hue-destructive) var(--fluid-sat-destructive) 6%);
+
+    /* Success scale — complete 50-900 */
+    --fluid-color-success-50:  hsl(var(--fluid-hue-success) calc(var(--fluid-sat-success) * 0.20) 98%);
+    --fluid-color-success-100: hsl(var(--fluid-hue-success) calc(var(--fluid-sat-success) * 0.40) 94%);
+    --fluid-color-success-200: hsl(var(--fluid-hue-success) calc(var(--fluid-sat-success) * 0.60) 88%);
+    --fluid-color-success-300: hsl(var(--fluid-hue-success) calc(var(--fluid-sat-success) * 0.80) 76%);
+    --fluid-color-success-400: hsl(var(--fluid-hue-success) calc(var(--fluid-sat-success) * 0.90) 60%);
+    --fluid-color-success-500: var(--fluid-color-success);
+    --fluid-color-success-600: hsl(var(--fluid-hue-success) var(--fluid-sat-success) 30%);
+    --fluid-color-success-700: hsl(var(--fluid-hue-success) var(--fluid-sat-success) 22%);
+    --fluid-color-success-800: hsl(var(--fluid-hue-success) var(--fluid-sat-success) 14%);
+    --fluid-color-success-900: hsl(var(--fluid-hue-success) var(--fluid-sat-success) 6%);
+
+    /* Caution scale — complete 50-900 */
+    --fluid-color-caution-50:  hsl(var(--fluid-hue-caution) calc(var(--fluid-sat-caution) * 0.20) 98%);
+    --fluid-color-caution-100: hsl(var(--fluid-hue-caution) calc(var(--fluid-sat-caution) * 0.40) 94%);
+    --fluid-color-caution-200: hsl(var(--fluid-hue-caution) calc(var(--fluid-sat-caution) * 0.60) 88%);
+    --fluid-color-caution-300: hsl(var(--fluid-hue-caution) calc(var(--fluid-sat-caution) * 0.80) 76%);
+    --fluid-color-caution-400: hsl(var(--fluid-hue-caution) calc(var(--fluid-sat-caution) * 0.90) 62%);
+    --fluid-color-caution-500: var(--fluid-color-caution);
+    --fluid-color-caution-600: hsl(var(--fluid-hue-caution) var(--fluid-sat-caution) 32%);
+    --fluid-color-caution-700: hsl(var(--fluid-hue-caution) var(--fluid-sat-caution) 24%);
+    --fluid-color-caution-800: hsl(var(--fluid-hue-caution) var(--fluid-sat-caution) 16%);
+    --fluid-color-caution-900: hsl(var(--fluid-hue-caution) var(--fluid-sat-caution) 6%);
+
+    /* Shadow — fully opaque for high contrast */
+    --fluid-shadow-surface: 0 1px 3px hsl(0 0% 0% / 0.40), 0 1px 2px hsl(0 0% 0% / 0.30);
+    --fluid-shadow-raised:  0 4px 6px hsl(0 0% 0% / 0.50), 0 2px 4px hsl(0 0% 0% / 0.40);
+    --fluid-shadow-overlay: 0 10px 15px hsl(0 0% 0% / 0.60), 0 4px 6px hsl(0 0% 0% / 0.50);
+    --fluid-shadow-sheet:   0 20px 25px hsl(0 0% 0% / 0.70), 0 10px 10px hsl(0 0% 0% / 0.60);
+  }
+}
+
+} /* @layer fluid.theme */

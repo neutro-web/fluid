@@ -85,18 +85,28 @@
     "./src/adapters/*/index.tsx"
   ],
   "peerDependencies": {
+    "@angular/core": ">=17",
     "react": ">=18",
     "react-dom": ">=18",
-    "vue": ">=3",
     "svelte": ">=4",
-    "@angular/core": ">=17"
+    "vue": ">=3"
   },
   "peerDependenciesMeta": {
-    "react": { "optional": true },
-    "react-dom": { "optional": true },
-    "vue": { "optional": true },
-    "svelte": { "optional": true },
-    "@angular/core": { "optional": true }
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    },
+    "vue": {
+      "optional": true
+    },
+    "svelte": {
+      "optional": true
+    },
+    "@angular/core": {
+      "optional": true
+    }
   },
   "size-limit": [
     {
@@ -112,6 +122,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
+    "lightningcss": "^1.32.0",
     "typescript": "^5.0.0",
     "vitest": "^2.0.0"
   }
