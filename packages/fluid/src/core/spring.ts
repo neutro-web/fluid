@@ -152,3 +152,11 @@ export function stepSpring(
 
   return { value: newValue, velocity: newVelocity }
 }
+
+export const SPRING_PRESETS = {
+  snappy:  { mass: 0.5, stiffness: 400, damping: 28 },
+  bouncy:  { mass: 1.0, stiffness: 300, damping: 20 },
+  gentle:  { mass: 1.0, stiffness: 120, damping: 20 },
+  smooth:  { mass: 1.0, stiffness: 200, damping: 26 },
+  precise: { mass: 0.8, stiffness: 500, damping: 32 },
+} as const satisfies Record<string, SpringConfig>

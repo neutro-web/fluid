@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { stepSpring, validateSpringConfig, FluidError, _resetValidationWarnings } from './spring'
+import { stepSpring, validateSpringConfig, FluidError, _resetValidationWarnings, SPRING_PRESETS } from './spring'
 import type { SpringConfig, SpringState } from './spring'
 
 // Golden values from docs/fluid-roadmap.md P0-T1-01 and docs/fluid-foundation-v5.md §II.4
@@ -270,5 +270,37 @@ describe('validateSpringConfig — production mode — P0-T1-03', () => {
     validateSpringConfig({ mass: 0, stiffness: 100, damping: 10 })
     expect(spy).toHaveBeenCalledOnce()
     spy.mockRestore()
+  })
+})
+
+describe('SPRING_PRESETS — P0-T1-08', () => {
+  it('snappy has exact values { mass: 0.5, stiffness: 400, damping: 28 }', () => {
+    expect(SPRING_PRESETS.snappy).toEqual({ mass: 0.5, stiffness: 400, damping: 28 })
+  })
+
+  it('bouncy has exact values { mass: 1.0, stiffness: 300, damping: 20 }', () => {
+    expect(SPRING_PRESETS.bouncy).toEqual({ mass: 1.0, stiffness: 300, damping: 20 })
+  })
+
+  it('gentle has exact values { mass: 1.0, stiffness: 120, damping: 20 }', () => {
+    expect(SPRING_PRESETS.gentle).toEqual({ mass: 1.0, stiffness: 120, damping: 20 })
+  })
+
+  it('smooth has exact values { mass: 1.0, stiffness: 200, damping: 26 }', () => {
+    expect(SPRING_PRESETS.smooth).toEqual({ mass: 1.0, stiffness: 200, damping: 26 })
+  })
+
+  it('precise has exact values { mass: 0.8, stiffness: 500, damping: 32 }', () => {
+    expect(SPRING_PRESETS.precise).toEqual({ mass: 0.8, stiffness: 500, damping: 32 })
+  })
+
+  it('has exactly 5 presets', () => {
+    expect(Object.keys(SPRING_PRESETS)).toHaveLength(5)
+  })
+
+  it('all presets pass validateSpringConfig without throwing', () => {
+    for (const preset of Object.values(SPRING_PRESETS)) {
+      expect(() => validateSpringConfig(preset)).not.toThrow()
+    }
   })
 })
