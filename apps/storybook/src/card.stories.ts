@@ -43,6 +43,10 @@ const meta: Meta = {
       options: ['flat', 'raised', 'floating'],
       description: 'Shadow depth tier',
     },
+    'actions-divider': {
+      control: 'boolean',
+      description: 'Adds a hairline separator between the card body and the actions bar',
+    },
   },
   args: {
     interactive: false,
@@ -51,6 +55,7 @@ const meta: Meta = {
     error: false,
     'error-message': '',
     elevation: 'raised',
+    'actions-divider': false,
   },
 }
 
@@ -123,6 +128,37 @@ export const WithActions: Story = {
         <fluid-button variant="ghost">Cancel</fluid-button>
       </div>
     </fluid-card>
+  `,
+}
+
+// ─── Actions divider ────────────────────────────────────────────────────────────
+
+export const WithActionsDivider: Story = {
+  name: 'Actions divider',
+  render: () => html`
+    <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start">
+      <fluid-card actions-divider style="max-width:300px">
+        <h2 slot="header" style="margin:0;font-size:1rem;font-weight:600">Delete account</h2>
+        <p style="margin:0;line-height:1.5">
+          This action is permanent and cannot be undone. All data will be removed within 30 days.
+        </p>
+        <div slot="actions">
+          <fluid-button variant="destructive">Delete</fluid-button>
+          <fluid-button variant="ghost">Cancel</fluid-button>
+        </div>
+      </fluid-card>
+
+      <fluid-card style="max-width:300px">
+        <h2 slot="header" style="margin:0;font-size:1rem;font-weight:600">Save changes</h2>
+        <p style="margin:0;line-height:1.5">
+          Without divider for comparison — padding alone separates content and actions.
+        </p>
+        <div slot="actions">
+          <fluid-button variant="primary">Save</fluid-button>
+          <fluid-button variant="ghost">Discard</fluid-button>
+        </div>
+      </fluid-card>
+    </div>
   `,
 }
 
@@ -220,6 +256,7 @@ export const Playground: Story = {
       ?layout=${args['layout']}
       ?loading=${args['loading']}
       ?error=${args['error']}
+      ?actions-divider=${args['actions-divider']}
       error-message=${args['error-message'] || ''}
       elevation=${args['elevation']}
       aria-label=${args['interactive'] ? 'Playground card — click to activate' : ''}
