@@ -138,6 +138,7 @@
   ],
   "scripts": {
     "build": "tsup",
+    "lint": "eslint src",
     "test:unit": "vitest run",
     "test:component": "node scripts/test-component.mjs",
     "size-limit": "size-limit",
