@@ -132,16 +132,15 @@ export class FluidStack extends HTMLElement {
         el.style.transition = 'none'
         el.style.transform = `translate(${dx}px, ${dy}px)`
         el.getBoundingClientRect()
-        el.style.transition = `transform ${duration}ms cubic-bezier(0.34, 1.56, 0.64, 1.0)`
+        el.style.transition = `transform ${duration}ms cubic-bezier(0.4, 0, 0.2, 1)`
         el.style.transform = ''
-        el.addEventListener(
-          'transitionend',
-          () => { el.style.transition = '' },
-          { once: true },
-        )
+        const cleanup = (): void => { el.style.transition = '' }
+        el.addEventListener('transitionend', cleanup, { once: true })
+        el.addEventListener('transitioncancel', cleanup, { once: true })
       }
     }
 
+    this._snapshots.clear()
     requestAnimationFrame(() => requestAnimationFrame(() => this._takeSnapshot()))
   }
 }
