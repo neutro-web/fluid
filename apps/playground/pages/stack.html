@@ -324,6 +324,59 @@
 &lt;/div&gt;</pre>
     </div>
   </section>
+
+  <!-- ─── Edge Cases ─────────────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Edge Cases</h2>
+
+    <div class="pg-example">
+      <p style="margin:0 0 8px;font-size:0.85rem;opacity:0.7">Empty stack — renders as an empty flex container, no layout side-effects.</p>
+      <div class="pg-preview">
+        <fluid-stack style="border:1px dashed rgba(99,102,241,0.4);min-width:80px;min-height:40px"></fluid-stack>
+      </div>
+      <pre class="pg-code">&lt;fluid-stack&gt;&lt;!-- no children --&gt;&lt;/fluid-stack&gt;</pre>
+    </div>
+
+    <div class="pg-example">
+      <p style="margin:0 0 8px;font-size:0.85rem;opacity:0.7">Very long content — children overflow; use <code>wrap</code> or clip with <code>overflow:hidden</code> on the stack.</p>
+      <div class="pg-preview" style="max-width:340px;overflow:hidden">
+        <fluid-stack direction="horizontal" gap="sm">
+          <div style="white-space:nowrap;padding:8px 12px;background:#6366f1;color:#fff;border-radius:6px;font-size:0.85rem">This label is extremely long and will overflow</div>
+          <div style="white-space:nowrap;padding:8px 12px;background:#f59e0b;color:#fff;border-radius:6px;font-size:0.85rem">Another very long one</div>
+        </fluid-stack>
+      </div>
+      <pre class="pg-code">&lt;fluid-stack direction="horizontal" gap="sm" style="overflow:hidden"&gt;
+  &lt;div&gt;Very long content...&lt;/div&gt;
+  &lt;div&gt;Another one&lt;/div&gt;
+&lt;/fluid-stack&gt;</pre>
+    </div>
+
+    <div class="pg-example">
+      <p style="margin:0 0 8px;font-size:0.85rem;opacity:0.7">Minimum size — stack collapses to its children's minimum size. Constrain with <code>min-width</code> if needed.</p>
+      <div class="pg-preview">
+        <fluid-stack direction="horizontal" gap="sm" style="min-width:200px;border:1px dashed rgba(99,102,241,0.4);padding:8px">
+          <div style="width:40px;height:40px;background:#10b981;border-radius:6px;flex-shrink:0"></div>
+          <div style="width:40px;height:40px;background:#6366f1;border-radius:6px;flex-shrink:0"></div>
+        </fluid-stack>
+      </div>
+      <pre class="pg-code">&lt;fluid-stack direction="horizontal" gap="sm" style="min-width:200px"&gt;
+  &lt;div&gt;...&lt;/div&gt;
+&lt;/fluid-stack&gt;</pre>
+    </div>
+
+    <div class="pg-example">
+      <p style="margin:0 0 8px;font-size:0.85rem;opacity:0.7">Container query — <code>fluid-stack</code> has <code>container-type: inline-size</code>. Descendants can use <code>@container</code> to respond to the stack's width.</p>
+      <div class="pg-preview" style="max-width:340px">
+        <fluid-stack id="cq-demo" direction="horizontal" gap="sm">
+          <div class="cq-box" style="padding:8px 16px;background:#6366f1;color:#fff;border-radius:6px;font-size:0.85rem">Adapts to stack width</div>
+        </fluid-stack>
+      </div>
+      <pre class="pg-code">/* In consumer CSS: */
+@container (max-width: 300px) {
+  .cq-box { background: #ef4444; }
+}</pre>
+    </div>
+  </section>
 </article>
 
 <script type="module">

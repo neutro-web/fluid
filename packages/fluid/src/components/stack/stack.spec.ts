@@ -25,22 +25,25 @@ describe('fluid-stack', () => {
   describe('direction', () => {
     it('defaults to column (vertical)', async () => {
       const el = await FluidTestUtils.mount('<fluid-stack></fluid-stack>')
-      if (el.style.flexDirection !== 'column') {
-        throw new Error(`Default: expected column, got ${el.style.flexDirection}`)
+      const dir = getComputedStyle(el).flexDirection
+      if (dir !== 'column') {
+        throw new Error(`Default: expected column, got ${dir}`)
       }
     })
 
     it('direction="horizontal" sets flex-direction: row', async () => {
       const el = await FluidTestUtils.mount('<fluid-stack direction="horizontal"></fluid-stack>')
-      if (el.style.flexDirection !== 'row') {
-        throw new Error(`Expected row, got ${el.style.flexDirection}`)
+      const dir = getComputedStyle(el).flexDirection
+      if (dir !== 'row') {
+        throw new Error(`Expected row, got ${dir}`)
       }
     })
 
     it('direction="vertical" sets flex-direction: column', async () => {
       const el = await FluidTestUtils.mount('<fluid-stack direction="vertical"></fluid-stack>')
-      if (el.style.flexDirection !== 'column') {
-        throw new Error(`Expected column, got ${el.style.flexDirection}`)
+      const dir = getComputedStyle(el).flexDirection
+      if (dir !== 'column') {
+        throw new Error(`Expected column, got ${dir}`)
       }
     })
 
@@ -48,16 +51,19 @@ describe('fluid-stack', () => {
       const el = await FluidTestUtils.mount(
         '<fluid-stack direction="horizontal" dir="rtl"></fluid-stack>',
       )
-      if (el.style.flexDirection !== 'row-reverse') {
-        throw new Error(`Expected row-reverse in RTL, got ${el.style.flexDirection}`)
+      const dir = getComputedStyle(el).flexDirection
+      if (dir !== 'row-reverse') {
+        throw new Error(`Expected row-reverse in RTL, got ${dir}`)
       }
     })
 
     it('updates flex-direction when direction attribute changes', async () => {
       const el = await FluidTestUtils.mount('<fluid-stack direction="vertical"></fluid-stack>')
       el.setAttribute('direction', 'horizontal')
-      if (el.style.flexDirection !== 'row') {
-        throw new Error(`After change: expected row, got ${el.style.flexDirection}`)
+      await new Promise<void>(r => requestAnimationFrame(r))
+      const dir = getComputedStyle(el).flexDirection
+      if (dir !== 'row') {
+        throw new Error(`After change: expected row, got ${dir}`)
       }
     })
   })
@@ -253,6 +259,104 @@ describe('fluid-stack', () => {
     it('has no axe violations when empty', async () => {
       const el = await FluidTestUtils.mount('<fluid-stack></fluid-stack>')
       await FluidAccessibilityUtils.assertAccessible(el)
+    })
+  })
+
+  describe('FLIP layout animation', () => {
+    const nextMutation = (): Promise<void> =>
+      new Promise(r => requestAnimationFrame(() => r()))
+
+    it('skips FLIP when prefers-reduced-motion is active', async () => {
+      const orig = window.matchMedia
+      window.matchMedia = () => ({ matches: true } as MediaQueryList)
+      try {
+        const stack = await FluidTestUtils.mount(`
+          <fluid-stack layout direction="horizontal">
+            <div style="width:60px;height:60px">A</div>
+            <div style="width:60px;height:60px">B</div>
+          </fluid-stack>
+        `)
+        const a = stack.children[0] as HTMLElement
+        stack.appendChild(a)
+        await nextMutation()
+        if (a.style.transform !== '') {
+          throw new Error(`reduced-motion: expected no transform, got "${a.style.transform}"`)
+        }
+        if (a.style.transition !== '') {
+          throw new Error(`reduced-motion: expected no transition, got "${a.style.transition}"`)
+        }
+      } finally {
+        window.matchMedia = orig
+      }
+    })
+
+    it('suppresses FLIP and emits dev warning for >50 children', async () => {
+      const warned: string[] = []
+      const orig = console.warn
+      console.warn = (...args: unknown[]): void => { warned.push(String(args[0])) }
+      try {
+        const children = Array.from({ length: 51 }, (_, i) => `<div style="width:4px;height:4px">${i}</div>`).join('')
+        const stack = await FluidTestUtils.mount(`<fluid-stack layout direction="horizontal">${children}</fluid-stack>`)
+        const first = stack.children[0] as HTMLElement
+        stack.appendChild(first)
+        await nextMutation()
+        if (!warned.some(w => w.includes('50 children'))) {
+          throw new Error('Expected >50 children dev warning — none found')
+        }
+        if (first.style.transform !== '') {
+          throw new Error(`Expected no transform when capped, got "${first.style.transform}"`)
+        }
+      } finally {
+        console.warn = orig
+      }
+    })
+
+    it('matte: applies cubic-bezier CSS transition on child reorder', async () => {
+      FluidTestUtils.mockTier('matte')
+      const stack = await FluidTestUtils.mount(`
+        <fluid-stack layout direction="horizontal">
+          <div style="width:60px;height:60px">A</div>
+          <div style="width:60px;height:60px">B</div>
+        </fluid-stack>
+      `)
+      const a = stack.children[0] as HTMLElement
+      stack.appendChild(a)
+      await nextMutation()
+      if (!a.style.transition.includes('cubic-bezier')) {
+        throw new Error(`matte: expected cubic-bezier transition, got "${a.style.transition}"`)
+      }
+    })
+
+    it('frosted: applies linear() CSS spring transition on child reorder', async () => {
+      FluidTestUtils.mockTier('frosted')
+      const stack = await FluidTestUtils.mount(`
+        <fluid-stack layout direction="horizontal">
+          <div style="width:60px;height:60px">A</div>
+          <div style="width:60px;height:60px">B</div>
+        </fluid-stack>
+      `)
+      const a = stack.children[0] as HTMLElement
+      stack.appendChild(a)
+      await nextMutation()
+      if (!a.style.transition.includes('linear(')) {
+        throw new Error(`frosted: expected linear() spring transition, got "${a.style.transition}"`)
+      }
+    })
+
+    it('crystalline: drives child via AnimationDriver spring on reorder', async () => {
+      FluidTestUtils.mockTier('crystalline')
+      const stack = await FluidTestUtils.mount(`
+        <fluid-stack layout direction="horizontal">
+          <div style="width:60px;height:60px">A</div>
+          <div style="width:60px;height:60px">B</div>
+        </fluid-stack>
+      `)
+      const a = stack.children[0] as HTMLElement
+      stack.appendChild(a)
+      await nextMutation()
+      if (!a.style.transform || a.style.transform === '') {
+        throw new Error(`crystalline: expected spring transform on child, got "${a.style.transform}"`)
+      }
     })
   })
 })
