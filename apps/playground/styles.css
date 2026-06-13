@@ -5,7 +5,6 @@
 html, body {
   margin: 0;
   padding: 0;
-  height: 100%;
 }
 
 body {
@@ -20,10 +19,7 @@ body {
 
 /* ── Sidebar ── */
 #sidebar {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  overflow-y: auto;
+  align-self: stretch;
   background: #1a1a1a;
   color: #e8e8e8;
   border-right: 1px solid #2a2a2a;
