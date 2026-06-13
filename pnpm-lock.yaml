@@ -23,6 +23,12 @@ importers:
 
   apps/docs: {}
 
+  apps/playground:
+    devDependencies:
+      vite:
+        specifier: ^5.0.0
+        version: 5.4.21(@types/node@20.19.43)(lightningcss@1.32.0)
+
   apps/storybook:
     dependencies:
       '@neutro/fluid':
