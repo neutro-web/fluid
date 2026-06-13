@@ -23,11 +23,12 @@ function injectStyles(): void {
 
 export class FluidSpacer extends HTMLElement {
   static get observedAttributes() {
-    return ['size']
+    return ['size', 'grow', 'axis']
   }
 
   connectedCallback(): void {
     injectStyles()
+    this.setAttribute('aria-hidden', 'true')
     this._syncStyles()
     this.dispatchEvent(new CustomEvent('fluid:mounted', { bubbles: true, composed: true }))
   }
@@ -42,11 +43,31 @@ export class FluidSpacer extends HTMLElement {
   }
 
   private _syncStyles(): void {
+    const grow = this.hasAttribute('grow')
     const size = this.getAttribute('size')
-    if (size !== null) {
-      this.style.flex = `0 0 ${resolveSize(size)}`
+    const axis = this.getAttribute('axis') ?? 'both'
+
+    if (grow) {
+      this.style.flex = '1 1 0'
+      this.style.width = ''
+      this.style.height = ''
+    } else if (size !== null) {
+      const resolved = resolveSize(size)
+      this.style.flex = ''
+      if (axis === 'horizontal') {
+        this.style.width = resolved
+        this.style.height = ''
+      } else if (axis === 'vertical') {
+        this.style.width = ''
+        this.style.height = resolved
+      } else {
+        this.style.width = resolved
+        this.style.height = resolved
+      }
     } else {
-      this.style.flex = '1 1 auto'
+      this.style.flex = ''
+      this.style.width = ''
+      this.style.height = ''
     }
   }
 }

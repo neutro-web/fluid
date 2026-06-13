@@ -264,57 +264,114 @@ describe('fluid-spacer', () => {
     FluidTestUtils.cleanup()
   })
 
-  describe('grow mode (no size attribute)', () => {
-    it('has flex: 1 1 auto by default', async () => {
+  describe('aria-hidden', () => {
+    it('sets aria-hidden="true" automatically on connect', async () => {
       const el = await FluidTestUtils.mount('<fluid-spacer></fluid-spacer>')
-      if (el.style.flex !== '1 1 auto') {
-        throw new Error(`Expected flex:1 1 auto, got ${el.style.flex}`)
+      if (el.getAttribute('aria-hidden') !== 'true') {
+        throw new Error(`Expected aria-hidden="true", got "${el.getAttribute('aria-hidden')}"`)
+      }
+    })
+  })
+
+  describe('default state (no attributes)', () => {
+    it('has no intrinsic size by default', async () => {
+      const el = await FluidTestUtils.mount('<fluid-spacer></fluid-spacer>')
+      if (el.style.flex !== '') throw new Error(`Expected empty flex, got ${el.style.flex}`)
+      if (el.style.width !== '') throw new Error(`Expected empty width, got ${el.style.width}`)
+      if (el.style.height !== '') throw new Error(`Expected empty height, got ${el.style.height}`)
+    })
+  })
+
+  describe('grow mode', () => {
+    it('grow attribute sets flex: 1 1 0', async () => {
+      const el = await FluidTestUtils.mount('<fluid-spacer grow></fluid-spacer>')
+      if (el.style.flex !== '1 1 0') {
+        throw new Error(`Expected flex:1 1 0, got ${el.style.flex}`)
+      }
+    })
+
+    it('grow takes precedence over size', async () => {
+      const el = await FluidTestUtils.mount('<fluid-spacer grow size="md"></fluid-spacer>')
+      if (el.style.flex !== '1 1 0') {
+        throw new Error(`grow+size: expected flex:1 1 0, got ${el.style.flex}`)
+      }
+    })
+
+    it('removing grow attribute clears flex', async () => {
+      const el = await FluidTestUtils.mount('<fluid-spacer grow></fluid-spacer>')
+      el.removeAttribute('grow')
+      if (el.style.flex !== '') {
+        throw new Error(`After removing grow: expected empty flex, got ${el.style.flex}`)
       }
     })
   })
 
   describe('fixed size mode', () => {
-    it('size="xs" sets flex: 0 0 var(--fluid-space-1)', async () => {
+    it('size="xs" sets width and height to var(--fluid-space-1) (axis=both default)', async () => {
       const el = await FluidTestUtils.mount('<fluid-spacer size="xs"></fluid-spacer>')
-      if (el.style.flex !== '0 0 var(--fluid-space-1)') {
-        throw new Error(`Expected 0 0 var(--fluid-space-1), got ${el.style.flex}`)
+      if (el.style.width !== 'var(--fluid-space-1)') {
+        throw new Error(`Expected width var(--fluid-space-1), got ${el.style.width}`)
+      }
+      if (el.style.height !== 'var(--fluid-space-1)') {
+        throw new Error(`Expected height var(--fluid-space-1), got ${el.style.height}`)
       }
     })
 
-    it('size="sm" sets flex: 0 0 var(--fluid-space-2)', async () => {
+    it('size="sm" sets width and height to var(--fluid-space-2)', async () => {
       const el = await FluidTestUtils.mount('<fluid-spacer size="sm"></fluid-spacer>')
-      if (el.style.flex !== '0 0 var(--fluid-space-2)') {
-        throw new Error(`Expected 0 0 var(--fluid-space-2), got ${el.style.flex}`)
-      }
+      if (el.style.width !== 'var(--fluid-space-2)') throw new Error(`Expected var(--fluid-space-2), got ${el.style.width}`)
+      if (el.style.height !== 'var(--fluid-space-2)') throw new Error(`Expected var(--fluid-space-2), got ${el.style.height}`)
     })
 
-    it('size="md" sets flex: 0 0 var(--fluid-space-4)', async () => {
+    it('size="md" sets width and height to var(--fluid-space-4)', async () => {
       const el = await FluidTestUtils.mount('<fluid-spacer size="md"></fluid-spacer>')
-      if (el.style.flex !== '0 0 var(--fluid-space-4)') {
-        throw new Error(`Expected 0 0 var(--fluid-space-4), got ${el.style.flex}`)
-      }
+      if (el.style.width !== 'var(--fluid-space-4)') throw new Error(`Expected var(--fluid-space-4), got ${el.style.width}`)
+      if (el.style.height !== 'var(--fluid-space-4)') throw new Error(`Expected var(--fluid-space-4), got ${el.style.height}`)
     })
 
-    it('size="lg" sets flex: 0 0 var(--fluid-space-6)', async () => {
+    it('size="lg" sets width and height to var(--fluid-space-6)', async () => {
       const el = await FluidTestUtils.mount('<fluid-spacer size="lg"></fluid-spacer>')
-      if (el.style.flex !== '0 0 var(--fluid-space-6)') {
-        throw new Error(`Expected 0 0 var(--fluid-space-6), got ${el.style.flex}`)
-      }
+      if (el.style.width !== 'var(--fluid-space-6)') throw new Error(`Expected var(--fluid-space-6), got ${el.style.width}`)
+      if (el.style.height !== 'var(--fluid-space-6)') throw new Error(`Expected var(--fluid-space-6), got ${el.style.height}`)
     })
 
-    it('size="xl" sets flex: 0 0 var(--fluid-space-10)', async () => {
+    it('size="xl" sets width and height to var(--fluid-space-10)', async () => {
       const el = await FluidTestUtils.mount('<fluid-spacer size="xl"></fluid-spacer>')
-      if (el.style.flex !== '0 0 var(--fluid-space-10)') {
-        throw new Error(`Expected 0 0 var(--fluid-space-10), got ${el.style.flex}`)
-      }
+      if (el.style.width !== 'var(--fluid-space-10)') throw new Error(`Expected var(--fluid-space-10), got ${el.style.width}`)
+      if (el.style.height !== 'var(--fluid-space-10)') throw new Error(`Expected var(--fluid-space-10), got ${el.style.height}`)
     })
 
-    it('removing size attribute restores grow mode', async () => {
-      const el = await FluidTestUtils.mount('<fluid-spacer size="lg"></fluid-spacer>')
+    it('arbitrary CSS size value passes through to width and height', async () => {
+      const el = await FluidTestUtils.mount('<fluid-spacer size="20px"></fluid-spacer>')
+      if (el.style.width !== '20px') throw new Error(`Expected width:20px, got ${el.style.width}`)
+      if (el.style.height !== '20px') throw new Error(`Expected height:20px, got ${el.style.height}`)
+    })
+
+    it('removing size attribute clears width and height', async () => {
+      const el = await FluidTestUtils.mount('<fluid-spacer size="md"></fluid-spacer>')
       el.removeAttribute('size')
-      if (el.style.flex !== '1 1 auto') {
-        throw new Error(`After remove: expected 1 1 auto, got ${el.style.flex}`)
-      }
+      if (el.style.width !== '') throw new Error(`After remove: expected empty width, got ${el.style.width}`)
+      if (el.style.height !== '') throw new Error(`After remove: expected empty height, got ${el.style.height}`)
+    })
+  })
+
+  describe('axis', () => {
+    it('axis="horizontal" with size only sets width', async () => {
+      const el = await FluidTestUtils.mount('<fluid-spacer size="md" axis="horizontal"></fluid-spacer>')
+      if (el.style.width !== 'var(--fluid-space-4)') throw new Error(`Expected width var(--fluid-space-4), got ${el.style.width}`)
+      if (el.style.height !== '') throw new Error(`Expected empty height with axis=horizontal, got ${el.style.height}`)
+    })
+
+    it('axis="vertical" with size only sets height', async () => {
+      const el = await FluidTestUtils.mount('<fluid-spacer size="md" axis="vertical"></fluid-spacer>')
+      if (el.style.height !== 'var(--fluid-space-4)') throw new Error(`Expected height var(--fluid-space-4), got ${el.style.height}`)
+      if (el.style.width !== '') throw new Error(`Expected empty width with axis=vertical, got ${el.style.width}`)
+    })
+
+    it('axis="both" with size sets both width and height', async () => {
+      const el = await FluidTestUtils.mount('<fluid-spacer size="sm" axis="both"></fluid-spacer>')
+      if (el.style.width !== 'var(--fluid-space-2)') throw new Error(`Expected width var(--fluid-space-2), got ${el.style.width}`)
+      if (el.style.height !== 'var(--fluid-space-2)') throw new Error(`Expected height var(--fluid-space-2), got ${el.style.height}`)
     })
   })
 
@@ -347,7 +404,7 @@ describe('fluid-spacer', () => {
       const el = await FluidTestUtils.mount(`
         <fluid-stack direction="horizontal">
           <div>Left</div>
-          <fluid-spacer></fluid-spacer>
+          <fluid-spacer grow></fluid-spacer>
           <div>Right</div>
         </fluid-stack>
       `)
