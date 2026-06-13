@@ -231,6 +231,7 @@ function initAsyncPhase(): void {
 export const FluidLedger = {
   forceTier(tier: FluidTier): void {
     if (!DEV) return
+    const previousTier = ledger.tier
     _forced = true
     ledger.tier = tier
     // Keep capability flags consistent with the forced tier so downstream
@@ -238,6 +239,13 @@ export const FluidLedger = {
     ledger.backdropFilter = tier !== 'matte'
     ledger.waapi = tier === 'crystalline' || tier === 'optical'
     ledger.houdiniPaint = tier === 'optical'
+    // Notify already-mounted components so they can react (e.g. tear down
+    // or create ripple when crossing the matte ↔ frosted boundary).
+    document.dispatchEvent(
+      new CustomEvent('fluidledger:tier-change', {
+        detail: { previousTier, newTier: tier },
+      }),
+    )
   },
 }
 

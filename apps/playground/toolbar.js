@@ -12,10 +12,15 @@ export function initToolbar(navigateCurrent) {
     })
   })
 
-  // Mode — data-theme on <html> is enough; CSS tokens respond immediately
+  // Mode — "system" removes data-theme so prefers-color-scheme applies;
+  // "light"/"dark" set data-theme to force a specific palette.
   document.querySelectorAll('[name="theme"]').forEach(input => {
     input.addEventListener('change', () => {
-      document.documentElement.dataset.theme = input.value
+      if (input.value === 'system') {
+        delete document.documentElement.dataset.theme
+      } else {
+        document.documentElement.dataset.theme = input.value
+      }
     })
   })
 

@@ -14,7 +14,9 @@ export class FluidRipple {
     }
 
     const canvas = document.createElement('canvas')
-    canvas.style.cssText = 'position:absolute;inset:0px;pointer-events:none;z-index:0'
+    // z-index:2 places the canvas above [part="surface"] (z-index:1) so the
+    // ripple gradient is visible on top of the button's opaque background.
+    canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2'
     const ctx = canvas.getContext('2d')
     if (!ctx) throw new Error('FluidRipple: failed to acquire 2d rendering context')
     this.canvas = canvas

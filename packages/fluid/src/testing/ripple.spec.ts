@@ -42,11 +42,11 @@ describe('FluidRipple', () => {
     ripple.destroy()
   })
 
-  it('canvas has z-index:0', () => {
+  it('canvas has z-index:2 (above the surface which is z-index:1)', () => {
     const ripple = new FluidRipple(shadowRoot)
     const canvas = shadowRoot.querySelector('canvas') as HTMLCanvasElement
-    if (canvas.style.zIndex !== '0') {
-      throw new Error(`Expected z-index:0, got "${canvas.style.zIndex}"`)
+    if (canvas.style.zIndex !== '2') {
+      throw new Error(`Expected z-index:2, got "${canvas.style.zIndex}"`)
     }
     ripple.destroy()
   })
