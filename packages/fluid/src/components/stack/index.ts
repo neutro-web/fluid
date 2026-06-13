@@ -108,6 +108,12 @@ export class FluidStack extends HTMLElement {
 
     const tier = ledger.tier
 
+    if (tier === 'matte') {
+      this._snapshots.clear()
+      requestAnimationFrame(() => requestAnimationFrame(() => this._takeSnapshot()))
+      return
+    }
+
     for (const child of children) {
       const first = this._snapshots.get(child)
       if (!first) continue
@@ -128,11 +134,10 @@ export class FluidStack extends HTMLElement {
           { duration: 450, easing: 'cubic-bezier(0.34, 1.56, 0.64, 1.0)', fill: 'none' },
         )
       } else {
-        const duration = tier === 'frosted' ? 350 : 250
         el.style.transition = 'none'
         el.style.transform = `translate(${dx}px, ${dy}px)`
         el.getBoundingClientRect()
-        el.style.transition = `transform ${duration}ms cubic-bezier(0.4, 0, 0.2, 1)`
+        el.style.transition = `transform 350ms cubic-bezier(0.34, 1.56, 0.64, 1.0)`
         el.style.transform = ''
         const cleanup = (): void => { el.style.transition = '' }
         el.addEventListener('transitionend', cleanup, { once: true })
