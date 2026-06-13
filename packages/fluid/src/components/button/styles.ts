@@ -50,7 +50,7 @@ const styles = /* css */ `
   white-space: nowrap;
 }
 
-[part="surface"]:focus {
+[part="surface"]:focus:not(:focus-visible) {
   outline: none;
 }
 
