@@ -221,9 +221,58 @@ body {
 }
 
 /* ── Reduced motion simulation ── */
+/* CSS custom properties cascade into shadow DOM — sets the vars read by
+   fluid component styles (spinner duration, overlay transition). */
+.reduced-motion {
+  --fluid-spinner-duration: 3s;
+  --fluid-overlay-transition: 10ms;
+}
+/* Suppress animations for non-shadow-DOM light-DOM content on the page */
 .reduced-motion *,
 .reduced-motion *::before,
 .reduced-motion *::after {
   animation-duration: 0.01ms !important;
   transition-duration: 0.01ms !important;
+}
+
+/* ── Dark mode — page shell ── */
+[data-theme="dark"] body {
+  background: #111;
+  color: #e8e8e8;
+}
+[data-theme="dark"] #toolbar {
+  background: #1c1c1e;
+  border-bottom-color: #2c2c2e;
+}
+[data-theme="dark"] #toolbar legend {
+  color: #8a8a8e;
+}
+[data-theme="dark"] #toolbar label {
+  color: #d1d1d6;
+}
+[data-theme="dark"] #shell-main {
+  background: #111;
+}
+[data-theme="dark"] .pg-page-title {
+  color: #f0f0f0;
+}
+[data-theme="dark"] .pg-page-desc,
+[data-theme="dark"] .pg-section h2 {
+  color: #8a8a8e;
+}
+[data-theme="dark"] .pg-page-header,
+[data-theme="dark"] .pg-section h2 {
+  border-color: #2c2c2e;
+}
+[data-theme="dark"] .pg-demo {
+  background: #1c1c1e;
+  border-color: #2c2c2e;
+}
+[data-theme="dark"] .pg-preview {
+  background: rgba(255 255 255 / 0.04);
+}
+[data-theme="dark"] .pg-code {
+  background: #1c1c1e;
+  border-color: #2c2c2e;
+  color: #d1d1d6;
 }
