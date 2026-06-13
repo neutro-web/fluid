@@ -1,0 +1,324 @@
+<article class="pg-page">
+  <header class="pg-page-header">
+    <h1 class="pg-page-title">Icon Button</h1>
+    <p class="pg-page-desc">
+      Circular icon-only button. Spring press deformation (scale 0.94) with per-instance
+      ripple canvas at Frosted+. <code>aria-label</code> is required — a FluidError fires in dev if absent.
+      Touch target enforced at minimum 48×48px (WCAG 2.5.5).
+    </p>
+  </header>
+
+  <!-- ─── Variants ───────────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Variants</h2>
+
+    <div class="pg-example">
+      <div class="pg-preview" style="gap: 12px">
+        <fluid-icon-button variant="primary" aria-label="Add item">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </fluid-icon-button>
+      </div>
+      <pre class="pg-code">&lt;fluid-icon-button variant="primary" aria-label="Add item"&gt;
+  &lt;svg ...&gt;...&lt;/svg&gt;
+&lt;/fluid-icon-button&gt;</pre>
+    </div>
+
+    <div class="pg-example">
+      <div class="pg-preview" style="gap: 12px">
+        <fluid-icon-button variant="secondary" aria-label="Edit">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M14.5 2.5L17.5 5.5L7 16H4V13L14.5 2.5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+          </svg>
+        </fluid-icon-button>
+      </div>
+      <pre class="pg-code">&lt;fluid-icon-button variant="secondary" aria-label="Edit"&gt;
+  &lt;svg ...&gt;...&lt;/svg&gt;
+&lt;/fluid-icon-button&gt;</pre>
+    </div>
+
+    <div class="pg-example">
+      <div class="pg-preview" style="gap: 12px">
+        <fluid-icon-button variant="ghost" aria-label="Share">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <circle cx="15" cy="4" r="2" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="15" cy="16" r="2" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="5" cy="10" r="2" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M7 9L13 5M7 11L13 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </fluid-icon-button>
+      </div>
+      <pre class="pg-code">&lt;fluid-icon-button variant="ghost" aria-label="Share"&gt;
+  &lt;svg ...&gt;...&lt;/svg&gt;
+&lt;/fluid-icon-button&gt;</pre>
+    </div>
+  </section>
+
+  <!-- ─── States ─────────────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>States</h2>
+    <p>All states visible simultaneously for side-by-side comparison.
+       Tier switcher and dark mode toggle apply globally.</p>
+
+    <div class="pg-example">
+      <div class="pg-preview" style="gap: 20px; flex-wrap: wrap; align-items: flex-start">
+        <div class="pg-state-col">
+          <fluid-icon-button variant="secondary" aria-label="Default state">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path d="M5 5L15 15M15 5L5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </fluid-icon-button>
+          <span class="pg-state-label">Default</span>
+        </div>
+
+        <div class="pg-state-col">
+          <fluid-icon-button variant="secondary" disabled aria-label="Disabled state">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path d="M5 5L15 15M15 5L5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </fluid-icon-button>
+          <span class="pg-state-label">Disabled</span>
+        </div>
+
+        <div class="pg-state-col">
+          <fluid-icon-button variant="secondary" loading aria-label="Loading state">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path d="M5 5L15 15M15 5L5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </fluid-icon-button>
+          <span class="pg-state-label">Loading</span>
+        </div>
+      </div>
+      <pre class="pg-code">&lt;fluid-icon-button variant="secondary" disabled aria-label="..."&gt;...&lt;/fluid-icon-button&gt;
+&lt;fluid-icon-button variant="secondary" loading aria-label="..."&gt;...&lt;/fluid-icon-button&gt;</pre>
+    </div>
+
+    <!-- All variants × all states -->
+    <h3 style="margin: 24px 0 12px; font-size: 0.875rem; font-weight: 600; opacity: 0.7">
+      All variants × states
+    </h3>
+    <div class="pg-example">
+      <div class="pg-preview" style="gap: 16px; flex-direction: column; align-items: flex-start">
+        <div style="display:flex;gap:12px;align-items:center">
+          <fluid-icon-button variant="primary" aria-label="Primary default">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </fluid-icon-button>
+          <fluid-icon-button variant="primary" disabled aria-label="Primary disabled">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </fluid-icon-button>
+          <fluid-icon-button variant="primary" loading aria-label="Primary loading">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </fluid-icon-button>
+          <span style="font:12px/1 system-ui;opacity:.5">primary</span>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center">
+          <fluid-icon-button variant="secondary" aria-label="Secondary default">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path d="M14.5 2.5L17.5 5.5L7 16H4V13L14.5 2.5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            </svg>
+          </fluid-icon-button>
+          <fluid-icon-button variant="secondary" disabled aria-label="Secondary disabled">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path d="M14.5 2.5L17.5 5.5L7 16H4V13L14.5 2.5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            </svg>
+          </fluid-icon-button>
+          <fluid-icon-button variant="secondary" loading aria-label="Secondary loading">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path d="M14.5 2.5L17.5 5.5L7 16H4V13L14.5 2.5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            </svg>
+          </fluid-icon-button>
+          <span style="font:12px/1 system-ui;opacity:.5">secondary</span>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center">
+          <fluid-icon-button variant="ghost" aria-label="Ghost default">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <circle cx="15" cy="4" r="2" stroke="currentColor" stroke-width="1.5"/>
+              <circle cx="15" cy="16" r="2" stroke="currentColor" stroke-width="1.5"/>
+              <circle cx="5" cy="10" r="2" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M7 9L13 5M7 11L13 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </fluid-icon-button>
+          <fluid-icon-button variant="ghost" disabled aria-label="Ghost disabled">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <circle cx="15" cy="4" r="2" stroke="currentColor" stroke-width="1.5"/>
+              <circle cx="15" cy="16" r="2" stroke="currentColor" stroke-width="1.5"/>
+              <circle cx="5" cy="10" r="2" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M7 9L13 5M7 11L13 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </fluid-icon-button>
+          <fluid-icon-button variant="ghost" loading aria-label="Ghost loading">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <circle cx="15" cy="4" r="2" stroke="currentColor" stroke-width="1.5"/>
+              <circle cx="15" cy="16" r="2" stroke="currentColor" stroke-width="1.5"/>
+              <circle cx="5" cy="10" r="2" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M7 9L13 5M7 11L13 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </fluid-icon-button>
+          <span style="font:12px/1 system-ui;opacity:.5">ghost</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Sizes ──────────────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Sizes</h2>
+    <p>All sizes enforce a minimum 48×48px touch target (WCAG 2.5.5).
+       <code>sm</code> and <code>md</code> both render at 48px — the touch target is clamped to the
+       WCAG minimum. <code>sm</code> uses a smaller icon (16px) within the same hit area.
+       <code>lg</code> expands to 56px.</p>
+
+    <div class="pg-example">
+      <div class="pg-preview" style="align-items: center; gap: 16px">
+        <div class="pg-state-col">
+          <fluid-icon-button variant="primary" size="sm" aria-label="Small add button">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M8 2V14M2 8H14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </fluid-icon-button>
+          <span class="pg-state-label">sm (≥48px)</span>
+        </div>
+        <div class="pg-state-col">
+          <fluid-icon-button variant="primary" size="md" aria-label="Medium add button">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </fluid-icon-button>
+          <span class="pg-state-label">md (48px)</span>
+        </div>
+        <div class="pg-state-col">
+          <fluid-icon-button variant="primary" size="lg" aria-label="Large add button">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 3V21M3 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </fluid-icon-button>
+          <span class="pg-state-label">lg (56px)</span>
+        </div>
+      </div>
+      <pre class="pg-code">&lt;fluid-icon-button size="sm" aria-label="..."&gt;...&lt;/fluid-icon-button&gt;
+&lt;fluid-icon-button size="md" aria-label="..."&gt;...&lt;/fluid-icon-button&gt;
+&lt;fluid-icon-button size="lg" aria-label="..."&gt;...&lt;/fluid-icon-button&gt;</pre>
+    </div>
+  </section>
+
+  <!-- ─── Edge cases ─────────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Edge cases</h2>
+
+    <!-- Dense toolbar row -->
+    <h3 style="margin: 0 0 12px; font-size: 0.875rem; font-weight: 600; opacity: 0.7">Dense toolbar</h3>
+    <div class="pg-example">
+      <div class="pg-preview" style="gap: 4px">
+        <fluid-icon-button variant="ghost" size="sm" aria-label="Bold">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M4 2H9.5a3 3 0 0 1 0 6H4zm0 6h6a3 3 0 0 1 0 6H4z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+          </svg>
+        </fluid-icon-button>
+        <fluid-icon-button variant="ghost" size="sm" aria-label="Italic">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M7 2H13M3 14H9M10 2L6 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </fluid-icon-button>
+        <fluid-icon-button variant="ghost" size="sm" aria-label="Underline">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M4 2V8a4 4 0 0 0 8 0V2M2 14H14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </fluid-icon-button>
+        <fluid-icon-button variant="ghost" size="sm" disabled aria-label="Strikethrough (disabled)">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M3 8H13M5 5.5C5 4 6.5 3 8 3s3 1 3 2.5c0 1-0.5 1.5-1 2M6 10.5C6 12 7 13 8 13s3-0.5 3-2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </fluid-icon-button>
+      </div>
+      <pre class="pg-code">&lt;!-- Dense toolbar (size="sm", gap: 4px) --&gt;
+&lt;fluid-icon-button variant="ghost" size="sm" aria-label="Bold"&gt;...&lt;/fluid-icon-button&gt;</pre>
+    </div>
+
+    <!-- Large standalone action -->
+    <h3 style="margin: 24px 0 12px; font-size: 0.875rem; font-weight: 600; opacity: 0.7">Standalone large action</h3>
+    <div class="pg-example">
+      <div class="pg-preview">
+        <fluid-icon-button variant="primary" size="lg" aria-label="Create new document">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 3V21M3 12H21" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+        </fluid-icon-button>
+      </div>
+      <pre class="pg-code">&lt;fluid-icon-button variant="primary" size="lg" aria-label="Create new document"&gt;
+  &lt;svg ...&gt;...&lt;/svg&gt;
+&lt;/fluid-icon-button&gt;</pre>
+    </div>
+
+    <!-- Missing aria-label (dev warning) — only shows warning in console, no render error -->
+    <h3 style="margin: 24px 0 12px; font-size: 0.875rem; font-weight: 600; opacity: 0.7">
+      aria-label — dev enforcement
+    </h3>
+    <div class="pg-example">
+      <div class="pg-preview">
+        <p style="font:13px/1.5 system-ui;opacity:0.7;margin:0">
+          In development builds, mounting <code>fluid-icon-button</code> without
+          <code>aria-label</code> throws a <code>FluidError</code> at connect time.
+          In production, a one-time <code>console.warn</code> fires instead.
+          All examples on this page include <code>aria-label</code>.
+        </p>
+      </div>
+      <pre class="pg-code">&lt;!-- ❌ Dev throws FluidError --&gt;
+&lt;fluid-icon-button&gt;...&lt;/fluid-icon-button&gt;
+
+&lt;!-- ✅ Correct usage --&gt;
+&lt;fluid-icon-button aria-label="Close"&gt;...&lt;/fluid-icon-button&gt;</pre>
+    </div>
+  </section>
+</article>
+
+<script type="module">
+  import '@neutro/fluid/icon-button'
+</script>
+
+<style>
+  .pg-example {
+    margin-bottom: 24px;
+  }
+  .pg-preview {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 24px;
+    background: var(--pg-surface, rgba(0 0 0 / 0.04));
+    border-radius: 8px;
+    margin-bottom: 8px;
+  }
+  .pg-code {
+    margin: 0;
+    padding: 12px 16px;
+    background: var(--pg-code-bg, rgba(0 0 0 / 0.06));
+    border-radius: 6px;
+    font-size: 0.8125rem;
+    overflow-x: auto;
+    white-space: pre;
+  }
+  .pg-state-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .pg-state-label {
+    font: 11px/1 system-ui;
+    opacity: 0.55;
+    white-space: nowrap;
+  }
+  h3 {
+    margin: 24px 0 12px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    opacity: 0.7;
+  }
+</style>
