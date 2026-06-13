@@ -1,0 +1,214 @@
+<article class="pg-page">
+  <header class="pg-page-header">
+    <h1 class="pg-page-title">Button</h1>
+    <p class="pg-page-desc">
+      Physics-grounded glass material button. Spring press deformation (snappy depress,
+      bouncy release) with per-instance ripple canvas at Frosted+.
+    </p>
+  </header>
+
+  <!-- ─── Variants ───────────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Variants</h2>
+
+    <div class="pg-example">
+      <div class="pg-preview">
+        <fluid-button variant="primary">Primary</fluid-button>
+      </div>
+      <pre class="pg-code">&lt;fluid-button variant="primary"&gt;Primary&lt;/fluid-button&gt;</pre>
+    </div>
+
+    <div class="pg-example">
+      <div class="pg-preview">
+        <fluid-button variant="secondary">Secondary</fluid-button>
+      </div>
+      <pre class="pg-code">&lt;fluid-button variant="secondary"&gt;Secondary&lt;/fluid-button&gt;</pre>
+    </div>
+
+    <div class="pg-example">
+      <div class="pg-preview">
+        <fluid-button variant="destructive">Destructive</fluid-button>
+      </div>
+      <pre class="pg-code">&lt;fluid-button variant="destructive"&gt;Destructive&lt;/fluid-button&gt;</pre>
+    </div>
+
+    <div class="pg-example">
+      <div class="pg-preview">
+        <fluid-button variant="ghost">Ghost</fluid-button>
+      </div>
+      <pre class="pg-code">&lt;fluid-button variant="ghost"&gt;Ghost&lt;/fluid-button&gt;</pre>
+    </div>
+  </section>
+
+  <!-- ─── States ─────────────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>States</h2>
+    <p>All states visible simultaneously for side-by-side comparison.
+       Tier switcher and dark mode toggle apply globally.</p>
+
+    <div class="pg-example">
+      <div class="pg-preview" style="gap: 12px; flex-wrap: wrap">
+        <fluid-button variant="primary">Default</fluid-button>
+        <fluid-button variant="primary" id="pg-btn-hover">Hover (hover me)</fluid-button>
+        <fluid-button variant="primary" id="pg-btn-focus">Focus (tab to me)</fluid-button>
+        <fluid-button variant="primary" id="pg-btn-active">Active (hold click)</fluid-button>
+        <fluid-button variant="primary" disabled>Disabled</fluid-button>
+        <fluid-button variant="primary" loading>Loading</fluid-button>
+      </div>
+      <pre class="pg-code">&lt;fluid-button variant="primary" disabled&gt;Disabled&lt;/fluid-button&gt;
+&lt;fluid-button variant="primary" loading&gt;Loading&lt;/fluid-button&gt;</pre>
+    </div>
+  </section>
+
+  <!-- ─── Sizes ──────────────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Sizes</h2>
+
+    <div class="pg-example">
+      <div class="pg-preview" style="align-items: center; gap: 12px">
+        <fluid-button variant="primary" size="sm">Small</fluid-button>
+        <fluid-button variant="primary" size="md">Medium</fluid-button>
+        <fluid-button variant="primary" size="lg">Large</fluid-button>
+      </div>
+      <pre class="pg-code">&lt;fluid-button size="sm"&gt;Small&lt;/fluid-button&gt;
+&lt;fluid-button size="md"&gt;Medium&lt;/fluid-button&gt;
+&lt;fluid-button size="lg"&gt;Large&lt;/fluid-button&gt;</pre>
+    </div>
+  </section>
+
+  <!-- ─── With icons ─────────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>With icons</h2>
+
+    <div class="pg-example">
+      <div class="pg-preview" style="gap: 12px; flex-wrap: wrap">
+        <fluid-button variant="primary">
+          <svg slot="icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M8 2L8 14M2 8L14 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          Add item
+        </fluid-button>
+
+        <fluid-button variant="secondary">
+          Continue
+          <svg slot="trailing-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M6 4L10 8L6 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </fluid-button>
+      </div>
+      <pre class="pg-code">&lt;fluid-button variant="primary"&gt;
+  &lt;svg slot="icon" ...&gt;...&lt;/svg&gt;
+  Add item
+&lt;/fluid-button&gt;</pre>
+    </div>
+  </section>
+
+  <!-- ─── Form association ───────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Form association</h2>
+
+    <div class="pg-example">
+      <div class="pg-preview">
+        <form id="pg-demo-form" style="display:flex;flex-direction:column;gap:10px;max-width:300px">
+          <label style="display:flex;flex-direction:column;gap:4px">
+            <span>Name</span>
+            <input type="text" name="name" placeholder="Your name"
+              style="padding:8px 12px;border:1px solid currentColor;border-radius:6px;
+                     background:transparent;color:inherit;font:inherit">
+          </label>
+          <div style="display:flex;gap:8px">
+            <fluid-button type="submit" variant="primary">Submit</fluid-button>
+            <fluid-button type="reset" variant="ghost">Reset</fluid-button>
+          </div>
+        </form>
+        <p id="pg-form-output" style="margin-top:12px;font-style:italic;opacity:0.7"></p>
+      </div>
+      <pre class="pg-code">&lt;form&gt;
+  &lt;fluid-button type="submit" variant="primary"&gt;Submit&lt;/fluid-button&gt;
+  &lt;fluid-button type="reset" variant="ghost"&gt;Reset&lt;/fluid-button&gt;
+&lt;/form&gt;</pre>
+    </div>
+  </section>
+
+  <!-- ─── Edge cases ─────────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Edge cases</h2>
+
+    <div class="pg-example">
+      <div class="pg-preview" style="gap: 12px; flex-wrap: wrap; align-items: center">
+        <!-- Very long content -->
+        <fluid-button variant="secondary">
+          This is an unusually long button label that tests text overflow behaviour
+        </fluid-button>
+
+        <!-- Icon-only primary (close button) -->
+        <fluid-button variant="primary" aria-label="Close">
+          <svg slot="icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M3 3L13 13M13 3L3 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </fluid-button>
+
+        <!-- Icon-only ghost (add button) -->
+        <fluid-button variant="ghost" aria-label="Add new item">
+          <svg slot="icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M8 2L8 14M2 8L14 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </fluid-button>
+      </div>
+      <pre class="pg-code">&lt;!-- Very long label --&gt;
+&lt;fluid-button variant="secondary"&gt;This is an unusually long button label...&lt;/fluid-button&gt;
+
+&lt;!-- Icon-only primary (requires aria-label) --&gt;
+&lt;fluid-button variant="primary" aria-label="Close"&gt;
+  &lt;svg slot="icon"&gt;...&lt;/svg&gt;
+&lt;/fluid-button&gt;
+
+&lt;!-- Icon-only ghost (requires aria-label) --&gt;
+&lt;fluid-button variant="ghost" aria-label="Add new item"&gt;
+  &lt;svg slot="icon"&gt;...&lt;/svg&gt;
+&lt;/fluid-button&gt;</pre>
+    </div>
+  </section>
+</article>
+
+<script type="module">
+  import '@neutro/fluid/button'
+
+  // Form demo
+  const form = document.getElementById('pg-demo-form')
+  const output = document.getElementById('pg-form-output')
+  if (form && output) {
+    form.addEventListener('submit', e => {
+      e.preventDefault()
+      const data = new FormData(form)
+      output.textContent = `Submitted: name = "${data.get('name') || '(empty)'}"`
+    })
+    form.addEventListener('reset', () => {
+      output.textContent = 'Form was reset.'
+    })
+  }
+</script>
+
+<style>
+  .pg-example {
+    margin-bottom: 24px;
+  }
+  .pg-preview {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 24px;
+    background: var(--pg-surface, rgba(0 0 0 / 0.04));
+    border-radius: 8px;
+    margin-bottom: 8px;
+  }
+  .pg-code {
+    margin: 0;
+    padding: 12px 16px;
+    background: var(--pg-code-bg, rgba(0 0 0 / 0.06));
+    border-radius: 6px;
+    font-size: 0.8125rem;
+    overflow-x: auto;
+    white-space: pre;
+  }
+</style>
