@@ -1,0 +1,5 @@
+<!-- Shim process so ledger.ts DEV flag evaluates to true.
+     Vite replaces process.env.NODE_ENV member expressions but leaves the bare
+     `process` identifier undefined in the browser, so typeof process stays false.
+     This must run before any module that imports the ledger. -->
+<script>window.process = { env: { NODE_ENV: 'development' } }</script>
