@@ -1,0 +1,477 @@
+<article class="pg-page">
+  <header class="pg-page-header">
+    <h1 class="pg-page-title">Card</h1>
+    <p class="pg-page-desc">
+      Physics-grounded glass material surface. Layer 1 (Surface), thin material (8px blur,
+      0.55 tint alpha). Gentle spring for hover elevation and press deformation.
+    </p>
+  </header>
+
+  <!-- ─── Variants ───────────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Variants</h2>
+
+    <div class="pg-example">
+      <div class="pg-preview" style="gap: 24px; flex-wrap: wrap; align-items: flex-start">
+        <!-- Content only -->
+        <fluid-card style="max-width: 300px">
+          <p style="margin:0;line-height:1.5">
+            Content-only card — no header, no media, no actions. The glass surface and
+            depth cues are provided by the card shell.
+          </p>
+        </fluid-card>
+
+        <!-- With header -->
+        <fluid-card style="max-width: 300px">
+          <h2 slot="header" style="margin:0;font-size:1rem;font-weight:600">Notification</h2>
+          <p style="margin:0;line-height:1.5">
+            Your report finished processing. Download is available for 48 hours.
+          </p>
+        </fluid-card>
+
+        <!-- With header + actions -->
+        <fluid-card style="max-width: 300px">
+          <h2 slot="header" style="margin:0;font-size:1rem;font-weight:600">Delete account</h2>
+          <p style="margin:0;line-height:1.5">
+            This action is permanent and cannot be undone.
+          </p>
+          <div slot="actions">
+            <fluid-button variant="destructive">Delete</fluid-button>
+            <fluid-button variant="ghost">Cancel</fluid-button>
+          </div>
+        </fluid-card>
+      </div>
+      <pre class="pg-code">&lt;fluid-card&gt;
+  &lt;h2 slot="header"&gt;Title&lt;/h2&gt;
+  Content in default slot.
+  &lt;fluid-button slot="actions" variant="primary"&gt;Action&lt;/fluid-button&gt;
+&lt;/fluid-card&gt;</pre>
+    </div>
+
+    <!-- With media -->
+    <div class="pg-example">
+      <div class="pg-preview">
+        <fluid-card style="max-width: 340px">
+          <div slot="media" style="height:180px;background:linear-gradient(135deg,hsl(220 80% 60%),hsl(280 70% 50%));display:flex;align-items:center;justify-content:center">
+            <span style="font-size:3rem" aria-hidden="true">🏞</span>
+          </div>
+          <h2 slot="header" style="margin:0;font-size:1rem;font-weight:600">Mountain Trail</h2>
+          <p style="margin:0;line-height:1.5">A guided hike through alpine terrain with panoramic valley views.</p>
+          <div slot="actions">
+            <fluid-button variant="primary">Book now</fluid-button>
+            <fluid-button variant="ghost">Learn more</fluid-button>
+          </div>
+        </fluid-card>
+      </div>
+      <pre class="pg-code">&lt;fluid-card&gt;
+  &lt;img slot="media" src="photo.jpg" alt="Trail view"&gt;
+  &lt;h2 slot="header"&gt;Mountain Trail&lt;/h2&gt;
+  Description…
+  &lt;fluid-button slot="actions" variant="primary"&gt;Book now&lt;/fluid-button&gt;
+&lt;/fluid-card&gt;</pre>
+    </div>
+
+    <!-- Interactive -->
+    <div class="pg-example">
+      <div class="pg-preview">
+        <fluid-card interactive aria-label="Open design system project" style="max-width:340px;cursor:pointer" id="pg-interactive-demo">
+          <h2 slot="header" style="margin:0;font-size:1rem;font-weight:600">Interactive card</h2>
+          <p style="margin:0;line-height:1.5">
+            Hover to elevate, click to activate. Actions in the slot below are independently clickable.
+          </p>
+          <div slot="actions">
+            <fluid-button variant="ghost">Share</fluid-button>
+            <fluid-button variant="ghost">Archive</fluid-button>
+          </div>
+        </fluid-card>
+        <p id="pg-interactive-output" style="margin-top:12px;font-style:italic;opacity:0.7"></p>
+      </div>
+      <pre class="pg-code">&lt;fluid-card interactive aria-label="Open project"&gt;
+  &lt;h2 slot="header"&gt;Interactive card&lt;/h2&gt;
+  Click anywhere on the surface to activate.
+  &lt;fluid-button slot="actions" variant="ghost"&gt;Share&lt;/fluid-button&gt;
+&lt;/fluid-card&gt;</pre>
+    </div>
+  </section>
+
+  <!-- ─── Actions divider ─────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Actions divider</h2>
+    <p>
+      The <code>actions-divider</code> attribute adds a hairline separator between the
+      card body and the actions bar. Useful for dialog-style cards where the distinction
+      between content and decision needs a hard visual break.
+    </p>
+
+    <div class="pg-example">
+      <div class="pg-preview" style="gap: 24px; flex-wrap: wrap; align-items: flex-start">
+
+        <!-- Non-interactive with divider -->
+        <fluid-card actions-divider style="max-width: 300px">
+          <h2 slot="header" style="margin:0;font-size:1rem;font-weight:600">Delete account</h2>
+          <p style="margin:0;line-height:1.5">
+            This action is permanent and cannot be undone.
+          </p>
+          <div slot="actions">
+            <fluid-button variant="destructive">Delete</fluid-button>
+            <fluid-button variant="ghost">Cancel</fluid-button>
+          </div>
+        </fluid-card>
+
+        <!-- Without divider for comparison -->
+        <fluid-card style="max-width: 300px">
+          <h2 slot="header" style="margin:0;font-size:1rem;font-weight:600">Save changes</h2>
+          <p style="margin:0;line-height:1.5">
+            Your edits will be published immediately.
+          </p>
+          <div slot="actions">
+            <fluid-button variant="primary">Save</fluid-button>
+            <fluid-button variant="ghost">Discard</fluid-button>
+          </div>
+        </fluid-card>
+
+      </div>
+      <pre class="pg-code">&lt;!-- With divider --&gt;
+&lt;fluid-card actions-divider&gt;
+  &lt;h2 slot="header"&gt;Delete account&lt;/h2&gt;
+  This action is permanent.
+  &lt;fluid-button slot="actions" variant="destructive"&gt;Delete&lt;/fluid-button&gt;
+  &lt;fluid-button slot="actions" variant="ghost"&gt;Cancel&lt;/fluid-button&gt;
+&lt;/fluid-card&gt;
+
+&lt;!-- Without divider (default) --&gt;
+&lt;fluid-card&gt;
+  &lt;h2 slot="header"&gt;Save changes&lt;/h2&gt;
+  Your edits will be published.
+  &lt;fluid-button slot="actions" variant="primary"&gt;Save&lt;/fluid-button&gt;
+&lt;/fluid-card&gt;</pre>
+    </div>
+
+    <!-- Interactive with divider -->
+    <div class="pg-example">
+      <div class="pg-preview">
+        <fluid-card
+          interactive
+          actions-divider
+          aria-label="Open project settings"
+          style="max-width:340px;cursor:pointer"
+          id="pg-divider-interactive"
+        >
+          <h2 slot="header" style="margin:0;font-size:1rem;font-weight:600">Project settings</h2>
+          <p style="margin:0;line-height:1.5">
+            Interactive card with divider — click anywhere on the surface, or use the action
+            buttons independently.
+          </p>
+          <div slot="actions">
+            <fluid-button variant="primary">Edit</fluid-button>
+            <fluid-button variant="ghost">Share</fluid-button>
+          </div>
+        </fluid-card>
+        <p id="pg-divider-output" style="margin-top:12px;font-style:italic;opacity:0.7"></p>
+      </div>
+      <pre class="pg-code">&lt;fluid-card interactive actions-divider aria-label="Open settings"&gt;
+  &lt;h2 slot="header"&gt;Project settings&lt;/h2&gt;
+  Click the card to navigate, or use action buttons.
+  &lt;fluid-button slot="actions" variant="primary"&gt;Edit&lt;/fluid-button&gt;
+  &lt;fluid-button slot="actions" variant="ghost"&gt;Share&lt;/fluid-button&gt;
+&lt;/fluid-card&gt;</pre>
+    </div>
+  </section>
+
+  <!-- ─── Elevation ──────────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Elevation</h2>
+
+    <div class="pg-example">
+      <div class="pg-preview" style="gap: 24px; flex-wrap: wrap; align-items: flex-start">
+        <fluid-card elevation="flat" style="max-width:220px">
+          <h3 style="margin:0;font-size:0.875rem;font-weight:600">Flat</h3>
+          <p style="margin:0;font-size:0.875rem;line-height:1.4">No shadow.</p>
+        </fluid-card>
+
+        <fluid-card elevation="raised" style="max-width:220px">
+          <h3 style="margin:0;font-size:0.875rem;font-weight:600">Raised</h3>
+          <p style="margin:0;font-size:0.875rem;line-height:1.4">Default elevation.</p>
+        </fluid-card>
+
+        <fluid-card elevation="floating" style="max-width:220px">
+          <h3 style="margin:0;font-size:0.875rem;font-weight:600">Floating</h3>
+          <p style="margin:0;font-size:0.875rem;line-height:1.4">Stronger shadow.</p>
+        </fluid-card>
+      </div>
+      <pre class="pg-code">&lt;fluid-card elevation="flat"&gt;…&lt;/fluid-card&gt;
+&lt;fluid-card elevation="raised"&gt;…&lt;/fluid-card&gt;
+&lt;fluid-card elevation="floating"&gt;…&lt;/fluid-card&gt;</pre>
+    </div>
+  </section>
+
+  <!-- ─── States ─────────────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>States</h2>
+    <p>All states visible simultaneously for side-by-side comparison.</p>
+
+    <div class="pg-example">
+      <div class="pg-preview" style="gap: 24px; flex-wrap: wrap; align-items: flex-start">
+        <!-- Default -->
+        <fluid-card style="max-width:230px">
+          <h3 slot="header" style="margin:0;font-size:0.875rem;font-weight:600">Default</h3>
+          <p style="margin:0;font-size:0.875rem;line-height:1.4">Resting state.</p>
+        </fluid-card>
+
+        <!-- Hover / Focus (interactive) -->
+        <fluid-card interactive aria-label="Example interactive card" style="max-width:230px">
+          <h3 slot="header" style="margin:0;font-size:0.875rem;font-weight:600">Interactive</h3>
+          <p style="margin:0;font-size:0.875rem;line-height:1.4">Hover / focus / press me.</p>
+        </fluid-card>
+
+        <!-- Loading -->
+        <fluid-card loading style="max-width:230px">
+          <h3 slot="header" style="margin:0;font-size:0.875rem;font-weight:600">Loading</h3>
+          <p style="margin:0;font-size:0.875rem;line-height:1.4">Skeleton overlay active.</p>
+        </fluid-card>
+
+        <!-- Error -->
+        <fluid-card error error-message="Upload failed. Check your connection." style="max-width:230px">
+          <h3 slot="header" style="margin:0;font-size:0.875rem;font-weight:600">Error</h3>
+          <p style="margin:0;font-size:0.875rem;line-height:1.4">Destructive border + message.</p>
+        </fluid-card>
+      </div>
+      <pre class="pg-code">&lt;fluid-card loading&gt;…&lt;/fluid-card&gt;
+&lt;fluid-card error error-message="Upload failed."&gt;…&lt;/fluid-card&gt;</pre>
+    </div>
+  </section>
+
+  <!-- ─── Layout behaviors ──────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Layout behaviors</h2>
+
+    <!-- Many wrapping actions -->
+    <div class="pg-example">
+      <div class="pg-preview">
+        <fluid-card style="max-width:300px">
+          <h2 slot="header" style="margin:0;font-size:1rem;font-weight:600">Actions wrap gracefully</h2>
+          <p style="margin:0;line-height:1.5">
+            When more actions than fit on one row are present, the actions bar wraps via
+            <code>flex-wrap</code>.
+          </p>
+          <fluid-button slot="actions" variant="primary">Confirm</fluid-button>
+          <fluid-button slot="actions" variant="ghost">Cancel</fluid-button>
+          <fluid-button slot="actions" variant="ghost">Learn more</fluid-button>
+        </fluid-card>
+      </div>
+      <pre class="pg-code">&lt;fluid-card&gt;
+  &lt;fluid-button slot="actions" variant="primary"&gt;Confirm&lt;/fluid-button&gt;
+  &lt;fluid-button slot="actions" variant="ghost"&gt;Cancel&lt;/fluid-button&gt;
+  &lt;fluid-button slot="actions" variant="ghost"&gt;Learn more&lt;/fluid-button&gt;
+&lt;/fluid-card&gt;</pre>
+    </div>
+
+    <!-- Long body content -->
+    <div class="pg-example">
+      <div class="pg-preview">
+        <fluid-card style="max-width:360px">
+          <h2 slot="header" style="margin:0;font-size:1rem;font-weight:600">Content-driven height</h2>
+          <p style="margin:0;line-height:1.5">
+            The card grows with its content — the glass surface, specular rim border, and
+            box-shadow all scale correctly. No fixed height is required. Glass components at
+            the Surface layer contain their own blur context, so tall cards don't cause
+            backdrop-filter bleed into adjacent layers.
+          </p>
+        </fluid-card>
+      </div>
+      <pre class="pg-code">&lt;fluid-card&gt;
+  &lt;h2 slot="header"&gt;Title&lt;/h2&gt;
+  &lt;p&gt;Long body text — card height is content-driven.&lt;/p&gt;
+&lt;/fluid-card&gt;</pre>
+    </div>
+  </section>
+
+  <!-- ─── FLIP demo ──────────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Layout FLIP animation</h2>
+    <p>
+      Cards with the <code>layout</code> attribute use <code>card.runFLIP(mutate)</code> for
+      single-element position changes. For multi-element moves, read before/after rects around the
+      mutation yourself and apply CSS transforms — the FLIP technique works the same way.
+    </p>
+
+    <!-- Single card: move left / right -->
+    <div class="pg-example">
+      <div class="pg-preview" style="flex-direction:column;gap:12px;align-items:stretch">
+        <div id="pg-flip-container" style="display:flex;justify-content:flex-start">
+          <fluid-card layout id="pg-flip-card" style="width:220px" aria-label="Moveable card">
+            <h3 slot="header" style="margin:0;font-size:0.875rem;font-weight:600">Project overview</h3>
+            <p style="margin:0;font-size:0.875rem;line-height:1.4">
+              Click to move this card across the container — FLIP animates the position change.
+            </p>
+          </fluid-card>
+        </div>
+        <fluid-button variant="secondary" id="pg-flip-move">Move →</fluid-button>
+      </div>
+      <pre class="pg-code">&lt;fluid-card layout id="card"&gt;…&lt;/fluid-card&gt;
+card.runFLIP(() =&gt; {
+  container.style.justifyContent = atEnd ? 'flex-start' : 'flex-end'
+})</pre>
+    </div>
+
+    <!-- Two cards: swap -->
+    <div class="pg-example">
+      <div class="pg-preview" style="flex-direction:column;gap:12px;align-items:flex-start">
+        <div id="pg-flip-row" style="display:flex;gap:12px">
+          <div id="pg-flip-wrap-a" style="order:0">
+            <fluid-card id="pg-flip-a" style="width:180px" aria-label="Card A">
+              <h3 slot="header" style="margin:0;font-size:0.875rem;font-weight:600">Card A</h3>
+              <p style="margin:0;font-size:0.875rem">First position.</p>
+            </fluid-card>
+          </div>
+          <div id="pg-flip-wrap-b" style="order:1">
+            <fluid-card id="pg-flip-b" style="width:180px" aria-label="Card B">
+              <h3 slot="header" style="margin:0;font-size:0.875rem;font-weight:600">Card B</h3>
+              <p style="margin:0;font-size:0.875rem">Second position.</p>
+            </fluid-card>
+          </div>
+        </div>
+        <fluid-button variant="secondary" id="pg-flip-swap">Swap cards</fluid-button>
+      </div>
+      <pre class="pg-code">// Use CSS `order` to swap visual position — NO DOM mutation.
+// DOM moves trigger connectedCallback on fluid-card descendants, which
+// restarts the emerge animation from opacity 0 (the "ghost" effect).
+const rA = wrapA.getBoundingClientRect(), rB = wrapB.getBoundingClientRect()
+const aOrder = parseInt(wrapA.style.order)
+wrapA.style.order = aOrder === 0 ? '1' : '0'  // toggle visual order
+wrapB.style.order = aOrder === 0 ? '0' : '1'
+const dxA = rA.left - wrapA.getBoundingClientRect().left
+const dxB = rB.left - wrapB.getBoundingClientRect().left
+wrapA.style.transform = \`translateX(\${dxA}px)\`
+wrapB.style.transform = \`translateX(\${dxB}px)\`
+void wrapA.offsetWidth  // force style flush
+wrapA.style.transition = wrapB.style.transition = 'transform 450ms cubic-bezier(0.34,1.15,0.64,1)'
+wrapA.style.transform = wrapB.style.transform = ''</pre>
+    </div>
+  </section>
+</article>
+
+<script type="module">
+  import '@neutro/fluid/card'
+  import '@neutro/fluid/button'
+
+  // Interactive card demo
+  const interactiveCard = document.getElementById('pg-interactive-demo')
+  const interactiveOutput = document.getElementById('pg-interactive-output')
+  if (interactiveCard && interactiveOutput) {
+    interactiveCard.addEventListener('fluid:activate', (e) => {
+      interactiveOutput.textContent = `Activated via ${e.detail.source} at ${new Date().toLocaleTimeString()}`
+    })
+  }
+
+  // Divider interactive demo
+  const dividerCard = document.getElementById('pg-divider-interactive')
+  const dividerOutput = document.getElementById('pg-divider-output')
+  if (dividerCard && dividerOutput) {
+    dividerCard.addEventListener('fluid:activate', (e) => {
+      dividerOutput.textContent = `Activated via ${e.detail.source} at ${new Date().toLocaleTimeString()}`
+    })
+  }
+
+  // FLIP demo — single card move (left ↔ right)
+  const flipMove = document.getElementById('pg-flip-move')
+  const flipCard = document.getElementById('pg-flip-card')
+  const flipContainer = document.getElementById('pg-flip-container')
+  let atEnd = false
+
+  if (flipMove && flipCard && flipContainer) {
+    flipMove.addEventListener('fluid:activate', () => {
+      flipCard.runFLIP(() => {
+        atEnd = !atEnd
+        flipContainer.style.justifyContent = atEnd ? 'flex-end' : 'flex-start'
+      })
+      flipMove.textContent = atEnd ? '← Move' : 'Move →'
+    })
+  }
+
+  // FLIP demo — swap two cards via CSS `order` (zero DOM mutations)
+  // Moving any ancestor of fluid-card in the DOM triggers connectedCallback on the
+  // card, restarting the emerge animation from opacity 0 — the "ghost" effect.
+  // CSS `order` changes the visual position in the flex container without touching
+  // the DOM, so fluid-card elements stay mounted and emerge never re-fires.
+  const flipSwap = document.getElementById('pg-flip-swap')
+  const wrapA = document.getElementById('pg-flip-wrap-a')
+  const wrapB = document.getElementById('pg-flip-wrap-b')
+
+  if (flipSwap && wrapA && wrapB) {
+    flipSwap.addEventListener('fluid:activate', () => {
+      // Read BOTH wrapper positions before changing anything
+      const rA = wrapA.getBoundingClientRect()
+      const rB = wrapB.getBoundingClientRect()
+
+      // Toggle visual order via CSS `order` — no DOM mutation, no connectedCallback
+      const aOrder = parseInt(wrapA.style.order)
+      wrapA.style.order = aOrder === 0 ? '1' : '0'
+      wrapB.style.order = aOrder === 0 ? '0' : '1'
+
+      // Compute delta: how far each wrapper visually moved
+      const dxA = rA.left - wrapA.getBoundingClientRect().left
+      const dxB = rB.left - wrapB.getBoundingClientRect().left
+
+      if (Math.abs(dxA) < 0.5 && Math.abs(dxB) < 0.5) return
+
+      // Stamp the delta — snaps wrappers back to where they were visually
+      wrapA.style.transform = `translateX(${dxA}px)`
+      wrapB.style.transform = `translateX(${dxB}px)`
+
+      // Force style flush so the browser commits the stamped transforms
+      void wrapA.offsetWidth
+
+      // Spring transition both wrappers to their natural (zero) position
+      const spring = 'cubic-bezier(0.34, 1.15, 0.64, 1)'
+      wrapA.style.transition = `transform 450ms ${spring}`
+      wrapB.style.transition = `transform 450ms ${spring}`
+      wrapA.style.transform = ''
+      wrapB.style.transform = ''
+
+      // Clean up after the transform transition ends
+      const makeCleanup = (el) => (e) => {
+        if (e.propertyName !== 'transform') return
+        el.style.transition = ''
+        el.removeEventListener('transitionend', el._flipCleanup)
+        delete el._flipCleanup
+      }
+      wrapA._flipCleanup = makeCleanup(wrapA)
+      wrapB._flipCleanup = makeCleanup(wrapB)
+      wrapA.addEventListener('transitionend', wrapA._flipCleanup)
+      wrapB.addEventListener('transitionend', wrapB._flipCleanup)
+    })
+  }
+</script>
+
+<style>
+  .pg-example {
+    margin-bottom: 24px;
+  }
+  .pg-preview {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 32px 24px;
+    /* Glass-friendly backdrop: vivid gradient gives the blur filter something to show */
+    background:
+      linear-gradient(135deg, hsl(220 70% 60% / 0.35) 0%, hsl(280 60% 50% / 0.25) 50%, hsl(170 60% 50% / 0.3) 100%),
+      var(--pg-surface, rgba(0 0 0 / 0.04));
+    border-radius: 8px;
+    margin-bottom: 8px;
+  }
+  [data-theme="dark"] .pg-preview {
+    background:
+      linear-gradient(135deg, hsl(220 70% 40% / 0.4) 0%, hsl(280 60% 35% / 0.35) 50%, hsl(170 60% 30% / 0.35) 100%),
+      rgba(255 255 255 / 0.04);
+  }
+  .pg-code {
+    margin: 0;
+    padding: 12px 16px;
+    background: var(--pg-code-bg, rgba(0 0 0 / 0.06));
+    border-radius: 6px;
+    font-size: 0.8125rem;
+    overflow-x: auto;
+    white-space: pre;
+  }
+</style>

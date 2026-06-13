@@ -96,6 +96,23 @@ The testing strategy is at: `fluid-testing-strategy.md`
 
 ---
 
+## Spec Conflicts — Never Resolve Unilaterally
+
+If your task instructions conflict with the foundation doc, or if you
+believe a spec decision is wrong, STOP. Do not resolve it yourself.
+Surface it to the task author with:
+
+  - What the conflict is
+  - Which source says what
+  - Your recommendation
+
+Then wait for an explicit decision before writing any code that depends
+on the resolution. Unilateral decisions made "toward the spec" are still
+unilateral — the spec may itself be wrong, and the task author is the
+only one who can make that call.
+
+---
+
 ## Architecture Reference (Quick Lookup)
 
 | Need | Where |
