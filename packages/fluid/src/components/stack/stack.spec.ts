@@ -217,11 +217,14 @@ describe('fluid-stack', () => {
       let mounted = false
       const fixture = document.createElement('div')
       document.body.appendChild(fixture)
-      const stack = document.createElement('fluid-stack')
-      stack.addEventListener('fluid:mounted', () => { mounted = true }, { once: true })
-      fixture.appendChild(stack)
-      await new Promise<void>(r => requestAnimationFrame(() => requestAnimationFrame(() => r())))
-      fixture.remove()
+      try {
+        const stack = document.createElement('fluid-stack')
+        stack.addEventListener('fluid:mounted', () => { mounted = true }, { once: true })
+        fixture.appendChild(stack)
+        await new Promise<void>(r => requestAnimationFrame(() => requestAnimationFrame(() => r())))
+      } finally {
+        fixture.remove()
+      }
       if (!mounted) throw new Error('fluid:mounted never fired')
     })
 
@@ -321,9 +324,21 @@ describe('fluid-spacer', () => {
       const sp = document.createElement('fluid-spacer')
       sp.addEventListener('fluid:mounted', () => { mounted = true }, { once: true })
       document.body.appendChild(sp)
-      await new Promise<void>(r => requestAnimationFrame(() => requestAnimationFrame(() => r())))
-      document.body.removeChild(sp)
+      try {
+        await new Promise<void>(r => requestAnimationFrame(() => requestAnimationFrame(() => r())))
+      } finally {
+        document.body.removeChild(sp)
+      }
       if (!mounted) throw new Error('fluid:mounted never fired')
+    })
+
+    it('dispatches fluid:unmounted on disconnect', async () => {
+      let unmounted = false
+      const el = await FluidTestUtils.mount('<fluid-spacer></fluid-spacer>')
+      el.addEventListener('fluid:unmounted', () => { unmounted = true }, { once: true })
+      FluidTestUtils.cleanup()
+      await new Promise<void>(r => requestAnimationFrame(r))
+      if (!unmounted) throw new Error('fluid:unmounted never fired')
     })
   })
 
