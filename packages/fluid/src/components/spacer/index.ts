@@ -48,7 +48,7 @@ export class FluidSpacer extends HTMLElement {
     const axis = this.getAttribute('axis') ?? 'both'
 
     if (grow) {
-      this.style.flex = '1 1 0'
+      this.style.flex = '1 1 0px'
       this.style.width = ''
       this.style.height = ''
     } else if (size !== null) {

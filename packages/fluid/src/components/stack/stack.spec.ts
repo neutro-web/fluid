@@ -285,15 +285,15 @@ describe('fluid-spacer', () => {
   describe('grow mode', () => {
     it('grow attribute sets flex: 1 1 0', async () => {
       const el = await FluidTestUtils.mount('<fluid-spacer grow></fluid-spacer>')
-      if (el.style.flex !== '1 1 0') {
-        throw new Error(`Expected flex:1 1 0, got ${el.style.flex}`)
+      if (el.style.flex !== '1 1 0px') {
+        throw new Error(`Expected flex:1 1 0px, got ${el.style.flex}`)
       }
     })
 
     it('grow takes precedence over size', async () => {
       const el = await FluidTestUtils.mount('<fluid-spacer grow size="md"></fluid-spacer>')
-      if (el.style.flex !== '1 1 0') {
-        throw new Error(`grow+size: expected flex:1 1 0, got ${el.style.flex}`)
+      if (el.style.flex !== '1 1 0px') {
+        throw new Error(`grow+size: expected flex:1 1 0px, got ${el.style.flex}`)
       }
     })
 
