@@ -1,0 +1,247 @@
+<article class="pg-page">
+  <header class="pg-page-header">
+    <h1 class="pg-page-title">Spacer</h1>
+    <p class="pg-page-desc">
+      Flexible whitespace element for use inside <code>fluid-stack</code>.
+      Invisible by default — demos use a tinted background so the spacer's shape and size are visible.
+      Always <code>aria-hidden="true"</code>; no shadow DOM.
+    </p>
+  </header>
+
+  <!-- ─── Grow ──────────────────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Grow</h2>
+    <p>A <code>grow</code> spacer sets <code>flex: 1 1 0px</code>, consuming all remaining space
+       in the stack. Use it to push siblings to opposite ends or to distribute space evenly.</p>
+
+    <!-- Two boxes pushed to opposite ends -->
+    <div class="pg-example">
+      <div class="pg-preview">
+        <fluid-stack direction="horizontal" style="width:100%;min-width:320px">
+          <div class="pg-demo-box" style="background:#6366f1"></div>
+          <fluid-spacer grow style="background:rgba(99,102,241,0.15);border-radius:4px"></fluid-spacer>
+          <div class="pg-demo-box" style="background:#f59e0b"></div>
+        </fluid-stack>
+      </div>
+      <pre class="pg-code">&lt;fluid-stack direction="horizontal"&gt;
+  &lt;div class="box"&gt;&lt;/div&gt;
+  &lt;fluid-spacer grow&gt;&lt;/fluid-spacer&gt;
+  &lt;div class="box"&gt;&lt;/div&gt;
+&lt;/fluid-stack&gt;</pre>
+    </div>
+
+    <!-- Three boxes with even distribution -->
+    <div class="pg-example">
+      <div class="pg-preview">
+        <fluid-stack direction="horizontal" style="width:100%;min-width:320px">
+          <div class="pg-demo-box" style="background:#6366f1"></div>
+          <fluid-spacer grow style="background:rgba(99,102,241,0.15);border-radius:4px"></fluid-spacer>
+          <div class="pg-demo-box" style="background:#f59e0b"></div>
+          <fluid-spacer grow style="background:rgba(99,102,241,0.15);border-radius:4px"></fluid-spacer>
+          <div class="pg-demo-box" style="background:#10b981"></div>
+        </fluid-stack>
+      </div>
+      <pre class="pg-code">&lt;!-- Equal grow spacers distribute space evenly --&gt;
+&lt;fluid-stack direction="horizontal"&gt;
+  &lt;div class="box"&gt;&lt;/div&gt;
+  &lt;fluid-spacer grow&gt;&lt;/fluid-spacer&gt;
+  &lt;div class="box"&gt;&lt;/div&gt;
+  &lt;fluid-spacer grow&gt;&lt;/fluid-spacer&gt;
+  &lt;div class="box"&gt;&lt;/div&gt;
+&lt;/fluid-stack&gt;</pre>
+    </div>
+  </section>
+
+  <!-- ─── Fixed Size ─────────────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Fixed Size</h2>
+    <p>The <code>size</code> attribute accepts a token (<code>xs</code>, <code>sm</code>, <code>md</code>, <code>lg</code>, <code>xl</code>)
+       or any arbitrary CSS length. It sets both width and height to that value.</p>
+
+    <div class="pg-example">
+      <div class="pg-preview" style="align-items: flex-start; gap: 32px; flex-wrap: wrap">
+
+        <!-- xs: 4px -->
+        <div class="pg-size-demo">
+          <span class="pg-size-label">xs — 4px</span>
+          <fluid-stack direction="vertical" style="align-items:flex-start">
+            <div class="pg-demo-box" style="background:#6366f1"></div>
+            <fluid-spacer size="xs" style="background:rgba(99,102,241,0.15);border-radius:4px"></fluid-spacer>
+            <div class="pg-demo-box" style="background:#f59e0b"></div>
+          </fluid-stack>
+        </div>
+
+        <!-- sm: 8px -->
+        <div class="pg-size-demo">
+          <span class="pg-size-label">sm — 8px</span>
+          <fluid-stack direction="vertical" style="align-items:flex-start">
+            <div class="pg-demo-box" style="background:#6366f1"></div>
+            <fluid-spacer size="sm" style="background:rgba(99,102,241,0.15);border-radius:4px"></fluid-spacer>
+            <div class="pg-demo-box" style="background:#f59e0b"></div>
+          </fluid-stack>
+        </div>
+
+        <!-- md: 16px -->
+        <div class="pg-size-demo">
+          <span class="pg-size-label">md — 16px</span>
+          <fluid-stack direction="vertical" style="align-items:flex-start">
+            <div class="pg-demo-box" style="background:#6366f1"></div>
+            <fluid-spacer size="md" style="background:rgba(99,102,241,0.15);border-radius:4px"></fluid-spacer>
+            <div class="pg-demo-box" style="background:#f59e0b"></div>
+          </fluid-stack>
+        </div>
+
+        <!-- lg: 24px -->
+        <div class="pg-size-demo">
+          <span class="pg-size-label">lg — 24px</span>
+          <fluid-stack direction="vertical" style="align-items:flex-start">
+            <div class="pg-demo-box" style="background:#6366f1"></div>
+            <fluid-spacer size="lg" style="background:rgba(99,102,241,0.15);border-radius:4px"></fluid-spacer>
+            <div class="pg-demo-box" style="background:#f59e0b"></div>
+          </fluid-stack>
+        </div>
+
+        <!-- xl: 40px -->
+        <div class="pg-size-demo">
+          <span class="pg-size-label">xl — 40px</span>
+          <fluid-stack direction="vertical" style="align-items:flex-start">
+            <div class="pg-demo-box" style="background:#6366f1"></div>
+            <fluid-spacer size="xl" style="background:rgba(99,102,241,0.15);border-radius:4px"></fluid-spacer>
+            <div class="pg-demo-box" style="background:#f59e0b"></div>
+          </fluid-stack>
+        </div>
+
+      </div>
+      <pre class="pg-code">&lt;fluid-spacer size="xs"&gt;&lt;/fluid-spacer&gt;  &lt;!-- 4px  --&gt;
+&lt;fluid-spacer size="sm"&gt;&lt;/fluid-spacer&gt;  &lt;!-- 8px  --&gt;
+&lt;fluid-spacer size="md"&gt;&lt;/fluid-spacer&gt;  &lt;!-- 16px --&gt;
+&lt;fluid-spacer size="lg"&gt;&lt;/fluid-spacer&gt;  &lt;!-- 24px --&gt;
+&lt;fluid-spacer size="xl"&gt;&lt;/fluid-spacer&gt;  &lt;!-- 40px --&gt;</pre>
+    </div>
+
+    <!-- Arbitrary size -->
+    <div class="pg-example">
+      <div class="pg-preview">
+        <fluid-stack direction="vertical" style="align-items:flex-start">
+          <div class="pg-demo-box" style="background:#6366f1"></div>
+          <fluid-spacer size="36px" style="background:rgba(99,102,241,0.15);border-radius:4px"></fluid-spacer>
+          <div class="pg-demo-box" style="background:#10b981"></div>
+        </fluid-stack>
+      </div>
+      <pre class="pg-code">&lt;!-- Arbitrary CSS length --&gt;
+&lt;fluid-spacer size="36px"&gt;&lt;/fluid-spacer&gt;</pre>
+    </div>
+  </section>
+
+  <!-- ─── Axis ──────────────────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Axis</h2>
+    <p>The <code>axis</code> attribute restricts which dimension the <code>size</code> is applied to.
+       The tinted background makes the spacer's actual footprint obvious.</p>
+
+    <div class="pg-example">
+      <div class="pg-preview" style="align-items: flex-start; gap: 48px; flex-wrap: wrap">
+
+        <!-- horizontal axis: width only, used in a horizontal stack -->
+        <div class="pg-axis-demo">
+          <span class="pg-size-label">axis="horizontal" — width only</span>
+          <fluid-stack direction="horizontal" style="align-items:center">
+            <div class="pg-demo-box" style="background:#6366f1"></div>
+            <fluid-spacer size="md" axis="horizontal" style="background:rgba(99,102,241,0.15);border-radius:4px;height:60px"></fluid-spacer>
+            <div class="pg-demo-box" style="background:#f59e0b"></div>
+          </fluid-stack>
+          <span class="pg-axis-note">Gap fills horizontally; height matches its container</span>
+        </div>
+
+        <!-- vertical axis: height only, used in a vertical stack -->
+        <div class="pg-axis-demo">
+          <span class="pg-size-label">axis="vertical" — height only</span>
+          <fluid-stack direction="vertical" style="align-items:flex-start">
+            <div class="pg-demo-box" style="background:#6366f1"></div>
+            <fluid-spacer size="md" axis="vertical" style="background:rgba(99,102,241,0.15);border-radius:4px;width:60px"></fluid-spacer>
+            <div class="pg-demo-box" style="background:#f59e0b"></div>
+          </fluid-stack>
+          <span class="pg-axis-note">Gap fills vertically; width matches its container</span>
+        </div>
+
+        <!-- default (both axes): square gap -->
+        <div class="pg-axis-demo">
+          <span class="pg-size-label">default — both axes (square)</span>
+          <fluid-stack direction="vertical" style="align-items:flex-start">
+            <div class="pg-demo-box" style="background:#6366f1"></div>
+            <fluid-spacer size="md" style="background:rgba(99,102,241,0.15);border-radius:4px"></fluid-spacer>
+            <div class="pg-demo-box" style="background:#10b981"></div>
+          </fluid-stack>
+          <span class="pg-axis-note">Fixed 16×16 square gap — useful between grid cells</span>
+        </div>
+
+      </div>
+      <pre class="pg-code">&lt;!-- Horizontal gap only (push siblings apart in a row) --&gt;
+&lt;fluid-spacer size="md" axis="horizontal"&gt;&lt;/fluid-spacer&gt;
+
+&lt;!-- Vertical gap only (push siblings apart in a column) --&gt;
+&lt;fluid-spacer size="md" axis="vertical"&gt;&lt;/fluid-spacer&gt;
+
+&lt;!-- Both axes — fixed square gap (default, no axis attribute) --&gt;
+&lt;fluid-spacer size="md"&gt;&lt;/fluid-spacer&gt;</pre>
+    </div>
+  </section>
+</article>
+
+<script type="module">
+  import '@neutro/fluid/stack'
+  import '@neutro/fluid/spacer'
+</script>
+
+<style>
+  .pg-example {
+    margin-bottom: 24px;
+  }
+  .pg-preview {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 24px;
+    background: var(--pg-surface, rgba(0 0 0 / 0.04));
+    border-radius: 8px;
+    margin-bottom: 8px;
+  }
+  .pg-code {
+    margin: 0;
+    padding: 12px 16px;
+    background: var(--pg-code-bg, rgba(0 0 0 / 0.06));
+    border-radius: 6px;
+    font-size: 0.8125rem;
+    overflow-x: auto;
+    white-space: pre;
+  }
+  .pg-demo-box {
+    width: 60px;
+    height: 60px;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+  .pg-size-demo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .pg-size-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    opacity: 0.6;
+    white-space: nowrap;
+  }
+  .pg-axis-demo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .pg-axis-note {
+    font-size: 0.75rem;
+    opacity: 0.55;
+    font-style: italic;
+  }
+</style>
