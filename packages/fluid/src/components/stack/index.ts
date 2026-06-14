@@ -143,9 +143,11 @@ export class FluidStack extends HTMLElement {
 
   private _startObserver(): void {
     if (this._mutationObs) return
-    this._takeSnapshot()
     this._mutationObs = new MutationObserver(() => this._handleMutation())
     this._mutationObs.observe(this, { childList: true })
+    // Defer initial snapshot one frame so fragment <style> blocks and inline
+    // styles are resolved before we read positions via getBoundingClientRect().
+    requestAnimationFrame(() => this._takeSnapshot())
   }
 
   private _stopObserver(): void {
