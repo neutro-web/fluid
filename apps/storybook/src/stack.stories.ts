@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/web-components'
 import { html } from 'lit'
 import '@neutro/fluid/stack'
+import '@neutro/fluid/button'
 
 const meta: Meta = {
   title: 'Layout / Stack',
@@ -150,20 +151,28 @@ export const Wrap: Story = {
 // ─── Layout FLIP ───────────────────────────────────────────────────────────────
 
 export const LayoutFlip: Story = {
-  render: () => html`
-    <div>
-      <button
-        style="margin-bottom:12px;padding:6px 14px;font-family:system-ui;font-size:14px;border:1px solid #d1d5db;border-radius:6px;cursor:pointer;background:#fff"
-        onclick="const s=this.nextElementSibling,ch=[...s.children];for(let i=ch.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[ch[i],ch[j]]=[ch[j],ch[i]]}ch.forEach(c=>s.appendChild(c))"
-      >Shuffle</button>
-      <fluid-stack layout gap="md">
-        <div style="width:60px;height:60px;background:#6366f1;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-family:system-ui;font-size:14px;font-weight:600">1</div>
-        <div style="width:60px;height:60px;background:#f59e0b;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-family:system-ui;font-size:14px;font-weight:600">2</div>
-        <div style="width:60px;height:60px;background:#10b981;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-family:system-ui;font-size:14px;font-weight:600">3</div>
-        <div style="width:60px;height:60px;background:#ef4444;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-family:system-ui;font-size:14px;font-weight:600">4</div>
-      </fluid-stack>
-    </div>
-  `,
+  render: () => {
+    const shuffle = (e: Event) => {
+      const stack = (e.target as HTMLElement).nextElementSibling!
+      const ch = [...stack.children]
+      for (let i = ch.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1))
+        stack.appendChild(ch[j])
+        ch.splice(j, 1)
+      }
+    }
+    return html`
+      <div style="display:flex;flex-direction:column;align-items:flex-start;gap:12px">
+        <fluid-button @fluid:activate=${shuffle}>Shuffle</fluid-button>
+        <fluid-stack layout gap="md">
+          <div style="width:60px;height:60px;background:#6366f1;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-family:system-ui;font-size:14px;font-weight:600">1</div>
+          <div style="width:60px;height:60px;background:#f59e0b;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-family:system-ui;font-size:14px;font-weight:600">2</div>
+          <div style="width:60px;height:60px;background:#10b981;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-family:system-ui;font-size:14px;font-weight:600">3</div>
+          <div style="width:60px;height:60px;background:#ef4444;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-family:system-ui;font-size:14px;font-weight:600">4</div>
+        </fluid-stack>
+      </div>
+    `
+  },
 }
 
 // ─── Interactive (controls-driven) ─────────────────────────────────────────────

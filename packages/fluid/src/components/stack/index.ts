@@ -14,9 +14,10 @@ interface ActiveFlip {
 
 // Module-level, keyed per element — same safety profile as `driver` (intentional singleton).
 const activeFlips = new WeakMap<HTMLElement, ActiveFlip>()
-// Tracks elements currently undergoing a CSS-based FLIP transition (frosted / matte tiers).
-// Checked in _onTierChange so we can cancel in-flight CSS transitions, not just springs.
-const activeCssFlips = new WeakSet<HTMLElement>()
+// Maps each CSS-FLIP element to its cancel function. Using a Map (not WeakSet) so
+// _onTierChange can call cancel() explicitly rather than relying on transitioncancel,
+// which Safari does not fire reliably when transition is removed synchronously in JS.
+const activeCssFlipCleanup = new Map<HTMLElement, () => void>()
 
 const DEV = typeof process !== 'undefined' && process.env.NODE_ENV !== 'production'
 
@@ -93,19 +94,25 @@ function springFlipChild(el: HTMLElement, dx: number, dy: number): void {
 }
 
 function cssFlipChild(el: HTMLElement, dx: number, dy: number, easing: string, duration: number): void {
-  activeCssFlips.add(el)
-  const savedTransition = el.style.transition
+  // Cancel any running CSS FLIP on this element before starting a new one.
+  // This removes the old event listeners and prevents double-registration.
+  activeCssFlipCleanup.get(el)?.()
+
   el.style.transition = 'none'
   el.style.transform = `translate(${dx}px, ${dy}px)`
   el.getBoundingClientRect()
   el.style.transition = `transform ${duration}ms ${easing}`
   el.style.transform = ''
-  const cleanup = (): void => {
-    el.style.transition = savedTransition
-    activeCssFlips.delete(el)
+
+  const cancel = (): void => {
+    el.style.transition = ''
+    activeCssFlipCleanup.delete(el)
+    el.removeEventListener('transitionend', cancel)
+    el.removeEventListener('transitioncancel', cancel)
   }
-  el.addEventListener('transitionend', cleanup, { once: true })
-  el.addEventListener('transitioncancel', cleanup, { once: true })
+  activeCssFlipCleanup.set(el, cancel)
+  el.addEventListener('transitionend', cancel, { once: true })
+  el.addEventListener('transitioncancel', cancel, { once: true })
 }
 
 export class FluidStack extends HTMLElement {
@@ -195,10 +202,14 @@ export class FluidStack extends HTMLElement {
         activeFlips.delete(el)
       }
       // CSS transition (Frosted / Matte) — forcibly settle to the final position.
-      if (activeCssFlips.has(el)) {
+      // Call cancel() explicitly rather than relying on transitioncancel, which
+      // Safari does not fire reliably when transition is removed synchronously in JS.
+      const cancelCss = activeCssFlipCleanup.get(el)
+      if (cancelCss) {
         el.style.transition = 'none'
+        el.getBoundingClientRect()
         el.style.transform = ''
-        activeCssFlips.delete(el)
+        cancelCss()
       }
     }
     // Refresh snapshot so the next mutation has accurate pre-mutation positions.

@@ -249,11 +249,7 @@
 
     <div class="pg-example">
       <div class="pg-preview" style="flex-direction: column; align-items: flex-start; gap: 16px;">
-        <button
-          id="shuffle-btn"
-          style="padding:8px 20px;border:1px solid currentColor;border-radius:6px;
-                 background:transparent;color:inherit;font:inherit;cursor:pointer;"
-        >Shuffle</button>
+        <fluid-button id="shuffle-btn">Shuffle</fluid-button>
         <fluid-stack id="flip-demo" layout direction="horizontal" gap="sm">
           <div class="box flip-box" style="background:#6366f1;" data-label="1">
             <span class="flip-label">1</span>
@@ -269,15 +265,18 @@
           </div>
         </fluid-stack>
       </div>
-      <pre class="pg-code">&lt;fluid-stack id="flip-demo" layout direction="horizontal" gap="sm"&gt;
+      <pre class="pg-code">&lt;fluid-button id="shuffle-btn"&gt;Shuffle&lt;/fluid-button&gt;
+&lt;fluid-stack id="flip-demo" layout direction="horizontal" gap="sm"&gt;
   &lt;div&gt;1&lt;/div&gt;
   &lt;div&gt;2&lt;/div&gt;
   &lt;div&gt;3&lt;/div&gt;
   &lt;div&gt;4&lt;/div&gt;
 &lt;/fluid-stack&gt;
 
-&lt;script&gt;
-  document.getElementById('shuffle-btn').addEventListener('click', () =&gt; {
+&lt;script type="module"&gt;
+  import '@neutro/fluid/button'
+  import '@neutro/fluid/stack'
+  document.getElementById('shuffle-btn').addEventListener('fluid:activate', () =&gt; {
     const s = document.getElementById('flip-demo')
     const ch = [...s.children]
     for (let i = ch.length - 1; i &gt; 0; i--) {
@@ -387,12 +386,13 @@
 <script type="module">
   import '@neutro/fluid/stack'
   import '@neutro/fluid/spacer'
+  import '@neutro/fluid/button'
 
   // Layout animation — Shuffle button
   const shuffleBtn = document.getElementById('shuffle-btn')
   const flipDemo = document.getElementById('flip-demo')
   if (shuffleBtn && flipDemo) {
-    shuffleBtn.addEventListener('click', () => {
+    shuffleBtn.addEventListener('fluid:activate', () => {
       const ch = [...flipDemo.children]
       for (let i = ch.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1))
