@@ -5,6 +5,15 @@ import { stepSpring, SPRING_PRESETS } from '../../core/spring'
 import type { SpringState } from '../../core/spring'
 import { STACK_STYLE_ID, stackStyles } from './styles'
 
+interface ActiveFlip {
+  id: symbol
+  stateX: SpringState
+  stateY: SpringState
+  realTransform: string
+}
+
+const activeFlips = new WeakMap<HTMLElement, ActiveFlip>()
+
 const DEV = typeof process !== 'undefined' && process.env.NODE_ENV !== 'production'
 
 const GAP_MAP: Record<string, string> = {
@@ -36,25 +45,39 @@ function injectStyles(): void {
 
 function springFlipChild(el: HTMLElement, dx: number, dy: number): void {
   const config = SPRING_PRESETS.smooth
-  let stateX: SpringState = { value: dx, velocity: 0 }
-  let stateY: SpringState = { value: dy, velocity: 0 }
+
+  // Interrupt any running spring for this element: carry over velocity so motion is continuous.
+  const existing = activeFlips.get(el)
+  const initVx = existing ? existing.stateX.velocity : 0
+  const initVy = existing ? existing.stateY.velocity : 0
+  // Capture the consumer's real transform before we start animating (not a transient translate).
+  const realTransform = existing ? existing.realTransform : el.style.transform
+  if (existing) driver.deregister(existing.id)
+
+  let stateX: SpringState = { value: dx, velocity: initVx }
+  let stateY: SpringState = { value: dy, velocity: initVy }
   const threshX = Math.max(Math.abs(dx) * 0.001, 0.1)
   const threshY = Math.max(Math.abs(dy) * 0.001, 0.1)
-  const savedTransform = el.style.transform
 
   el.style.willChange = 'transform'
   el.style.transform = `translate(${dx}px, ${dy}px)`
 
   const id = Symbol()
+  const flip: ActiveFlip = { id, stateX, stateY, realTransform }
+  activeFlips.set(el, flip)
+
   const task: SpringTask = {
     advance(dt: number): boolean {
       stateX = stepSpring(config, stateX, 0, dt)
       stateY = stepSpring(config, stateY, 0, dt)
+      flip.stateX = stateX
+      flip.stateY = stateY
       const sx = Math.abs(stateX.value) < threshX && Math.abs(stateX.velocity) < threshX * 2
       const sy = Math.abs(stateY.value) < threshY && Math.abs(stateY.velocity) < threshY * 2
       if (sx && sy) {
-        el.style.transform = savedTransform
+        el.style.transform = realTransform
         el.style.willChange = ''
+        activeFlips.delete(el)
         return true
       }
       el.style.transform = `translate(${sx ? 0 : stateX.value}px, ${sy ? 0 : stateY.value}px)`
@@ -154,15 +177,25 @@ export class FluidStack extends HTMLElement {
     const tier = ledger.tier
 
     for (const child of children) {
-      const first = this._snapshots.get(child)
-      if (!first) continue
-
-      const last = child.getBoundingClientRect()
-      const dx = first.left - last.left
-      const dy = first.top - last.top
-      if (dx === 0 && dy === 0) continue
-
       const el = child as HTMLElement
+      const last = child.getBoundingClientRect()
+
+      // For elements mid-spring, use the live spring position as the "first" rect so the
+      // new animation starts from where the element visually is, not where the snapshot was.
+      let dx: number
+      let dy: number
+      const inFlight = activeFlips.get(el)
+      if (inFlight) {
+        dx = inFlight.stateX.value
+        dy = inFlight.stateY.value
+      } else {
+        const first = this._snapshots.get(child)
+        if (!first) continue
+        dx = first.left - last.left
+        dy = first.top - last.top
+      }
+
+      if (dx === 0 && dy === 0) continue
 
       if (tier === 'crystalline' || tier === 'optical') {
         springFlipChild(el, dx, dy)
