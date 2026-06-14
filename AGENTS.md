@@ -100,10 +100,32 @@ The testing strategy is at: `fluid-testing-strategy.md`
   in `connectedCallback` and remove it in `disconnectedCallback`.
 - Without this, `FluidLedger.forceTier()` from the playground toolbar or devtools console leaves
   the component in the old tier's state — FLIP animations "stop working" or keep the wrong animation style.
-- Handler must: (1) cancel any in-flight tier-specific state (deregister spring tasks, destroy/create ripple)
-  and (2) refresh any cached pre-mutation state (re-take FLIP snapshot).
-- `fluid-button` (ripple teardown/create) and `fluid-stack` (spring cancel + snapshot refresh) are the
-  canonical references. Every new component with tier-gated behaviour must follow this pattern.
+- Handler must cancel ALL in-flight tier-specific state — not just the current tier. For `fluid-stack`:
+  both the spring tasks (`driver.deregister`) AND any CSS transitions (`el.style.transition = 'none'`)
+  must be cancelled. Only cancelling springs leaves CSS transitions in a broken state when switching from
+  Frosted → Crystalline. Track active CSS flip elements in a module-level `WeakSet` for this.
+- After cancelling animations, refresh any cached state (re-take FLIP snapshot).
+- `fluid-button` (ripple teardown/create) and `fluid-stack` (spring cancel + CSS cancel + snapshot refresh)
+  are the canonical references. Every new component with tier-gated behaviour must follow this pattern.
+
+**FLIP snapshot init — two paths, not one:**
+- `_startObserver()` must handle two distinct cases for taking the initial pre-shuffle snapshot:
+  1. **Upgrade path**: element was NOT defined when `innerHTML` was set → HTML parser creates it as
+     an unknown element → `reExecuteScripts()` defines it → element upgrades → `connectedCallback` fires
+     with ALL children already in the DOM. Snapshot immediately: `if (this.children.length > 0) this._takeSnapshot()`.
+  2. **Mid-parse path**: element IS defined when `innerHTML` is set → `connectedCallback` fires as the
+     parser builds the subtree → children aren't in the DOM yet. Defer one rAF:
+     `else requestAnimationFrame(() => this._takeSnapshot())`.
+- Using only the rAF in both paths means the upgrade-path snapshot fires one frame later than needed
+  and can race with mutations fired by `_handleMutation` (which also schedules a double-rAF and clears
+  `_snapshots`). The two-path approach is explicit, correct, and mirrors `fluid-button`'s "initialize
+  at mount time" pattern: if state can be initialized immediately, do it immediately.
+
+**Vite HMR and custom elements:**
+- `customElements.define()` can only be called once per tag name (guarded by `if (!customElements.get(name))`).
+  Vite HMR re-imports the updated module but the guard prevents re-registration, so the OLD class
+  remains active in the browser. Changes to custom element classes require a HARD BROWSER RELOAD
+  (Cmd+Shift+R) to take effect — hot module replacement alone is not sufficient.
 
 ---
 

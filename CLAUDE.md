@@ -70,12 +70,43 @@ document.removeEventListener('fluidledger:tier-change', this._onTierChange)
 
 // handler (arrow fn for correct `this` binding)
 private _onTierChange = (): void => {
-  // 1. Cancel/destroy tier-specific state (spring tasks, ripple canvas, etc.)
-  // 2. Re-snapshot or re-initialise so the next interaction uses the new tier
+  // 1. Cancel ALL tier-specific state — not just the current tier's variant.
+  //    fluid-stack example: cancel BOTH spring tasks AND CSS transitions.
+  //    Track CSS-animated elements in a module-level WeakSet<HTMLElement> so
+  //    you can target them here (CSS transitions have no built-in cancel API).
+  // 2. Re-snapshot or re-initialise so the next interaction uses the new tier.
 }
 ```
 
-Canonical refs: `fluid-button` (ripple), `fluid-stack` (spring cancel + FLIP snapshot).
+Canonical refs: `fluid-button` (ripple teardown/create), `fluid-stack` (spring cancel +
+CSS transition cancel + FLIP snapshot refresh).
+
+**FLIP snapshot init — two paths**
+`_startObserver()` must handle two cases:
+
+```typescript
+private _startObserver(): void {
+  if (this._mutationObs) return
+  this._mutationObs = new MutationObserver(() => this._handleMutation())
+  this._mutationObs.observe(this, { childList: true })
+  // Upgrade path: element defined after innerHTML → children already present → snapshot now.
+  // Mid-parse path: element defined before innerHTML → children not yet present → defer.
+  if (this.children.length > 0) {
+    this._takeSnapshot()
+  } else {
+    requestAnimationFrame(() => this._takeSnapshot())
+  }
+}
+```
+
+Using only `requestAnimationFrame` for both paths lets `_handleMutation`'s double-rAF and
+`_snapshots.clear()` race with the snapshot. The two-path check is explicit and mirrors
+fluid-button's "initialize at mount time" pattern.
+
+**Vite HMR + custom elements**
+`customElements.define()` runs once (guarded by `if (!customElements.get(name))`). Vite HMR
+re-imports the module but the guard blocks re-registration, so the OLD class stays active.
+After any change to a custom element class, do a **hard browser reload** (Cmd+Shift+R).
 
 **Playground wrap demos**
 The `.pg-preview` is `display:flex; align-items:flex-start`. Any `fluid-stack` directly

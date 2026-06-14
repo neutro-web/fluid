@@ -14,6 +14,9 @@ interface ActiveFlip {
 
 // Module-level, keyed per element — same safety profile as `driver` (intentional singleton).
 const activeFlips = new WeakMap<HTMLElement, ActiveFlip>()
+// Tracks elements currently undergoing a CSS-based FLIP transition (frosted / matte tiers).
+// Checked in _onTierChange so we can cancel in-flight CSS transitions, not just springs.
+const activeCssFlips = new WeakSet<HTMLElement>()
 
 const DEV = typeof process !== 'undefined' && process.env.NODE_ENV !== 'production'
 
@@ -90,13 +93,17 @@ function springFlipChild(el: HTMLElement, dx: number, dy: number): void {
 }
 
 function cssFlipChild(el: HTMLElement, dx: number, dy: number, easing: string, duration: number): void {
+  activeCssFlips.add(el)
   const savedTransition = el.style.transition
   el.style.transition = 'none'
   el.style.transform = `translate(${dx}px, ${dy}px)`
   el.getBoundingClientRect()
   el.style.transition = `transform ${duration}ms ${easing}`
   el.style.transform = ''
-  const cleanup = (): void => { el.style.transition = savedTransition }
+  const cleanup = (): void => {
+    el.style.transition = savedTransition
+    activeCssFlips.delete(el)
+  }
   el.addEventListener('transitionend', cleanup, { once: true })
   el.addEventListener('transitioncancel', cleanup, { once: true })
 }
@@ -145,9 +152,19 @@ export class FluidStack extends HTMLElement {
     if (this._mutationObs) return
     this._mutationObs = new MutationObserver(() => this._handleMutation())
     this._mutationObs.observe(this, { childList: true })
-    // Defer initial snapshot one frame so fragment <style> blocks and inline
-    // styles are resolved before we read positions via getBoundingClientRect().
-    requestAnimationFrame(() => this._takeSnapshot())
+    // Two-path snapshot init — mirrors fluid-button's "initialize at mount" pattern:
+    //
+    // • Upgrade path  (element defined AFTER innerHTML parse): children are already in the
+    //   DOM and CSS is fully applied when connectedCallback fires → snapshot immediately.
+    //
+    // • Mid-parse path (element defined BEFORE innerHTML runs): connectedCallback fires as
+    //   the parser builds the subtree, so children aren't present yet → defer one rAF so
+    //   the fragment <style> block and layout are both resolved before we read positions.
+    if (this.children.length > 0) {
+      this._takeSnapshot()
+    } else {
+      requestAnimationFrame(() => this._takeSnapshot())
+    }
   }
 
   private _stopObserver(): void {
@@ -165,16 +182,23 @@ export class FluidStack extends HTMLElement {
 
   // Arrow function so `this` is bound without an explicit bind() call.
   private _onTierChange = (): void => {
-    // Cancel any in-flight spring tasks — they were started for the previous tier
-    // and conflict with the CSS transitions (or springs) the new tier expects.
+    // Cancel every in-flight animation for this element — they were started for
+    // the previous tier and conflict with whatever the new tier expects.
     for (const child of this.children) {
       const el = child as HTMLElement
+      // Spring (Crystalline / Optical)
       const inFlight = activeFlips.get(el)
       if (inFlight) {
         driver.deregister(inFlight.id)
         el.style.transform = inFlight.realTransform
         el.style.willChange = ''
         activeFlips.delete(el)
+      }
+      // CSS transition (Frosted / Matte) — forcibly settle to the final position.
+      if (activeCssFlips.has(el)) {
+        el.style.transition = 'none'
+        el.style.transform = ''
+        activeCssFlips.delete(el)
       }
     }
     // Refresh snapshot so the next mutation has accurate pre-mutation positions.
