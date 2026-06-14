@@ -113,11 +113,13 @@ export class FluidStack extends HTMLElement {
     injectStyles()
     this._syncStyles()
     if (this.hasAttribute('layout')) this._startObserver()
+    document.addEventListener('fluidledger:tier-change', this._onTierChange)
     this.dispatchEvent(new CustomEvent('fluid:mounted', { bubbles: true, composed: true }))
   }
 
   disconnectedCallback(): void {
     this._stopObserver()
+    document.removeEventListener('fluidledger:tier-change', this._onTierChange)
     this.dispatchEvent(new CustomEvent('fluid:unmounted', { bubbles: true, composed: true }))
   }
 
@@ -157,6 +159,24 @@ export class FluidStack extends HTMLElement {
     for (const child of this.children) {
       this._snapshots.set(child, child.getBoundingClientRect())
     }
+  }
+
+  // Arrow function so `this` is bound without an explicit bind() call.
+  private _onTierChange = (): void => {
+    // Cancel any in-flight spring tasks — they were started for the previous tier
+    // and conflict with the CSS transitions (or springs) the new tier expects.
+    for (const child of this.children) {
+      const el = child as HTMLElement
+      const inFlight = activeFlips.get(el)
+      if (inFlight) {
+        driver.deregister(inFlight.id)
+        el.style.transform = inFlight.realTransform
+        el.style.willChange = ''
+        activeFlips.delete(el)
+      }
+    }
+    // Refresh snapshot so the next mutation has accurate pre-mutation positions.
+    if (this._mutationObs) this._takeSnapshot()
   }
 
   private _handleMutation(): void {

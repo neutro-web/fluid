@@ -54,6 +54,37 @@ pnpm size-limit             # Bundle size gates
 
 ---
 
+## Recurring Pitfalls — Do Not Repeat
+
+**Tier-change reactivity**
+Every component with tier-gated behaviour (ripple, spring FLIP, CSS transitions) MUST
+listen to `fluidledger:tier-change` on `document`. Without it, `FluidLedger.forceTier()`
+from the playground toolbar leaves the component in the old tier's state.
+
+```typescript
+// connectedCallback
+document.addEventListener('fluidledger:tier-change', this._onTierChange)
+
+// disconnectedCallback
+document.removeEventListener('fluidledger:tier-change', this._onTierChange)
+
+// handler (arrow fn for correct `this` binding)
+private _onTierChange = (): void => {
+  // 1. Cancel/destroy tier-specific state (spring tasks, ripple canvas, etc.)
+  // 2. Re-snapshot or re-initialise so the next interaction uses the new tier
+}
+```
+
+Canonical refs: `fluid-button` (ripple), `fluid-stack` (spring cancel + FLIP snapshot).
+
+**Playground wrap demos**
+The `.pg-preview` is `display:flex; align-items:flex-start`. Any `fluid-stack` directly
+inside it shrinks to its min-content width (the widest single child). Always wrap a
+flex-direction:row + wrap demo in a block container with an explicit width:
+`<div style="width:340px; flex-shrink:0;"><fluid-stack wrap>…</fluid-stack></div>`
+
+---
+
 ## When You're Unsure
 
 - Design decision → `docs/fluid-foundation-v5.md`

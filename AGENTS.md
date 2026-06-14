@@ -94,6 +94,17 @@ The testing strategy is at: `fluid-testing-strategy.md`
 - Forget `overflow: hidden` on `:host` and the ripple bleeds — always set it alongside `border-radius` in component styles
 - Do not instantiate unconditionally — always check `ledger.tier !== 'matte'` and `!ledger.deviceMemoryLow` first
 
+**Tier-change reactivity (recurring bug — do not repeat):**
+- Any component that initialises tier-gated behavior (ripple at Frosted+, spring FLIP at Crystalline+,
+  CSS transitions at Matte/Frosted) MUST add `document.addEventListener('fluidledger:tier-change', handler)`
+  in `connectedCallback` and remove it in `disconnectedCallback`.
+- Without this, `FluidLedger.forceTier()` from the playground toolbar or devtools console leaves
+  the component in the old tier's state — FLIP animations "stop working" or keep the wrong animation style.
+- Handler must: (1) cancel any in-flight tier-specific state (deregister spring tasks, destroy/create ripple)
+  and (2) refresh any cached pre-mutation state (re-take FLIP snapshot).
+- `fluid-button` (ripple teardown/create) and `fluid-stack` (spring cancel + snapshot refresh) are the
+  canonical references. Every new component with tier-gated behaviour must follow this pattern.
+
 ---
 
 ## Architecture Reference (Quick Lookup)

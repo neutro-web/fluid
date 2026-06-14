@@ -210,17 +210,22 @@
 
     <div class="pg-example">
       <div class="pg-preview">
-        <fluid-stack direction="horizontal" gap="sm" wrap style="max-width:340px;">
-          <div class="box" style="background:#6366f1;"></div>
-          <div class="box" style="background:#f59e0b;"></div>
-          <div class="box" style="background:#10b981;"></div>
-          <div class="box" style="background:#ef4444;"></div>
-          <div class="box" style="background:#6366f1;"></div>
-          <div class="box" style="background:#f59e0b;"></div>
-          <div class="box" style="background:#10b981;"></div>
-          <div class="box" style="background:#ef4444;"></div>
-          <div class="box" style="background:#6366f1;"></div>
-        </fluid-stack>
+        <!-- Wrap needs a block container with a definite width; the pg-preview is
+             display:flex + align-items:flex-start, which would shrink the stack to
+             its min-content (one box wide) without an explicit containing block. -->
+        <div style="width:340px; flex-shrink:0;">
+          <fluid-stack direction="horizontal" gap="sm" wrap>
+            <div class="box" style="background:#6366f1;"></div>
+            <div class="box" style="background:#f59e0b;"></div>
+            <div class="box" style="background:#10b981;"></div>
+            <div class="box" style="background:#ef4444;"></div>
+            <div class="box" style="background:#6366f1;"></div>
+            <div class="box" style="background:#f59e0b;"></div>
+            <div class="box" style="background:#10b981;"></div>
+            <div class="box" style="background:#ef4444;"></div>
+            <div class="box" style="background:#6366f1;"></div>
+          </fluid-stack>
+        </div>
       </div>
       <pre class="pg-code">&lt;fluid-stack direction="horizontal" gap="sm" wrap&gt;
   &lt;!-- 9 items wrap into multiple rows --&gt;
