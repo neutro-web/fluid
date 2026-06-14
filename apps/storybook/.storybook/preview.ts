@@ -54,10 +54,13 @@ const preview: Preview = {
 
       if (scheme === 'system') {
         document.documentElement.removeAttribute('data-theme')
+        document.body.style.background = ''
       } else {
         // 'light' sets data-theme="light" so it overrides prefers-color-scheme:dark
         // via the :not([data-theme="light"]) guard in dark.css.
         document.documentElement.setAttribute('data-theme', scheme)
+        // Also set the canvas background so the glass surface has something to blur against
+        document.body.style.background = scheme === 'dark' ? '#1a1a1a' : ''
       }
 
       return story()
