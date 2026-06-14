@@ -12,6 +12,7 @@ interface ActiveFlip {
   realTransform: string
 }
 
+// Module-level, keyed per element — same safety profile as `driver` (intentional singleton).
 const activeFlips = new WeakMap<HTMLElement, ActiveFlip>()
 
 const DEV = typeof process !== 'undefined' && process.env.NODE_ENV !== 'production'
@@ -180,19 +181,24 @@ export class FluidStack extends HTMLElement {
       const el = child as HTMLElement
       const last = child.getBoundingClientRect()
 
-      // For elements mid-spring, use the live spring position as the "first" rect so the
-      // new animation starts from where the element visually is, not where the snapshot was.
       let dx: number
       let dy: number
+      const first = this._snapshots.get(child)
       const inFlight = activeFlips.get(el)
-      if (inFlight) {
+
+      if (first) {
+        // Standard FLIP delta. getBoundingClientRect includes the current spring transform,
+        // so this correctly captures the full visual displacement (layout shift + spring residual)
+        // even for mid-spring elements. Preferred over inFlight residual alone.
+        dx = first.left - last.left
+        dy = first.top - last.top
+      } else if (inFlight) {
+        // No snapshot yet (rapid re-order within the 2-frame double-rAF window).
+        // Use the live spring residual as a best approximation of the visual position.
         dx = inFlight.stateX.value
         dy = inFlight.stateY.value
       } else {
-        const first = this._snapshots.get(child)
-        if (!first) continue
-        dx = first.left - last.left
-        dy = first.top - last.top
+        continue
       }
 
       if (dx === 0 && dy === 0) continue

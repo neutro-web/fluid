@@ -358,6 +358,48 @@ describe('fluid-stack', () => {
         throw new Error(`crystalline: expected spring transform on child, got "${a.style.transform}"`)
       }
     })
+
+    it('crystalline: rapid double-reorder deregisters prior task and restores consumer transform on settle', async () => {
+      FluidTestUtils.mockTier('crystalline')
+      const stack = await FluidTestUtils.mount(`
+        <fluid-stack layout direction="horizontal">
+          <div style="width:60px;height:60px">A</div>
+          <div style="width:60px;height:60px">B</div>
+        </fluid-stack>
+      `)
+      const a = stack.children[0] as HTMLElement
+
+      // Consumer-set transform — must be fully restored once both springs settle.
+      // With the ghost-task bug the second task's savedTransform captured a transient
+      // translate() value, so the element would be left permanently translated.
+      a.style.transform = 'rotate(45deg)'
+
+      // First reorder: spring starts, no prior task to interrupt
+      stack.appendChild(a)
+      await nextMutation()
+      if (!a.style.willChange) throw new Error('Expected willChange set after first reorder')
+
+      // Second reorder immediately — no double-rAF has fired so the snapshot map is empty.
+      // This exercises the inFlight branch: prior task deregistered, velocity carried over,
+      // realTransform taken from existing.realTransform (not the transient translate).
+      stack.insertBefore(a, stack.children[0])
+      await nextMutation()
+
+      // Wait up to 1.5 s for the single surviving spring task to settle
+      const deadline = Date.now() + 1500
+      while (a.style.willChange !== '' && Date.now() < deadline) {
+        await new Promise<void>(r => requestAnimationFrame(r))
+      }
+
+      // (a) willChange cleared — proves a single task ran to completion with no ghost leaking
+      if (a.style.willChange !== '') {
+        throw new Error(`Expected willChange '' on settle, got "${a.style.willChange}"`)
+      }
+      // (b) consumer transform preserved — proves realTransform was not the transient translate
+      if (a.style.transform !== 'rotate(45deg)') {
+        throw new Error(`Expected 'rotate(45deg)' restored on settle, got "${a.style.transform}"`)
+      }
+    })
   })
 })
 
