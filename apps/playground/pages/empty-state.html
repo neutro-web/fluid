@@ -1,0 +1,307 @@
+<article class="pg-page">
+  <style>
+    /*
+     * Colourful gradient scene behind every pg-preview on this page.
+     * Makes the backdrop-filter blur at Frosted/Crystalline tier immediately visible
+     * when switching tiers in the toolbar — without this, Matte and Frosted look identical.
+     */
+    .pg-es-scene {
+      position: relative;
+      min-height: 200px;
+      align-items: center;
+      justify-content: center;
+      background-image:
+        radial-gradient(ellipse 65% 55% at 12% 20%, hsl(215 90% 62% / 0.85) 0%, transparent 65%),
+        radial-gradient(ellipse 55% 65% at 88% 78%, hsl(272 78% 58% / 0.82) 0%, transparent 65%),
+        radial-gradient(ellipse 75% 45% at 58%  5%, hsl(158 68% 52% / 0.72) 0%, transparent 65%),
+        radial-gradient(ellipse 45% 60% at 32% 92%, hsl( 32 88% 62% / 0.78) 0%, transparent 65%),
+        radial-gradient(ellipse 50% 50% at 70% 40%, hsl(340 70% 60% / 0.60) 0%, transparent 65%);
+      background-color: hsl(224 30% 90%);
+    }
+
+    [data-theme="dark"] .pg-es-scene {
+      background-image:
+        radial-gradient(ellipse 65% 55% at 12% 20%, hsl(215 90% 38% / 0.80) 0%, transparent 65%),
+        radial-gradient(ellipse 55% 65% at 88% 78%, hsl(272 78% 35% / 0.78) 0%, transparent 65%),
+        radial-gradient(ellipse 75% 45% at 58%  5%, hsl(158 68% 30% / 0.70) 0%, transparent 65%),
+        radial-gradient(ellipse 45% 60% at 32% 92%, hsl( 32 88% 38% / 0.75) 0%, transparent 65%),
+        radial-gradient(ellipse 50% 50% at 70% 40%, hsl(340 70% 35% / 0.58) 0%, transparent 65%);
+      background-color: hsl(224 20% 12%);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) .pg-es-scene {
+        background-image:
+          radial-gradient(ellipse 65% 55% at 12% 20%, hsl(215 90% 38% / 0.80) 0%, transparent 65%),
+          radial-gradient(ellipse 55% 65% at 88% 78%, hsl(272 78% 35% / 0.78) 0%, transparent 65%),
+          radial-gradient(ellipse 75% 45% at 58%  5%, hsl(158 68% 30% / 0.70) 0%, transparent 65%),
+          radial-gradient(ellipse 45% 60% at 32% 92%, hsl( 32 88% 38% / 0.75) 0%, transparent 65%),
+          radial-gradient(ellipse 50% 50% at 70% 40%, hsl(340 70% 35% / 0.58) 0%, transparent 65%);
+        background-color: hsl(224 20% 12%);
+      }
+    }
+  </style>
+
+  <header class="pg-page-header">
+    <h1 class="pg-page-title">Empty State</h1>
+    <p class="pg-page-desc">
+      An illustrated indicator of absence. Composes <code>fluid-card</code> as the glass surface —
+      Layer 1 (Surface), thin material. Headline and description are string attributes for
+      predictable accessible naming. Illustration supports a URL attribute or a custom element
+      via the <code>illustration</code> slot.
+    </p>
+  </header>
+
+  <!-- ─── Tier effects ────────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Glass tier</h2>
+    <p>
+      Toggle the <strong>Tier</strong> control in the toolbar to see the glass material change.
+      <strong>Matte</strong> is opaque with no blur. <strong>Frosted</strong> adds
+      <code>backdrop-filter: blur</code>. <strong>Crystalline</strong> samples the background
+      luminance to tint the surface.
+    </p>
+
+    <div class="pg-example">
+      <div class="pg-preview pg-es-scene">
+        <fluid-empty-state
+          headline="No messages"
+          description="When someone sends you a message it will appear here."
+          style="max-width: 380px; width: 100%"
+        >
+          <fluid-button slot="actions" variant="primary">Start conversation</fluid-button>
+        </fluid-empty-state>
+      </div>
+      <pre class="pg-code">&lt;!-- Use the Tier toolbar to compare Matte / Frosted / Crystalline --&gt;
+&lt;fluid-empty-state
+  headline="No messages"
+  description="When someone sends you a message it will appear here."
+&gt;
+  &lt;fluid-button slot="actions" variant="primary"&gt;Start conversation&lt;/fluid-button&gt;
+&lt;/fluid-empty-state&gt;</pre>
+    </div>
+  </section>
+
+  <!-- ─── Variants ───────────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Variants</h2>
+
+    <!-- Headline only -->
+    <div class="pg-example">
+      <div class="pg-preview pg-es-scene">
+        <fluid-empty-state
+          headline="Your cart is empty"
+          style="max-width: 360px"
+        ></fluid-empty-state>
+      </div>
+      <pre class="pg-code">&lt;fluid-empty-state
+  headline="Your cart is empty"
+&gt;&lt;/fluid-empty-state&gt;</pre>
+    </div>
+
+    <!-- With description -->
+    <div class="pg-example">
+      <div class="pg-preview pg-es-scene">
+        <fluid-empty-state
+          headline="No messages"
+          description="When someone sends you a message, it will appear here."
+          style="max-width: 400px"
+        ></fluid-empty-state>
+      </div>
+      <pre class="pg-code">&lt;fluid-empty-state
+  headline="No messages"
+  description="When someone sends you a message, it will appear here."
+&gt;&lt;/fluid-empty-state&gt;</pre>
+    </div>
+
+    <!-- With actions -->
+    <div class="pg-example">
+      <div class="pg-preview pg-es-scene">
+        <fluid-empty-state
+          headline="No projects yet"
+          description="Create your first project to start collaborating with your team."
+          style="max-width: 420px"
+        >
+          <fluid-button slot="actions" variant="primary">Create project</fluid-button>
+          <fluid-button slot="actions" variant="ghost">Learn more</fluid-button>
+        </fluid-empty-state>
+      </div>
+      <pre class="pg-code">&lt;fluid-empty-state
+  headline="No projects yet"
+  description="Create your first project to start collaborating with your team."
+&gt;
+  &lt;fluid-button slot="actions" variant="primary"&gt;Create project&lt;/fluid-button&gt;
+  &lt;fluid-button slot="actions" variant="ghost"&gt;Learn more&lt;/fluid-button&gt;
+&lt;/fluid-empty-state&gt;</pre>
+    </div>
+
+    <!-- With URL illustration -->
+    <div class="pg-example">
+      <div class="pg-preview pg-es-scene">
+        <fluid-empty-state
+          headline="All caught up"
+          description="No notifications to review. Check back later."
+          illustration="https://api.iconify.design/solar:bell-off-linear.svg"
+          style="max-width: 400px"
+        >
+          <fluid-button slot="actions" variant="ghost">View archive</fluid-button>
+        </fluid-empty-state>
+      </div>
+      <pre class="pg-code">&lt;!-- URL illustration via attribute --&gt;
+&lt;fluid-empty-state
+  headline="All caught up"
+  description="No notifications to review."
+  illustration="/icons/bell-off.svg"
+&gt;
+  &lt;fluid-button slot="actions" variant="ghost"&gt;View archive&lt;/fluid-button&gt;
+&lt;/fluid-empty-state&gt;</pre>
+    </div>
+
+    <!-- With custom illustration slot -->
+    <div class="pg-example">
+      <div class="pg-preview pg-es-scene">
+        <fluid-empty-state
+          headline="No files uploaded"
+          description="Drag and drop files here, or use the button below to browse."
+          style="max-width: 420px"
+        >
+          <span slot="illustration" aria-hidden="true" style="font-size:3.5rem;display:block;text-align:center">📂</span>
+          <fluid-button slot="actions" variant="primary">Browse files</fluid-button>
+        </fluid-empty-state>
+      </div>
+      <pre class="pg-code">&lt;!-- Custom element in the illustration slot (overrides the attribute) --&gt;
+&lt;fluid-empty-state
+  headline="No files uploaded"
+  description="Drag and drop or browse to upload."
+&gt;
+  &lt;my-icon slot="illustration" name="folder"&gt;&lt;/my-icon&gt;
+  &lt;fluid-button slot="actions" variant="primary"&gt;Browse files&lt;/fluid-button&gt;
+&lt;/fluid-empty-state&gt;</pre>
+    </div>
+  </section>
+
+  <!-- ─── States ─────────────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>States</h2>
+    <p>
+      <code>fluid-empty-state</code> has one state: idle. It is the indicator of absence and
+      does not carry loading or error state itself. The parent container decides when to show it.
+      The <code>fluid-button</code> elements in the actions slot carry their own states.
+    </p>
+
+    <div class="pg-example">
+      <div class="pg-preview pg-es-scene" style="gap: 24px; flex-wrap: wrap">
+
+        <!-- Default idle -->
+        <fluid-empty-state
+          headline="No results found"
+          description="Try adjusting your search filters."
+          style="max-width: 260px"
+        >
+          <fluid-button slot="actions" variant="primary">Clear filters</fluid-button>
+        </fluid-empty-state>
+
+        <!-- Action slot with loading button -->
+        <fluid-empty-state
+          headline="Syncing data"
+          description="Your content will appear here once sync completes."
+          style="max-width: 260px"
+        >
+          <fluid-button slot="actions" variant="primary" loading>Syncing…</fluid-button>
+        </fluid-empty-state>
+
+        <!-- Action slot with disabled button -->
+        <fluid-empty-state
+          headline="Access restricted"
+          description="You don't have permission to create items in this workspace."
+          style="max-width: 260px"
+        >
+          <fluid-button slot="actions" variant="primary" disabled>Create item</fluid-button>
+          <fluid-button slot="actions" variant="ghost">Request access</fluid-button>
+        </fluid-empty-state>
+
+      </div>
+      <pre class="pg-code">&lt;!-- The empty state itself is always idle.
+     Action buttons carry their own loading/disabled states. --&gt;
+&lt;fluid-empty-state headline="Syncing data" description="…"&gt;
+  &lt;fluid-button slot="actions" variant="primary" loading&gt;Syncing…&lt;/fluid-button&gt;
+&lt;/fluid-empty-state&gt;</pre>
+    </div>
+  </section>
+
+  <!-- ─── Edge cases ──────────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Edge cases</h2>
+
+    <!-- Empty description — hidden -->
+    <div class="pg-example">
+      <div class="pg-preview pg-es-scene">
+        <fluid-empty-state
+          headline="Nothing here yet"
+          style="max-width: 360px"
+        ></fluid-empty-state>
+      </div>
+      <pre class="pg-code">&lt;!-- Description is hidden when omitted --&gt;
+&lt;fluid-empty-state headline="Nothing here yet"&gt;&lt;/fluid-empty-state&gt;</pre>
+    </div>
+
+    <!-- Very long content -->
+    <div class="pg-example">
+      <div class="pg-preview pg-es-scene">
+        <fluid-empty-state
+          headline="No matching results found for this search query"
+          description="We searched through all available documents, folders, and archived items using the keywords you provided, but could not find anything that matches. Please check your spelling, try different keywords, or broaden your search by removing some filters."
+          style="max-width: 420px"
+        >
+          <fluid-button slot="actions" variant="primary">Clear all filters</fluid-button>
+          <fluid-button slot="actions" variant="ghost">Browse everything</fluid-button>
+        </fluid-empty-state>
+      </div>
+      <pre class="pg-code">&lt;!-- Long content: wraps gracefully --&gt;
+&lt;fluid-empty-state
+  headline="No matching results found for this search query"
+  description="A very long description…"
+&gt;
+  &lt;fluid-button slot="actions" variant="primary"&gt;Clear all filters&lt;/fluid-button&gt;
+&lt;/fluid-empty-state&gt;</pre>
+    </div>
+
+    <!-- Minimum size — narrow container -->
+    <div class="pg-example">
+      <div class="pg-preview pg-es-scene">
+        <fluid-empty-state
+          headline="Empty"
+          style="max-width: 180px"
+        ></fluid-empty-state>
+      </div>
+      <pre class="pg-code">&lt;!-- Minimum size — narrow container --&gt;
+&lt;fluid-empty-state headline="Empty" style="max-width:180px"&gt;&lt;/fluid-empty-state&gt;</pre>
+    </div>
+
+    <!-- Illustration attribute overridden by slot content -->
+    <div class="pg-example">
+      <div class="pg-preview pg-es-scene">
+        <fluid-empty-state
+          headline="Custom illustration wins"
+          description="The illustration attribute is ignored when a slot element is present."
+          illustration="https://api.iconify.design/solar:bell-off-linear.svg"
+          style="max-width: 400px"
+        >
+          <span slot="illustration" aria-hidden="true" style="font-size:3.5rem;display:block;text-align:center">🎨</span>
+        </fluid-empty-state>
+      </div>
+      <pre class="pg-code">&lt;!-- Slot content overrides the illustration attribute --&gt;
+&lt;fluid-empty-state
+  headline="Custom illustration wins"
+  illustration="/ignored.svg"
+&gt;
+  &lt;my-icon slot="illustration" name="palette"&gt;&lt;/my-icon&gt;
+&lt;/fluid-empty-state&gt;</pre>
+    </div>
+  </section>
+
+  <script type="module">
+    import '@neutro/fluid/empty-state'
+    import '@neutro/fluid/button'
+  </script>
+</article>
