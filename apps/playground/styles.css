@@ -186,6 +186,21 @@ body {
   border-bottom: 1px solid #e8e8e8;
 }
 
+.pg-example {
+  margin-bottom: 32px;
+}
+
+.pg-preview {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 24px;
+  background: rgba(0 0 0 / 0.03);
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
 .pg-demo {
   display: flex;
   flex-wrap: wrap;

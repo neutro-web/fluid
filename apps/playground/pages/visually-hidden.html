@@ -1,0 +1,238 @@
+<article class="pg-page">
+  <header class="pg-page-header">
+    <h1 class="pg-page-title">Visually Hidden</h1>
+    <p class="pg-page-desc">
+      A CSS-only accessibility utility that clips content to 1×1 px — invisible to sighted
+      users, fully present in the accessibility tree. No glass surface, no spring physics,
+      no tier awareness. Its value in Fluid is pairing with glass and icon-heavy components
+      that need accessible supplements without disrupting the visual design.
+    </p>
+  </header>
+
+  <!-- ─── Usage patterns ────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Usage patterns</h2>
+
+    <!-- fluid-button row actions -->
+    <div class="pg-example">
+      <div class="pg-preview" style="align-items:flex-start">
+        <fluid-card style="width:100%;max-width:480px">
+          <h2 slot="header" style="margin:0;font-size:0.9375rem;font-weight:600">Project files</h2>
+
+          <div style="display:flex;flex-direction:column;gap:0">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;font-size:0.875rem">
+              <div>
+                <span style="font-weight:500">Annual Report 2025.pdf</span>
+                <span style="margin-left:8px;opacity:0.45;font-size:0.8rem">2.4 MB</span>
+              </div>
+              <div style="display:flex;gap:6px">
+                <fluid-button variant="ghost" size="sm">Download<fluid-visually-hidden> Annual Report 2025.pdf</fluid-visually-hidden></fluid-button>
+                <fluid-button variant="destructive" size="sm">Delete<fluid-visually-hidden> Annual Report 2025.pdf</fluid-visually-hidden></fluid-button>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;font-size:0.875rem;border-top:1px solid oklch(0.85 0 0 / 0.3)">
+              <div>
+                <span style="font-weight:500">Q3 Budget.xlsx</span>
+                <span style="margin-left:8px;opacity:0.45;font-size:0.8rem">840 KB</span>
+              </div>
+              <div style="display:flex;gap:6px">
+                <fluid-button variant="ghost" size="sm">Download<fluid-visually-hidden> Q3 Budget.xlsx</fluid-visually-hidden></fluid-button>
+                <fluid-button variant="destructive" size="sm">Delete<fluid-visually-hidden> Q3 Budget.xlsx</fluid-visually-hidden></fluid-button>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;font-size:0.875rem;border-top:1px solid oklch(0.85 0 0 / 0.3)">
+              <div>
+                <span style="font-weight:500">Design Tokens v2.json</span>
+                <span style="margin-left:8px;opacity:0.45;font-size:0.8rem">128 KB</span>
+              </div>
+              <div style="display:flex;gap:6px">
+                <fluid-button variant="ghost" size="sm">Download<fluid-visually-hidden> Design Tokens v2.json</fluid-visually-hidden></fluid-button>
+                <fluid-button variant="destructive" size="sm">Delete<fluid-visually-hidden> Design Tokens v2.json</fluid-visually-hidden></fluid-button>
+              </div>
+            </div>
+          </div>
+        </fluid-card>
+      </div>
+      <pre class="pg-code">&lt;!-- Repeated labels become distinct for screen readers --&gt;
+&lt;fluid-button variant="ghost"&gt;
+  Download&lt;fluid-visually-hidden&gt; Annual Report 2025.pdf&lt;/fluid-visually-hidden&gt;
+&lt;/fluid-button&gt;
+&lt;fluid-button variant="destructive"&gt;
+  Delete&lt;fluid-visually-hidden&gt; Annual Report 2025.pdf&lt;/fluid-visually-hidden&gt;
+&lt;/fluid-button&gt;</pre>
+    </div>
+
+    <!-- Badge count context -->
+    <div class="pg-example">
+      <div class="pg-preview" style="gap:12px;flex-wrap:wrap">
+        <fluid-button variant="secondary">
+          Inbox
+          <span aria-hidden="true" style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;margin-left:4px;background:oklch(0.55 0.18 25);color:#fff;font-size:0.7rem;font-weight:700">4</span>
+          <fluid-visually-hidden>4 unread messages</fluid-visually-hidden>
+        </fluid-button>
+
+        <fluid-button variant="secondary">
+          Notifications
+          <span aria-hidden="true" style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;margin-left:4px;background:oklch(0.55 0.18 265);color:#fff;font-size:0.7rem;font-weight:700">12</span>
+          <fluid-visually-hidden>12 new notifications</fluid-visually-hidden>
+        </fluid-button>
+
+        <fluid-button variant="secondary">
+          Reviews
+          <span aria-hidden="true" style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;margin-left:4px;background:oklch(0.55 0.15 140);color:#fff;font-size:0.7rem;font-weight:700">3</span>
+          <fluid-visually-hidden>3 pending reviews</fluid-visually-hidden>
+        </fluid-button>
+      </div>
+      <pre class="pg-code">&lt;!-- Badge number alone is ambiguous to AT --&gt;
+&lt;fluid-button variant="secondary"&gt;
+  Inbox
+  &lt;span aria-hidden="true"&gt;4&lt;/span&gt;
+  &lt;fluid-visually-hidden&gt;4 unread messages&lt;/fluid-visually-hidden&gt;
+&lt;/fluid-button&gt;</pre>
+    </div>
+
+    <!-- Hidden card header context -->
+    <div class="pg-example">
+      <div class="pg-preview" style="align-items:flex-start">
+        <fluid-card style="max-width:400px">
+          <h2 slot="header" style="margin:0;font-size:0.9375rem;font-weight:600">
+            Quarterly report
+            <fluid-visually-hidden> — draft, last saved 3 minutes ago</fluid-visually-hidden>
+          </h2>
+          <p style="margin:0;line-height:1.5;font-size:0.875rem">
+            The heading above carries a hidden status suffix. Sighted users see
+            "Quarterly report"; screen readers hear the full state.
+          </p>
+          <div slot="actions">
+            <fluid-button variant="primary">Publish</fluid-button>
+            <fluid-button variant="ghost">Discard</fluid-button>
+          </div>
+        </fluid-card>
+      </div>
+      <pre class="pg-code">&lt;fluid-card&gt;
+  &lt;h2 slot="header"&gt;
+    Quarterly report
+    &lt;fluid-visually-hidden&gt; — draft, last saved 3 minutes ago&lt;/fluid-visually-hidden&gt;
+  &lt;/h2&gt;
+  …
+&lt;/fluid-card&gt;</pre>
+    </div>
+  </section>
+
+  <!-- ─── States ─────────────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>States</h2>
+    <p>
+      <code>fluid-visually-hidden</code> has one permanent state — always clipped.
+      It has no hover, focus, active, disabled, loading, or error state of its own.
+      Below: the consuming <code>fluid-button</code> carries state; the hidden label
+      remains unchanged regardless.
+    </p>
+
+    <div class="pg-example">
+      <div class="pg-preview" style="gap:12px;flex-wrap:wrap;align-items:flex-start">
+        <fluid-button variant="primary">
+          Submit<fluid-visually-hidden> your project proposal</fluid-visually-hidden>
+        </fluid-button>
+
+        <fluid-button variant="primary" disabled>
+          Submit<fluid-visually-hidden> your project proposal</fluid-visually-hidden>
+        </fluid-button>
+
+        <fluid-button variant="primary" loading>
+          Submit<fluid-visually-hidden> your project proposal</fluid-visually-hidden>
+        </fluid-button>
+
+        <fluid-button variant="destructive">
+          Delete<fluid-visually-hidden> your account permanently</fluid-visually-hidden>
+        </fluid-button>
+      </div>
+      <pre class="pg-code">&lt;fluid-button variant="primary"&gt;
+  Submit&lt;fluid-visually-hidden&gt; your project proposal&lt;/fluid-visually-hidden&gt;
+&lt;/fluid-button&gt;
+
+&lt;!-- disabled / loading — hidden label unchanged --&gt;
+&lt;fluid-button variant="primary" disabled&gt;
+  Submit&lt;fluid-visually-hidden&gt; your project proposal&lt;/fluid-visually-hidden&gt;
+&lt;/fluid-button&gt;</pre>
+    </div>
+  </section>
+
+  <!-- ─── Edge cases ─────────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Edge cases</h2>
+
+    <!-- Empty children -->
+    <div class="pg-example">
+      <div class="pg-preview">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <p style="margin:0;font-size:0.875rem">
+            No children — no visible or accessible content added:
+          </p>
+          <fluid-visually-hidden id="pg-edge-empty"></fluid-visually-hidden>
+          <p style="margin:0;font-size:0.8125rem;opacity:0.6;font-style:italic">
+            (Element present in DOM but empty — no impact on layout or a11y tree)
+          </p>
+        </div>
+      </div>
+      <pre class="pg-code">&lt;!-- Empty element is safe — renders nothing --&gt;
+&lt;fluid-visually-hidden&gt;&lt;/fluid-visually-hidden&gt;</pre>
+    </div>
+
+    <!-- Very long content -->
+    <div class="pg-example">
+      <div class="pg-preview">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <p style="margin:0;font-size:0.875rem">
+            Long content — <code>white-space:nowrap</code> + <code>overflow:hidden</code>
+            prevent the 1 px box from expanding:
+          </p>
+          <fluid-visually-hidden id="pg-edge-long">
+            This is an extremely long piece of text that would normally wrap across many
+            lines and push layout elements apart, but white-space:nowrap and overflow:hidden
+            keep the box at 1×1 px with no visible impact on surrounding layout.
+          </fluid-visually-hidden>
+          <span style="font-size:0.8125rem;opacity:0.6;font-style:italic">
+            ← fluid-visually-hidden is here, 1×1 px (inspect to confirm)
+          </span>
+        </div>
+      </div>
+      <pre class="pg-code">&lt;fluid-visually-hidden&gt;
+  Very long text that would normally wrap…
+&lt;/fluid-visually-hidden&gt;</pre>
+    </div>
+
+    <!-- Live size check -->
+    <div class="pg-example">
+      <div class="pg-preview" style="flex-direction:column;align-items:flex-start;gap:12px">
+        <p style="margin:0;font-size:0.875rem">
+          Confirm the 1×1 px bounding rect at runtime:
+        </p>
+        <div style="display:flex;align-items:center;gap:12px">
+          <fluid-visually-hidden id="pg-edge-measure">Measured element</fluid-visually-hidden>
+          <fluid-button variant="secondary" id="pg-measure-btn">Measure</fluid-button>
+          <span id="pg-measure-result" style="font-size:0.8125rem;opacity:0.7;font-variant-numeric:tabular-nums"></span>
+        </div>
+      </div>
+      <pre class="pg-code">const rect = el.getBoundingClientRect()
+// → { width: 1, height: 1 }</pre>
+    </div>
+  </section>
+</article>
+
+<script type="module">
+  import '@neutro/fluid/visually-hidden'
+  import '@neutro/fluid/button'
+  import '@neutro/fluid/card'
+
+  const measureBtn = document.getElementById('pg-measure-btn')
+  const measureEl  = document.getElementById('pg-edge-measure')
+  const result     = document.getElementById('pg-measure-result')
+
+  if (measureBtn && measureEl && result) {
+    measureBtn.addEventListener('fluid:activate', () => {
+      const rect = measureEl.getBoundingClientRect()
+      result.textContent = `width: ${rect.width}px, height: ${rect.height}px`
+    })
+  }
+</script>
