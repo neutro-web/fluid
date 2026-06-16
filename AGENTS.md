@@ -206,6 +206,80 @@ window.__FLUID_FORCE_TIER__ = 'matte'
 
 ---
 
+## Animated Component Contract — Reduced Motion
+
+Every component that runs a continuous CSS animation MUST follow this two-level contract. Forgetting it is the #1 recurring fix request.
+
+### Level 1 — Playground toolbar (slows animations)
+
+The `.reduced-motion` class on `<html>` sets CSS custom properties that cascade into Shadow DOM. Each animated component must parameterize its animation duration(s) with a CSS var so the playground can slow them:
+
+```css
+/* In the component's styles.ts — immediately after the animation shorthand: */
+animation: fluid-shimmer 1.4s ease-in-out infinite;
+animation-duration: var(--fluid-shimmer-duration, 1.4s); /* overrides shorthand duration */
+```
+
+Then register the slow value in `apps/playground/styles.css` under `.reduced-motion`:
+
+```css
+.reduced-motion {
+  --fluid-shimmer-duration: 8s;   /* skeleton */
+  --fluid-spin-duration:    4s;   /* spinner  */
+  --fluid-progress-duration: 6s;  /* progress */
+  /* add new component vars here — one line per animated component */
+}
+```
+
+**Rule:** `.reduced-motion *` only reaches light DOM. CSS custom properties cascade into Shadow DOM — that's the only channel.
+
+### Level 2 — OS preference (stops animations)
+
+```css
+/* In the component's styles.ts — separate block, always present: */
+@media (prefers-reduced-motion: reduce) {
+  [part="animated-element"] {
+    animation: none;   /* or swap to static fallback */
+  }
+}
+```
+
+### Matte tier — always provide a fallback animation
+
+Shimmer, ripple, and other glass effects are disabled on Matte. But Matte components must still signal activity visually. Rule:
+
+- If the primary animation is shimmer or glass-dependent → add a plain CSS opacity pulse as the Matte fallback.
+- **CRITICAL: Never put the Matte fallback animation on `:host`.** The host is light DOM; the playground's `.reduced-motion * { animation-duration: 0.01ms !important }` will reach it and cause rapid flashing. Instead, put the animation on a **shadow DOM element** (e.g., `[part="surface"]::after`).
+- Skeleton's `[part="surface"]::after` pulse is the canonical reference:
+  ```css
+  :host(:not([data-shimmer])) [part="surface"]::after {
+    content: ''; position: absolute; inset: 0;
+    background: oklch(1 0 0 / 0.2); opacity: 0;
+    animation: fluid-skeleton-pulse 1.5s ease-in-out infinite;
+    animation-duration: var(--fluid-shimmer-duration, 1.5s);
+  }
+  @keyframes fluid-skeleton-pulse { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
+  ```
+
+### Checklist for every new animated component
+
+- [ ] `animation-duration: var(--fluid-[name]-duration, <default>)` after every `animation` shorthand in `styles.ts`
+- [ ] New `--fluid-[name]-duration: <slow>` line added to `.reduced-motion` in `apps/playground/styles.css`
+- [ ] `@media (prefers-reduced-motion: reduce)` block in `styles.ts` stops or replaces the animation
+- [ ] Matte tier has a fallback animation (plain CSS pulse) so the component still signals activity
+
+The playground toolbar SLOWS (designer-visible at reduced pace). The OS preference STOPS (user safety). Do not conflate the two.
+
+---
+
+## Brief Scope Qualifiers Are Narrow
+
+When a brief says "use CSS for X" or "no JS spring needed for Y," that guidance applies to X and Y specifically. It does not override the spec's mount/unmount motion requirements or any other contract not explicitly mentioned. Narrow guidance does not become a blanket rule.
+
+**Example:** "Fill animation is CSS transition, no JS spring needed" means the fill advancement is CSS-only. It does not mean the component's mount emergence should skip the `motion.emerge()` spring. Both can be true simultaneously.
+
+---
+
 ## Tool-Specific Sections
 
 ### For Claude Code
