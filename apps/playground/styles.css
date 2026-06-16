@@ -236,10 +236,14 @@ body {
 }
 
 /* ── Reduced motion simulation ── */
-/* CSS custom properties cascade into shadow DOM — sets the vars read by
-   fluid component styles (spinner duration, overlay transition). */
+/* CSS custom properties cascade into shadow DOM — component animation-duration
+   rules read these vars, so toggling .reduced-motion slows them down without
+   stopping (playground simulation). OS prefers-reduced-motion stops them entirely
+   via @media blocks inside each component's shadow root. */
 .reduced-motion {
-  --fluid-spinner-duration: 3s;
+  --fluid-shimmer-duration:   8s;   /* skeleton shimmer  (default 1.4s) */
+  --fluid-spin-duration:      4s;   /* spinner arc/pulse (default 0.8s) */
+  --fluid-progress-duration:  6s;   /* progress indeterminate (default 1.5s / 1s) */
   --fluid-overlay-transition: 10ms;
 }
 /* Suppress animations for non-shadow-DOM light-DOM content on the page */

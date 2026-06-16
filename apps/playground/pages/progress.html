@@ -1,0 +1,338 @@
+<article class="pg-page">
+  <header class="pg-page-header">
+    <h1 class="pg-page-title">Progress</h1>
+    <p class="pg-page-desc">
+      A <code>role="progressbar"</code> component with linear and circular variants.
+      Determinate mode visualises a specific value; omit <code>value</code> to
+      enter indeterminate mode with a continuous animation.
+    </p>
+  </header>
+
+  <!-- ─── Variants ─────────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Variants</h2>
+
+    <!-- Linear determinate -->
+    <div class="pg-example">
+      <div class="pg-preview" style="flex-direction:column;gap:20px;align-items:stretch;max-width:460px">
+        <div class="pg-progress-row">
+          <span class="pg-progress-label">Linear — 60%</span>
+          <fluid-progress aria-label="Upload progress" value="60"></fluid-progress>
+        </div>
+        <div class="pg-progress-row">
+          <span class="pg-progress-label">Linear — indeterminate</span>
+          <fluid-progress aria-label="Loading content" indeterminate></fluid-progress>
+        </div>
+      </div>
+      <pre class="pg-code">&lt;!-- Determinate --&gt;
+&lt;fluid-progress aria-label="Upload progress" value="60"&gt;&lt;/fluid-progress&gt;
+
+&lt;!-- Indeterminate (use indeterminate attribute) --&gt;
+&lt;fluid-progress aria-label="Loading content" indeterminate&gt;&lt;/fluid-progress&gt;</pre>
+    </div>
+
+    <!-- Circular -->
+    <div class="pg-example">
+      <div class="pg-preview" style="gap:32px;align-items:flex-end;flex-wrap:wrap">
+        <div class="pg-circular-item">
+          <fluid-progress aria-label="Upload progress 40%" variant="circular" value="40"></fluid-progress>
+          <span class="pg-progress-caption">40%</span>
+        </div>
+        <div class="pg-circular-item">
+          <fluid-progress aria-label="Loading content" variant="circular" indeterminate></fluid-progress>
+          <span class="pg-progress-caption">Indeterminate</span>
+        </div>
+      </div>
+      <pre class="pg-code">&lt;!-- Circular determinate --&gt;
+&lt;fluid-progress aria-label="Upload progress 40%" variant="circular" value="40"&gt;&lt;/fluid-progress&gt;
+
+&lt;!-- Circular indeterminate --&gt;
+&lt;fluid-progress aria-label="Loading content" variant="circular" indeterminate&gt;&lt;/fluid-progress&gt;</pre>
+    </div>
+  </section>
+
+  <!-- ─── States ───────────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>States</h2>
+    <p>All values visible simultaneously — 0%, 25%, 50%, 75%, 100%, and indeterminate.</p>
+
+    <div class="pg-example">
+      <div class="pg-preview" style="flex-direction:column;gap:16px;align-items:stretch;max-width:480px">
+        <div class="pg-progress-row">
+          <span class="pg-progress-label">0%</span>
+          <fluid-progress aria-label="0% complete" value="0"></fluid-progress>
+        </div>
+        <div class="pg-progress-row">
+          <span class="pg-progress-label">25%</span>
+          <fluid-progress aria-label="25% complete" value="25"></fluid-progress>
+        </div>
+        <div class="pg-progress-row">
+          <span class="pg-progress-label">50%</span>
+          <fluid-progress aria-label="50% complete" value="50"></fluid-progress>
+        </div>
+        <div class="pg-progress-row">
+          <span class="pg-progress-label">75%</span>
+          <fluid-progress aria-label="75% complete" value="75"></fluid-progress>
+        </div>
+        <div class="pg-progress-row">
+          <span class="pg-progress-label">100%</span>
+          <fluid-progress aria-label="100% complete" value="100"></fluid-progress>
+        </div>
+        <div class="pg-progress-row">
+          <span class="pg-progress-label">Indeterminate</span>
+          <fluid-progress aria-label="Loading, please wait" indeterminate></fluid-progress>
+        </div>
+      </div>
+      <pre class="pg-code">&lt;fluid-progress aria-label="0% complete" value="0"&gt;&lt;/fluid-progress&gt;
+&lt;fluid-progress aria-label="25% complete" value="25"&gt;&lt;/fluid-progress&gt;
+&lt;fluid-progress aria-label="50% complete" value="50"&gt;&lt;/fluid-progress&gt;
+&lt;fluid-progress aria-label="75% complete" value="75"&gt;&lt;/fluid-progress&gt;
+&lt;fluid-progress aria-label="100% complete" value="100"&gt;&lt;/fluid-progress&gt;
+&lt;fluid-progress aria-label="Loading, please wait" indeterminate&gt;&lt;/fluid-progress&gt;</pre>
+    </div>
+
+    <!-- Circular states -->
+    <div class="pg-example">
+      <div class="pg-preview" style="gap:24px;align-items:flex-end;flex-wrap:wrap">
+        <div class="pg-circular-item">
+          <fluid-progress aria-label="0% complete" variant="circular" value="0"></fluid-progress>
+          <span class="pg-progress-caption">0%</span>
+        </div>
+        <div class="pg-circular-item">
+          <fluid-progress aria-label="25% complete" variant="circular" value="25"></fluid-progress>
+          <span class="pg-progress-caption">25%</span>
+        </div>
+        <div class="pg-circular-item">
+          <fluid-progress aria-label="50% complete" variant="circular" value="50"></fluid-progress>
+          <span class="pg-progress-caption">50%</span>
+        </div>
+        <div class="pg-circular-item">
+          <fluid-progress aria-label="75% complete" variant="circular" value="75"></fluid-progress>
+          <span class="pg-progress-caption">75%</span>
+        </div>
+        <div class="pg-circular-item">
+          <fluid-progress aria-label="100% complete" variant="circular" value="100"></fluid-progress>
+          <span class="pg-progress-caption">100%</span>
+        </div>
+        <div class="pg-circular-item">
+          <fluid-progress aria-label="Loading" variant="circular" indeterminate></fluid-progress>
+          <span class="pg-progress-caption">Indeterminate</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Edge cases ────────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Edge cases</h2>
+
+    <!-- Out-of-bounds values -->
+    <div class="pg-example">
+      <h3 style="margin:0 0 12px;font-size:0.875rem;font-weight:600">
+        Value clamping (out-of-bounds values)
+      </h3>
+      <div class="pg-preview" style="flex-direction:column;gap:16px;align-items:stretch;max-width:480px">
+        <div class="pg-progress-row">
+          <span class="pg-progress-label">value="-50" → 0%</span>
+          <fluid-progress aria-label="Negative value clamped to 0" value="-50"></fluid-progress>
+        </div>
+        <div class="pg-progress-row">
+          <span class="pg-progress-label">value="200" → 100%</span>
+          <fluid-progress aria-label="Overflow value clamped to 100" value="200"></fluid-progress>
+        </div>
+      </div>
+      <pre class="pg-code">&lt;!-- Values outside [min, max] are clamped --&gt;
+&lt;fluid-progress value="-50"&gt;&lt;/fluid-progress&gt;  &lt;!-- renders as 0% --&gt;
+&lt;fluid-progress value="200"&gt;&lt;/fluid-progress&gt;  &lt;!-- renders as 100% --&gt;</pre>
+    </div>
+
+    <!-- Custom min/max -->
+    <div class="pg-example">
+      <h3 style="margin:0 0 12px;font-size:0.875rem;font-weight:600">
+        Custom min / max
+      </h3>
+      <div class="pg-preview" style="flex-direction:column;gap:16px;align-items:stretch;max-width:480px">
+        <div class="pg-progress-row">
+          <span class="pg-progress-label">Step 3 of 8</span>
+          <fluid-progress
+            aria-label="Step 3 of 8"
+            aria-valuetext="Step 3 of 8"
+            min="0"
+            max="8"
+            value="3"
+          ></fluid-progress>
+        </div>
+      </div>
+      <pre class="pg-code">&lt;fluid-progress
+  aria-label="Step 3 of 8"
+  aria-valuetext="Step 3 of 8"
+  min="0" max="8" value="3"
+&gt;&lt;/fluid-progress&gt;</pre>
+    </div>
+
+    <!-- Live animated demo -->
+    <div class="pg-example">
+      <h3 style="margin:0 0 12px;font-size:0.875rem;font-weight:600">
+        Animated value transition
+      </h3>
+      <div class="pg-preview" style="flex-direction:column;gap:16px;align-items:stretch;max-width:480px">
+        <div class="pg-progress-row">
+          <span class="pg-progress-label" id="pg-progress-label">0%</span>
+          <fluid-progress
+            id="pg-progress-animated"
+            aria-label="File upload progress"
+            value="0"
+          ></fluid-progress>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:4px">
+          <fluid-button id="pg-progress-start" variant="secondary" size="sm">Start</fluid-button>
+          <fluid-button id="pg-progress-reset" variant="ghost" size="sm">Reset</fluid-button>
+        </div>
+      </div>
+      <pre class="pg-code">// Animate value updates — CSS transition on width handles the visual motion
+const bar = document.querySelector('#pg-progress-animated')
+let pct = 0
+const interval = setInterval(() => {
+  pct = Math.min(100, pct + 5)
+  bar.setAttribute('value', String(pct))
+  if (pct >= 100) clearInterval(interval)
+}, 120)</pre>
+    </div>
+  </section>
+
+  <!-- ─── Tier effects ─────────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Tier effects</h2>
+    <p>
+      The progress component adjusts its mount animation and indeterminate behaviour based
+      on the active performance tier. Switch tiers in the toolbar and toggle the indeterminate
+      progress below to observe mount behaviour.
+    </p>
+    <ul style="margin:0 0 16px;padding-left:20px;font-size:0.875rem;line-height:1.7">
+      <li>
+        <strong>Matte</strong> — no emerge spring on mount; indeterminate animation runs
+        as a CSS-only sliding fill.
+      </li>
+      <li>
+        <strong>Frosted / Crystalline / Optical</strong> — emerge spring (scale + fade)
+        plays when the component mounts.
+      </li>
+    </ul>
+    <p style="font-size:0.875rem;margin:0 0 16px">
+      The <em>Reduced motion</em> toolbar toggle pauses the indeterminate animation via
+      <code>--fluid-animation-play-state: paused</code> cascading into the Shadow DOM.
+    </p>
+
+    <div class="pg-example">
+      <div class="pg-preview" style="flex-direction:column;align-items:stretch;gap:16px;max-width:480px">
+        <div id="pg-tier-progress-container" class="pg-progress-row">
+          <span class="pg-progress-label">Indeterminate</span>
+          <fluid-progress id="pg-tier-progress" aria-label="Loading" indeterminate></fluid-progress>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <fluid-button id="pg-tier-progress-hide" variant="secondary" size="sm">Unmount</fluid-button>
+        <fluid-button id="pg-tier-progress-show" variant="secondary" size="sm" disabled>Mount</fluid-button>
+      </div>
+      <p style="margin:8px 0 0;font-size:0.8125rem;opacity:0.65">
+        Tip: the emerge spring is only visible on Frosted+ tiers.
+      </p>
+    </div>
+  </section>
+</article>
+
+<script type="module">
+  import '@neutro/fluid/progress'
+  import '@neutro/fluid/button'
+
+  // Animated progress demo
+  const bar = document.getElementById('pg-progress-animated')
+  const label = document.getElementById('pg-progress-label')
+  const startBtn = document.getElementById('pg-progress-start')
+  const resetBtn = document.getElementById('pg-progress-reset')
+
+  let timer = null
+  let pct = 0
+
+  function stopTimer() {
+    if (timer !== null) {
+      clearInterval(timer)
+      timer = null
+    }
+  }
+
+  if (startBtn && bar && label) {
+    startBtn.addEventListener('fluid:activate', () => {
+      stopTimer()
+      timer = setInterval(() => {
+        pct = Math.min(100, pct + 5)
+        bar.setAttribute('value', String(pct))
+        label.textContent = pct + '%'
+        if (pct >= 100) stopTimer()
+      }, 120)
+    })
+  }
+
+  if (resetBtn && bar && label) {
+    resetBtn.addEventListener('fluid:activate', () => {
+      stopTimer()
+      pct = 0
+      bar.setAttribute('value', '0')
+      label.textContent = '0%'
+    })
+  }
+
+  // Tier toggle demo
+  const container = document.getElementById('pg-tier-progress-container')
+  const hideBtn = document.getElementById('pg-tier-progress-hide')
+  const showBtn = document.getElementById('pg-tier-progress-show')
+
+  hideBtn.addEventListener('fluid:activate', () => {
+    const el = document.getElementById('pg-tier-progress')
+    if (el) el.remove()
+    hideBtn.setAttribute('disabled', '')
+    showBtn.removeAttribute('disabled')
+  })
+
+  showBtn.addEventListener('fluid:activate', () => {
+    const el = document.createElement('fluid-progress')
+    el.id = 'pg-tier-progress'
+    el.setAttribute('aria-label', 'Loading')
+    el.setAttribute('indeterminate', '')
+    el.style.flex = '1'
+    container.appendChild(el)
+    showBtn.setAttribute('disabled', '')
+    hideBtn.removeAttribute('disabled')
+  })
+</script>
+
+<style>
+  .pg-progress-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .pg-progress-label {
+    font-size: 0.8125rem;
+    min-width: 140px;
+    flex-shrink: 0;
+    opacity: 0.7;
+  }
+
+  .pg-progress-row fluid-progress {
+    flex: 1;
+  }
+
+  .pg-circular-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .pg-progress-caption {
+    font-size: 0.75rem;
+    opacity: 0.7;
+  }
+</style>

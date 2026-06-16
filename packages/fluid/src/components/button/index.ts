@@ -7,6 +7,7 @@ import { FluidRipple } from '../../core/ripple'
 import { motion } from '../../core/motion'
 import { requestContext } from '../../core/context'
 import buttonStyles from './styles'
+import '../spinner'
 
 const DEV: boolean =
   typeof process !== 'undefined' && process.env.NODE_ENV !== 'production'
@@ -40,7 +41,7 @@ export class FluidButton extends FluidElement {
   private _ripple: FluidRipple | null = null
   private _contextDisabled = false
   private _activePointerId: number | null = null
-  private _spinner: HTMLSpanElement | null = null
+  private _spinner: HTMLElement | null = null
   private _loadingLabelCaptured = false
 
   get variant(): string {
@@ -185,9 +186,10 @@ export class FluidButton extends FluidElement {
 
   private _ensureSpinner(show: boolean): void {
     if (show && !this._spinner) {
-      this._spinner = document.createElement('span')
-      this._spinner.className = 'fluid-spinner'
-      this._spinner.setAttribute('aria-hidden', 'true')
+      const spinner = document.createElement('fluid-spinner')
+      spinner.setAttribute('size', this.size === 'lg' ? 'md' : 'sm')
+      spinner.setAttribute('aria-hidden', 'true')
+      this._spinner = spinner
       this._surface.insertBefore(this._spinner, this._surface.firstChild)
     } else if (!show && this._spinner) {
       this._spinner.remove()

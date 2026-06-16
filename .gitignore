@@ -9,6 +9,7 @@ dist
 coverage
 .nyc_output
 storybook-static
+build-storybook.log
 playwright-report
 test-results
 .changeset/pre.json
