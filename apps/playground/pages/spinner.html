@@ -1,0 +1,231 @@
+<article class="pg-page">
+  <header class="pg-page-header">
+    <h1 class="pg-page-title">Spinner</h1>
+    <p class="pg-page-desc">
+      A CSS-animated loading indicator with a rotating arc. Uses <code>role="status"</code>
+      and <code>aria-label</code> to announce loading state to assistive technologies.
+      Switches to a pulsing opacity animation when <code>prefers-reduced-motion</code> is active.
+    </p>
+  </header>
+
+  <!-- ─── Variants (Sizes) ─────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Sizes</h2>
+    <p>
+      Three sizes cover common use cases — <code>sm</code> for inline/button contexts,
+      <code>md</code> as the default, and <code>lg</code> for full-section or empty-state loaders.
+    </p>
+
+    <div class="pg-example">
+      <div class="pg-preview" style="gap: 32px; align-items: center">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+          <fluid-spinner size="sm" aria-label="Loading"></fluid-spinner>
+          <code style="font-size:0.75rem">sm — 16px</code>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+          <fluid-spinner size="md" aria-label="Loading"></fluid-spinner>
+          <code style="font-size:0.75rem">md — 24px (default)</code>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+          <fluid-spinner size="lg" aria-label="Loading"></fluid-spinner>
+          <code style="font-size:0.75rem">lg — 36px</code>
+        </div>
+      </div>
+      <pre class="pg-code">&lt;fluid-spinner size="sm" aria-label="Loading"&gt;&lt;/fluid-spinner&gt;
+&lt;fluid-spinner size="md" aria-label="Loading"&gt;&lt;/fluid-spinner&gt;
+&lt;fluid-spinner size="lg" aria-label="Loading"&gt;&lt;/fluid-spinner&gt;</pre>
+    </div>
+  </section>
+
+  <!-- ─── States ───────────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>States</h2>
+
+    <!-- Default -->
+    <div class="pg-example">
+      <h3 style="margin:0 0 12px;font-size:0.9375rem;font-weight:500">Default</h3>
+      <div class="pg-preview">
+        <fluid-spinner aria-label="Loading"></fluid-spinner>
+      </div>
+      <pre class="pg-code">&lt;fluid-spinner aria-label="Loading"&gt;&lt;/fluid-spinner&gt;</pre>
+    </div>
+
+    <!-- Custom aria-label -->
+    <div class="pg-example">
+      <h3 style="margin:0 0 12px;font-size:0.9375rem;font-weight:500">Custom accessible label</h3>
+      <p style="margin:0 0 12px;font-size:0.875rem;opacity:0.75">
+        Always provide a descriptive <code>aria-label</code> matching the specific operation
+        so screen readers announce the correct context.
+      </p>
+      <div class="pg-preview" style="flex-direction:column;align-items:flex-start;gap:16px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <fluid-spinner size="sm" aria-label="Uploading file"></fluid-spinner>
+          <span>Uploading profile photo…</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <fluid-spinner size="md" aria-label="Processing payment"></fluid-spinner>
+          <span>Processing payment</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <fluid-spinner size="lg" aria-label="Generating report"></fluid-spinner>
+          <span>Generating report, this may take a moment</span>
+        </div>
+      </div>
+      <pre class="pg-code">&lt;fluid-spinner size="sm" aria-label="Uploading file"&gt;&lt;/fluid-spinner&gt;
+&lt;fluid-spinner size="md" aria-label="Processing payment"&gt;&lt;/fluid-spinner&gt;
+&lt;fluid-spinner size="lg" aria-label="Generating report"&gt;&lt;/fluid-spinner&gt;</pre>
+    </div>
+  </section>
+
+  <!-- ─── Edge cases ───────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Edge cases</h2>
+
+    <!-- Inside a button -->
+    <div class="pg-example">
+      <h3 style="margin:0 0 12px;font-size:0.9375rem;font-weight:500">Button loading state</h3>
+      <p style="margin:0 0 12px;font-size:0.875rem;opacity:0.75">
+        Use <code>fluid-button[loading]</code> for the built-in loading variant, or compose
+        a spinner manually when you need a custom button appearance.
+      </p>
+      <div class="pg-preview" style="gap:16px;flex-wrap:wrap;align-items:center">
+        <fluid-button loading variant="primary" id="pg-loading-btn">Save changes</fluid-button>
+        <fluid-button loading variant="secondary">Processing</fluid-button>
+
+        <button
+          type="button"
+          aria-busy="true"
+          aria-label="Uploading file"
+          style="
+            display:inline-flex;align-items:center;gap:8px;
+            padding:10px 20px;border-radius:8px;border:none;
+            background:oklch(0.55 0.18 265);color:white;
+            font-size:0.9375rem;font-weight:500;cursor:default;
+          "
+        >
+          <fluid-spinner size="sm" aria-label="Uploading"></fluid-spinner>
+          Uploading…
+        </button>
+      </div>
+      <pre class="pg-code">&lt;!-- fluid-button with built-in loading state --&gt;
+&lt;fluid-button loading variant="primary"&gt;Save changes&lt;/fluid-button&gt;
+
+&lt;!-- Manual composition --&gt;
+&lt;button type="button" aria-busy="true" aria-label="Uploading file"&gt;
+  &lt;fluid-spinner size="sm" aria-label="Uploading"&gt;&lt;/fluid-spinner&gt;
+  Uploading…
+&lt;/button&gt;</pre>
+    </div>
+
+    <!-- Inside a card -->
+    <div class="pg-example">
+      <h3 style="margin:0 0 12px;font-size:0.9375rem;font-weight:500">Card loading state</h3>
+      <div class="pg-preview" style="gap:24px;flex-wrap:wrap;align-items:flex-start">
+        <!-- Centered loading card -->
+        <fluid-card style="max-width:260px;min-height:140px">
+          <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:16px 0">
+            <fluid-spinner size="lg" aria-label="Loading dashboard data"></fluid-spinner>
+            <p style="margin:0;font-size:0.875rem;opacity:0.65">Loading dashboard…</p>
+          </div>
+        </fluid-card>
+
+        <!-- Card with inline header loader -->
+        <fluid-card style="max-width:260px">
+          <div slot="header" style="display:flex;align-items:center;gap:8px">
+            <h2 style="margin:0;font-size:1rem;font-weight:600;flex:1">Analytics</h2>
+            <fluid-spinner size="sm" aria-label="Refreshing analytics data"></fluid-spinner>
+          </div>
+          <p style="margin:0;line-height:1.5;opacity:0.65">
+            Fetching latest data from server…
+          </p>
+        </fluid-card>
+      </div>
+      <pre class="pg-code">&lt;!-- Centered loader inside a card --&gt;
+&lt;fluid-card&gt;
+  &lt;fluid-spinner size="lg" aria-label="Loading dashboard data"&gt;&lt;/fluid-spinner&gt;
+  Loading dashboard…
+&lt;/fluid-card&gt;
+
+&lt;!-- Inline header loader --&gt;
+&lt;fluid-card&gt;
+  &lt;div slot="header"&gt;
+    &lt;h2&gt;Analytics&lt;/h2&gt;
+    &lt;fluid-spinner size="sm" aria-label="Refreshing analytics data"&gt;&lt;/fluid-spinner&gt;
+  &lt;/div&gt;
+  Fetching data…
+&lt;/fluid-card&gt;</pre>
+    </div>
+
+    <!-- Very long custom label -->
+    <div class="pg-example">
+      <h3 style="margin:0 0 12px;font-size:0.9375rem;font-weight:500">Verbose accessible label</h3>
+      <p style="margin:0 0 12px;font-size:0.875rem;opacity:0.75">
+        The <code>aria-label</code> is not visible — it only affects screen readers.
+        A detailed label improves context without cluttering the UI.
+      </p>
+      <div class="pg-preview">
+        <fluid-spinner
+          size="md"
+          aria-label="Analyzing your document — this may take up to 30 seconds depending on file size"
+        ></fluid-spinner>
+      </div>
+      <pre class="pg-code">&lt;fluid-spinner
+  size="md"
+  aria-label="Analyzing your document — this may take up to 30 seconds depending on file size"
+&gt;&lt;/fluid-spinner&gt;</pre>
+    </div>
+  </section>
+
+  <!-- ─── Tier effects ─────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Tier effects</h2>
+    <p>
+      The spinner adjusts its mount/unmount behaviour based on the active performance tier
+      (set via the toolbar above). Switch tiers and toggle the spinner below to observe the difference.
+    </p>
+    <ul style="margin:0 0 16px;padding-left:20px;font-size:0.875rem;line-height:1.7">
+      <li><strong>Matte</strong> — spins in and out immediately, no spring animation on mount/unmount.</li>
+      <li><strong>Frosted / Crystalline / Optical</strong> — emerge spring (scale + fade) plays on mount; recede plays on unmount.</li>
+    </ul>
+
+    <div class="pg-example">
+      <div class="pg-preview" style="gap:24px;align-items:center;min-height:80px">
+        <fluid-spinner id="pg-tier-spinner" size="lg" aria-label="Loading"></fluid-spinner>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <fluid-button id="pg-tier-hide" variant="secondary">Hide spinner</fluid-button>
+        <fluid-button id="pg-tier-show" variant="secondary" disabled>Show spinner</fluid-button>
+      </div>
+      <p style="margin:8px 0 0;font-size:0.8125rem;opacity:0.65">
+        Tip: the emerge/recede spring is only visible on Frosted+ tiers.
+        The <em>Reduced motion</em> toolbar toggle pauses all spinner animations.
+      </p>
+    </div>
+  </section>
+</article>
+
+<script type="module">
+  import '@neutro/fluid/spinner'
+  import '@neutro/fluid/button'
+  import '@neutro/fluid/card'
+
+  const preview = document.querySelector('#pg-tier-spinner').parentElement
+  const hideBtn = document.getElementById('pg-tier-hide')
+  const showBtn = document.getElementById('pg-tier-show')
+
+  hideBtn.addEventListener('fluid:activate', () => {
+    document.getElementById('pg-tier-spinner').remove()
+    hideBtn.setAttribute('disabled', '')
+    showBtn.removeAttribute('disabled')
+  })
+
+  showBtn.addEventListener('fluid:activate', () => {
+    const spinner = document.createElement('fluid-spinner')
+    spinner.id = 'pg-tier-spinner'
+    spinner.setAttribute('size', 'lg')
+    spinner.setAttribute('aria-label', 'Loading')
+    preview.appendChild(spinner)
+    showBtn.setAttribute('disabled', '')
+    hideBtn.removeAttribute('disabled')
+  })
+</script>
