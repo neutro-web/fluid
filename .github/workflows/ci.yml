@@ -90,8 +90,10 @@ jobs:
       - name: Serve Storybook and run axe tests
         # serve and wait-on are pinned devDependencies — no runtime npx pulls.
         # TEST_BASE_URL bypasses the webServer dev-start block in playwright.config.ts.
+        # --config disables serve's clean-URL redirect that strips query strings from
+        # iframe.html?id=..., which prevents Storybook from loading the requested story.
         run: |
-          pnpm exec serve apps/storybook/storybook-static --listen 6006 &
+          pnpm exec serve apps/storybook/storybook-static --listen 6006 --config ../serve.json &
           pnpm exec wait-on http://localhost:6006 --timeout 30000
           pnpm test:a11y
         env:
