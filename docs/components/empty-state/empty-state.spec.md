@@ -18,7 +18,7 @@
 |---|---|---|---|---|
 | `headline` | string | `''` | Yes | Required. The primary empty state message displayed as the heading. A dev-mode warning fires in `connectedCallback` if this attribute is absent or empty: `[fluid warn] fluid-empty-state: 'headline' attribute is required.` |
 | `description` | string | `''` | Yes | Supporting text displayed below the headline. Hidden when empty. |
-| `illustration` | string (URL) | `''` | Yes | URL for an SVG or image shown above the headline. Hidden when empty. Ignored when the default slot contains a custom illustration element. |
+| `illustration` | string (URL) | `''` | Yes | URL for an SVG or image shown above the headline. Hidden when empty. Ignored when the `illustration` slot contains a custom illustration element. |
 
 ---
 
@@ -32,7 +32,7 @@
 
 | Slot | Required | Fallback | Description |
 |---|---|---|---|
-| `(default)` | No | Hidden | Custom illustration element. When slotted content is present, it is rendered above the headline and the `illustration` attribute URL is ignored. |
+| `illustration` | No | Hidden | Custom illustration element. When slotted content is present, it is rendered above the headline and the `illustration` attribute URL is ignored. The slot name matches the attribute name for clarity. |
 | `actions` | No | Hidden | CTA area — typically one `fluid-button[variant=primary]` element. Rendered below the description. The actions slot manages its own events; `fluid-empty-state` does not re-emit them. |
 
 ---
@@ -64,7 +64,14 @@
 idle  (no loading, no error, no interactive states — fluid-empty-state IS the empty/error state)
 ```
 
-`fluid-empty-state` does not have a loading or error state of its own. It is the indicator of absence. The actions slot's `fluid-button` elements may carry their own loading states independently.
+`fluid-empty-state` does not have a loading or error state of its own. It is the indicator of
+absence. A loading state on the parent container determines when the empty state is shown at all.
+The actions slot's `fluid-button` elements may carry their own loading states independently.
+
+**API design rationale:** Headline and description are string attributes rather than slots because
+`fluid-empty-state` communicates a fixed, predictable message. Slots invite arbitrary HTML into the
+heading which creates accessibility problems (the accessible name becomes unpredictable) and visual
+inconsistency. String attributes are the correct API for text that must be controlled.
 
 ---
 

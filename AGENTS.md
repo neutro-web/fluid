@@ -140,9 +140,16 @@ Surface it to the task author with:
   - Your recommendation
 
 Then wait for an explicit decision before writing any code that depends
-on the resolution. Unilateral decisions made "toward the spec" are still
-unilateral — the spec may itself be wrong, and the task author is the
-only one who can make that call.
+on the resolution. Surfacing is mandatory even when you believe the
+answer is obvious — building first and flagging later is still a
+unilateral decision.
+
+Component spec files (`docs/components/[name]/[name].spec.md`) take
+precedence over session-brief instructions when they conflict — the spec
+is the more specific contract. You must still surface the conflict (what
+conflicts, which source says what, your recommendation) before writing
+code that depends on it; precedence sets the default resolution, not a
+license to skip sign-off.
 
 ---
 
