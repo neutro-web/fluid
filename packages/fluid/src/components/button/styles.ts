@@ -140,22 +140,6 @@ const styles = /* css */ `
   border-color: color-mix(in srgb, var(--fluid-color-brand, #005FCC) 38%, transparent);
 }
 
-/* ─── Loading spinner ───────────────────────────────────────────────────────── */
-
-.fluid-spinner {
-  width: 1em;
-  height: 1em;
-  border: 2px solid currentColor;
-  border-top-color: transparent;
-  border-radius: 50%;
-  animation: fluid-spin var(--fluid-spinner-duration, 0.75s) linear infinite;
-  flex-shrink: 0;
-}
-
-@keyframes fluid-spin {
-  to { transform: rotate(360deg); }
-}
-
 /* ─── States ────────────────────────────────────────────────────────────────── */
 
 :host([disabled]) [part="surface"],
@@ -173,15 +157,6 @@ const styles = /* css */ `
 :host([loading]) [part="trailing-icon"] {
   display: none;
 }
-
-/* ─── prefers-reduced-motion ────────────────────────────────────────────────── */
-
-@media (prefers-reduced-motion: reduce) {
-  .fluid-spinner {
-    animation: none;
-  }
-}
-
 
 /* ─── prefers-contrast: more ────────────────────────────────────────────────── */
 
@@ -211,10 +186,6 @@ const styles = /* css */ `
   }
   [part="surface"]:focus-visible {
     outline: 2px solid Highlight;
-  }
-  .fluid-spinner {
-    border-color: ButtonText;
-    border-top-color: transparent;
   }
 }
 
