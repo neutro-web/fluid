@@ -1,7 +1,7 @@
 import { FluidTestUtils } from '../../testing/utils'
 import { FluidAccessibilityUtils } from '../../testing/accessibility'
 import { ledger } from '../../core/ledger'
-import { DISABLED_CONTEXT_KEY } from '../button/index'
+import { DISABLED_CONTEXT_KEY } from '../../core/context'
 
 // Registers fluid-icon-button — must happen before first test
 import './index'

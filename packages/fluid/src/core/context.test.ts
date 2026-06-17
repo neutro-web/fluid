@@ -148,3 +148,106 @@ describe('provideContext + requestContext', () => {
     expect(grandparentCb).not.toHaveBeenCalled()
   })
 })
+
+describe('push subscription', () => {
+  it('subscribe=false (default) is fire-and-forget — no push on value change', () => {
+    const parent = new MockElement()
+    const child = new MockElement()
+    child.parentElement = parent
+
+    const values: number[] = []
+    let disposer = provideContext(parent as unknown as Element, 'count', 1)
+    requestContext(child as unknown as Element, 'count', (v: number) => values.push(v))
+    expect(values).toEqual([1])
+
+    disposer()
+    disposer = provideContext(parent as unknown as Element, 'count', 2)
+    expect(values).toEqual([1]) // no push — subscribe=false
+
+    disposer()
+  })
+
+  it('subscribe=true pushes updated value to consumer when provideContext is re-called', () => {
+    const parent = new MockElement()
+    const child = new MockElement()
+    child.parentElement = parent
+
+    const values: number[] = []
+    let disposer = provideContext(parent as unknown as Element, 'count', 1)
+    requestContext(child as unknown as Element, 'count', (v: number) => values.push(v), true)
+    expect(values).toEqual([1])
+
+    disposer()
+    disposer = provideContext(parent as unknown as Element, 'count', 2)
+    expect(values).toEqual([1, 2])
+
+    disposer()
+    disposer = provideContext(parent as unknown as Element, 'count', 3)
+    expect(values).toEqual([1, 2, 3])
+
+    disposer()
+  })
+
+  it('unsubscribe prevents further pushes', () => {
+    const parent = new MockElement()
+    const child = new MockElement()
+    child.parentElement = parent
+
+    const values: number[] = []
+    let disposer = provideContext(parent as unknown as Element, 'count', 1)
+    const unsubscribe = requestContext(child as unknown as Element, 'count', (v: number) => values.push(v), true)
+    expect(values).toEqual([1])
+
+    unsubscribe()
+    disposer()
+    disposer = provideContext(parent as unknown as Element, 'count', 2)
+    expect(values).toEqual([1]) // callback was removed, no further pushes
+
+    disposer()
+  })
+
+  it('all active subscribers receive the push', () => {
+    const parent = new MockElement()
+    const child1 = new MockElement()
+    const child2 = new MockElement()
+    child1.parentElement = parent
+    child2.parentElement = parent
+
+    const a: number[] = []
+    const b: number[] = []
+    let disposer = provideContext(parent as unknown as Element, 'x', 10)
+    requestContext(child1 as unknown as Element, 'x', (v: number) => a.push(v), true)
+    requestContext(child2 as unknown as Element, 'x', (v: number) => b.push(v), true)
+    expect(a).toEqual([10])
+    expect(b).toEqual([10])
+
+    disposer()
+    disposer = provideContext(parent as unknown as Element, 'x', 20)
+    expect(a).toEqual([10, 20])
+    expect(b).toEqual([10, 20])
+
+    disposer()
+  })
+
+  it('unsubscribed consumer does not receive push while remaining subscriber still does', () => {
+    const parent = new MockElement()
+    const child1 = new MockElement()
+    const child2 = new MockElement()
+    child1.parentElement = parent
+    child2.parentElement = parent
+
+    const a: number[] = []
+    const b: number[] = []
+    let disposer = provideContext(parent as unknown as Element, 'x', 1)
+    const unsubscribe1 = requestContext(child1 as unknown as Element, 'x', (v: number) => a.push(v), true)
+    requestContext(child2 as unknown as Element, 'x', (v: number) => b.push(v), true)
+
+    unsubscribe1()
+    disposer()
+    disposer = provideContext(parent as unknown as Element, 'x', 2)
+    expect(a).toEqual([1]) // unsubscribed, no push
+    expect(b).toEqual([1, 2]) // still subscribed
+
+    disposer()
+  })
+})

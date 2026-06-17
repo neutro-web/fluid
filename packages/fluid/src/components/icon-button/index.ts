@@ -6,8 +6,7 @@ import { FluidError, SPRING_PRESETS } from '../../core/spring'
 import { FluidRipple } from '../../core/ripple'
 import { motion } from '../../core/motion'
 import type { MotionDef } from '../../core/motion'
-import { requestContext } from '../../core/context'
-import { DISABLED_CONTEXT_KEY } from '../button/index'
+import { requestContext, DISABLED_CONTEXT_KEY } from '../../core/context'
 import iconButtonStyles from './styles'
 
 const DEV: boolean =
@@ -117,10 +116,10 @@ export class FluidIconButton extends FluidElement {
     this._surface.addEventListener('keydown', this._onKeyDown)
     this._surface.addEventListener('keyup', this._onKeyUp)
 
-    requestContext<boolean>(this, DISABLED_CONTEXT_KEY, (value) => {
+    this.disposers.push(requestContext<boolean>(this, DISABLED_CONTEXT_KEY, (value) => {
       this._contextDisabled = value
       this._syncState()
-    })
+    }, true))
 
     this.disposers.push(() => {
       this._surface.removeEventListener('pointerdown', this._onPointerDown)

@@ -1,0 +1,352 @@
+<article class="pg-page">
+  <header class="pg-page-header">
+    <h1 class="pg-page-title">Fieldset</h1>
+    <p class="pg-page-desc">
+      Semantic form group with a glass header surface and legend.
+      The <code>legend</code> attribute is linked to the inner <code>&lt;fieldset&gt;</code>
+      via <code>aria-labelledby</code>. When <code>disabled</code>, the header dims and
+      the component propagates disabled context to nested fluid form inputs and buttons.
+    </p>
+  </header>
+
+  <!-- ─── Default ──────────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Default</h2>
+
+    <div class="pg-example">
+      <div class="pg-preview">
+        <fluid-fieldset legend="Personal information" style="width:100%;max-width:480px">
+          <div class="demo-fields">
+            <label class="demo-label">
+              <span>First name</span>
+              <input type="text" placeholder="Jane" class="demo-input"/>
+            </label>
+            <label class="demo-label">
+              <span>Last name</span>
+              <input type="text" placeholder="Smith" class="demo-input"/>
+            </label>
+            <label class="demo-label">
+              <span>Email</span>
+              <input type="email" placeholder="jane@example.com" class="demo-input"/>
+            </label>
+            <div class="demo-footer">
+              <fluid-button variant="ghost">Cancel</fluid-button>
+              <fluid-button variant="primary">Save</fluid-button>
+            </div>
+          </div>
+        </fluid-fieldset>
+      </div>
+      <pre class="pg-code">&lt;fluid-fieldset legend="Personal information"&gt;
+  ...form controls...
+  &lt;fluid-button variant="primary"&gt;Save&lt;/fluid-button&gt;
+&lt;/fluid-fieldset&gt;</pre>
+    </div>
+  </section>
+
+  <!-- ─── Disabled ─────────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Disabled state</h2>
+    <p>The header opacity drops to 0.5 and pointer events are blocked.
+       Child <code>fluid-button</code> elements receive the disabled context automatically — no
+       <code>disabled</code> attribute needed on each child.</p>
+
+    <div class="pg-example">
+      <div class="pg-preview">
+        <fluid-fieldset legend="Billing address" disabled style="width:100%;max-width:480px">
+          <div class="demo-fields">
+            <label class="demo-label">
+              <span>Street</span>
+              <input type="text" value="123 Main St" disabled class="demo-input"/>
+            </label>
+            <label class="demo-label">
+              <span>City</span>
+              <input type="text" value="San Francisco" disabled class="demo-input"/>
+            </label>
+            <label class="demo-label">
+              <span>Postcode</span>
+              <input type="text" value="94105" disabled class="demo-input"/>
+            </label>
+            <div class="demo-footer">
+              <fluid-button variant="ghost">Cancel</fluid-button>
+              <fluid-button variant="primary">Update address</fluid-button>
+            </div>
+          </div>
+        </fluid-fieldset>
+      </div>
+      <pre class="pg-code">&lt;!-- fluid-button gets disabled context automatically --&gt;
+&lt;fluid-fieldset legend="Billing address" disabled&gt;
+  ...
+  &lt;fluid-button variant="primary"&gt;Update address&lt;/fluid-button&gt;
+&lt;/fluid-fieldset&gt;</pre>
+    </div>
+  </section>
+
+  <!-- ─── Header actions slot ──────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Header actions</h2>
+    <p>Use <code>slot="header-actions"</code> to place controls in the glass header area — typically icon buttons.</p>
+
+    <div class="pg-example">
+      <div class="pg-preview">
+        <fluid-fieldset legend="Notification settings" style="width:100%;max-width:480px">
+          <fluid-icon-button
+            slot="header-actions"
+            variant="ghost"
+            size="sm"
+            aria-label="Edit notification settings"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M11.5 1.5L14.5 4.5L5 14H2V11L11.5 1.5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" fill="none"/>
+            </svg>
+          </fluid-icon-button>
+          <div class="demo-fields">
+            <label class="demo-check">
+              <input type="checkbox" checked/> Email notifications
+            </label>
+            <label class="demo-check">
+              <input type="checkbox"/> Push notifications
+            </label>
+            <label class="demo-check">
+              <input type="checkbox" checked/> Weekly digest
+            </label>
+            <div class="demo-footer">
+              <fluid-button variant="primary">Save preferences</fluid-button>
+            </div>
+          </div>
+        </fluid-fieldset>
+      </div>
+      <pre class="pg-code">&lt;fluid-fieldset legend="Notification settings"&gt;
+  &lt;fluid-icon-button slot="header-actions" variant="ghost" size="sm" aria-label="Edit"&gt;
+    ...icon...
+  &lt;/fluid-icon-button&gt;
+  ...controls...
+  &lt;fluid-button variant="primary"&gt;Save preferences&lt;/fluid-button&gt;
+&lt;/fluid-fieldset&gt;</pre>
+    </div>
+  </section>
+
+  <!-- ─── Legend slot ──────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Legend slot</h2>
+    <p>For rich legend content (icons, badges), use <code>slot="legend"</code> instead of the <code>legend</code> attribute.
+       The slot content replaces the text and is still used for the <code>aria-labelledby</code> link.</p>
+
+    <div class="pg-example">
+      <div class="pg-preview">
+        <fluid-fieldset style="width:100%;max-width:480px">
+          <span slot="legend" style="display:flex;align-items:center;gap:6px">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+              <circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M7 4v3.5L9 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            Schedule
+          </span>
+          <div class="demo-fields">
+            <label class="demo-label">
+              <span>Start date</span>
+              <input type="date" class="demo-input"/>
+            </label>
+            <label class="demo-label">
+              <span>End date</span>
+              <input type="date" class="demo-input"/>
+            </label>
+            <div class="demo-footer">
+              <fluid-button variant="ghost">Clear</fluid-button>
+              <fluid-button variant="primary">Apply</fluid-button>
+            </div>
+          </div>
+        </fluid-fieldset>
+      </div>
+      <pre class="pg-code">&lt;fluid-fieldset&gt;
+  &lt;span slot="legend"&gt;
+    &lt;svg ...&gt;...&lt;/svg&gt;
+    Schedule
+  &lt;/span&gt;
+  ...controls...
+&lt;/fluid-fieldset&gt;</pre>
+    </div>
+  </section>
+
+  <!-- ─── Nested fieldsets ─────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Nested fieldsets</h2>
+    <p>Fieldsets can be nested. Each provides its own context scope — the disabled Security group
+       disables its own <code>fluid-button</code> children without affecting the outer group.</p>
+
+    <div class="pg-example">
+      <div class="pg-preview">
+        <fluid-fieldset legend="Account settings" style="width:100%;max-width:480px">
+          <div class="demo-fields">
+            <fluid-fieldset legend="Profile">
+              <div class="demo-fields">
+                <label class="demo-label">
+                  <span>Display name</span>
+                  <input type="text" placeholder="Jane Smith" class="demo-input"/>
+                </label>
+                <label class="demo-label">
+                  <span>Bio</span>
+                  <input type="text" placeholder="Short description" class="demo-input"/>
+                </label>
+                <div class="demo-footer">
+                  <fluid-button variant="primary">Save profile</fluid-button>
+                </div>
+              </div>
+            </fluid-fieldset>
+            <fluid-fieldset legend="Security" disabled>
+              <div class="demo-fields">
+                <label class="demo-label">
+                  <span>Current password</span>
+                  <input type="password" value="••••••••" disabled class="demo-input"/>
+                </label>
+                <label class="demo-label">
+                  <span>New password</span>
+                  <input type="password" placeholder="••••••••" disabled class="demo-input"/>
+                </label>
+                <div class="demo-footer">
+                  <fluid-button variant="ghost">Cancel</fluid-button>
+                  <fluid-button variant="primary">Change password</fluid-button>
+                </div>
+              </div>
+            </fluid-fieldset>
+          </div>
+        </fluid-fieldset>
+      </div>
+      <pre class="pg-code">&lt;fluid-fieldset legend="Account settings"&gt;
+  &lt;fluid-fieldset legend="Profile"&gt;
+    ...
+    &lt;fluid-button variant="primary"&gt;Save profile&lt;/fluid-button&gt;
+  &lt;/fluid-fieldset&gt;
+  &lt;fluid-fieldset legend="Security" disabled&gt;
+    &lt;!-- fluid-button gets disabled context automatically --&gt;
+    &lt;fluid-button variant="primary"&gt;Change password&lt;/fluid-button&gt;
+  &lt;/fluid-fieldset&gt;
+&lt;/fluid-fieldset&gt;</pre>
+    </div>
+  </section>
+
+  <!-- ─── Edge cases ───────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Edge cases</h2>
+
+    <!-- Toggle disabled -->
+    <h3>Toggle disabled</h3>
+    <p>Removing the <code>disabled</code> attribute restores the header and pushes
+       <code>DISABLED_CONTEXT_KEY=false</code> to all subscribed child fluid components.</p>
+    <div class="pg-example">
+      <div class="pg-preview" style="flex-direction:column;align-items:flex-start;gap:16px">
+        <fluid-fieldset legend="Payment method" id="fs-toggle-demo" style="width:100%;max-width:480px">
+          <div class="demo-fields">
+            <label class="demo-check">
+              <input type="radio" name="payment" value="card" checked/> Credit card
+            </label>
+            <label class="demo-check">
+              <input type="radio" name="payment" value="bank"/> Bank transfer
+            </label>
+            <div class="demo-footer">
+              <fluid-button variant="primary" id="fs-save-btn">Confirm payment</fluid-button>
+            </div>
+          </div>
+        </fluid-fieldset>
+        <div style="display:flex;gap:8px">
+          <fluid-button variant="secondary" onclick="document.getElementById('fs-toggle-demo').setAttribute('disabled','')">Disable group</fluid-button>
+          <fluid-button variant="primary" onclick="document.getElementById('fs-toggle-demo').removeAttribute('disabled')">Enable group</fluid-button>
+        </div>
+      </div>
+      <pre class="pg-code">// Disable — fluid-button children receive context push automatically
+fieldset.setAttribute('disabled', '')
+
+// Enable
+fieldset.removeAttribute('disabled')</pre>
+    </div>
+
+    <!-- Missing legend warning -->
+    <h3>Missing legend</h3>
+    <div class="pg-example">
+      <div class="pg-preview">
+        <p style="font:13px/1.5 system-ui;opacity:0.7;margin:0">
+          In development builds, mounting <code>fluid-fieldset</code> without a
+          <code>legend</code> attribute or <code>slot="legend"</code> content
+          emits a <code>console.warn</code> after the first animation frame.
+        </p>
+      </div>
+      <pre class="pg-code">&lt;!-- ⚠️  Dev warns: legend attribute or legend slot required --&gt;
+&lt;fluid-fieldset&gt;...&lt;/fluid-fieldset&gt;
+
+&lt;!-- ✅ Attribute --&gt;
+&lt;fluid-fieldset legend="My group"&gt;...&lt;/fluid-fieldset&gt;
+
+&lt;!-- ✅ Slot --&gt;
+&lt;fluid-fieldset&gt;
+  &lt;span slot="legend"&gt;My group&lt;/span&gt;
+  ...
+&lt;/fluid-fieldset&gt;</pre>
+    </div>
+  </section>
+</article>
+
+<script type="module">
+  import '@neutro/fluid/fieldset'
+  import '@neutro/fluid/button'
+  import '@neutro/fluid/icon-button'
+</script>
+
+<style>
+  .pg-example {
+    margin-bottom: 24px;
+  }
+  .pg-preview {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 24px;
+    background: var(--pg-surface, rgba(0 0 0 / 0.04));
+    border-radius: 8px;
+    margin-bottom: 8px;
+  }
+  .pg-code {
+    margin: 0;
+    padding: 12px 16px;
+    background: var(--pg-code-bg, rgba(0 0 0 / 0.06));
+    border-radius: 6px;
+    font-size: 0.8125rem;
+    overflow-x: auto;
+    white-space: pre;
+  }
+  h3 {
+    margin: 24px 0 12px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    opacity: 0.7;
+  }
+  .demo-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .demo-footer {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 4px;
+  }
+  .demo-label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font: 14px/1 system-ui;
+  }
+  .demo-input {
+    padding: 8px 12px;
+    border: 1px solid rgba(0 0 0 / 0.15);
+    border-radius: 6px;
+    font: 14px/1 system-ui;
+    background: var(--pg-input-bg, white);
+    color: inherit;
+  }
+  .demo-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font: 14px/1 system-ui;
+  }
+</style>

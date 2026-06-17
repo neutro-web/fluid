@@ -47,6 +47,9 @@
     --fluid-color-neutral-strong:     var(--fluid-color-neutral-300);
     --fluid-color-neutral-on-surface: var(--fluid-color-neutral-50);
 
+    /* General surface foreground — inverted for dark backgrounds */
+    --fluid-color-on-surface: var(--fluid-color-neutral-900);
+
     /* Destructive — inverted */
     --fluid-color-destructive-50:  hsl(var(--fluid-hue-destructive) calc(var(--fluid-sat-destructive) * 0.65) 10%);
     --fluid-color-destructive-100: hsl(var(--fluid-hue-destructive) calc(var(--fluid-sat-destructive) * 0.80) 16%);
@@ -141,6 +144,9 @@
   --fluid-color-neutral-subtle:     var(--fluid-color-neutral-900);
   --fluid-color-neutral-strong:     var(--fluid-color-neutral-300);
   --fluid-color-neutral-on-surface: var(--fluid-color-neutral-50);
+
+  /* General surface foreground — inverted for dark backgrounds */
+  --fluid-color-on-surface: var(--fluid-color-neutral-900);
 
   /* Destructive */
   --fluid-color-destructive-50:  hsl(var(--fluid-hue-destructive) calc(var(--fluid-sat-destructive) * 0.65) 10%);
