@@ -6,7 +6,7 @@
 
 ## Status
 
-**Last updated:** Sessions 14–22 complete, except P1-02 (`fluid-theme`) which was reported done but never implemented — see Phase 1 below. Corrected 2026-06-17.
+**Last updated:** Sessions 14–22 complete. P1-02 (`fluid-theme`) implemented and verified 2026-06-17.
 
 ### ✅ Completed
 
