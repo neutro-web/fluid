@@ -77,7 +77,7 @@
 
 **Phase 1 — Component Foundation**
 - ✅ P1-01 — FluidElement base class
-- ⬜ P1-02 — `fluid-theme` element — NOT DONE. No `components/theme/` exists; `core/element.ts` carries a typed placeholder (`export type FluidTheme = HTMLElement`) and `fluid-portal` ships a private `snapshotTokens()` workaround pending this. Blocks P3-01, P3-02. (Status corrected 2026-06-17.)
+- ✅ P1-02 — `fluid-theme` element
 - ✅ P1-03 — `fluid-portal` element
 - ✅ P1-04 — `core/ripple.ts` (FluidRipple canvas primitive)
 
