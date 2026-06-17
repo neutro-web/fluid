@@ -200,10 +200,13 @@ export class FluidTheme extends FluidElement {
       }
 
       this._suppressStyleObserver = true
-      this.style.setProperty('--fluid-env-luminance', luminance.toFixed(4))
-      this.style.setProperty('--fluid-env-hue', String(hue))
-      this._correctContrast(luminance)
-      this._suppressStyleObserver = false
+      try {
+        this.style.setProperty('--fluid-env-luminance', luminance.toFixed(4))
+        this.style.setProperty('--fluid-env-hue', String(hue))
+        this._correctContrast(luminance)
+      } finally {
+        this._suppressStyleObserver = false
+      }
     } catch {
       // Silent — prefers-color-scheme fallback (no-op)
     }
