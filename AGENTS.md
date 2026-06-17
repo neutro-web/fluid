@@ -31,7 +31,7 @@ The testing strategy is at: `fluid-testing-strategy.md`
 
 8. **`fluid:mounted` fires after `onMount()` completes.** The lifecycle event is the reliable "ready" signal. Dispatch it as the last line of `connectedCallback()`.
 
-9. **`fluid-theme:change` requires MutationObserver.** CSS custom properties have no native change event. `fluid-theme` observes its own `style` attribute and dispatches `fluidtheme:change` for portals and other consumers.
+9. **`fluidtheme:change` requires MutationObserver.** CSS custom properties have no native change event. `fluid-theme` observes its own `style` attribute and dispatches `fluidtheme:change` for portals and other consumers.
 
 ---
 

@@ -6,7 +6,7 @@
 
 ## Status
 
-**Last updated:** Sessions 14–22 complete.
+**Last updated:** Sessions 14–22 complete, except P1-02 (`fluid-theme`) which was reported done but never implemented — see Phase 1 below. Corrected 2026-06-17.
 
 ### ✅ Completed
 
@@ -77,7 +77,7 @@
 
 **Phase 1 — Component Foundation**
 - ✅ P1-01 — FluidElement base class
-- ✅ P1-02 — `fluid-theme` element
+- ⬜ P1-02 — `fluid-theme` element — NOT DONE. No `components/theme/` exists; `core/element.ts` carries a typed placeholder (`export type FluidTheme = HTMLElement`) and `fluid-portal` ships a private `snapshotTokens()` workaround pending this. Blocks P3-01, P3-02. (Status corrected 2026-06-17.)
 - ✅ P1-03 — `fluid-portal` element
 - ✅ P1-04 — `core/ripple.ts` (FluidRipple canvas primitive)
 
