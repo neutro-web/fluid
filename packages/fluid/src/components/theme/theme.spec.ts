@@ -381,22 +381,23 @@ describe('fluid-theme', () => {
   // ─── AC 13: contrast correction quality ──────────────────────────────────
 
   describe('contrast correction quality', () => {
-    it('achieves >= 4.5:1 contrast ratio against a black background', async () => {
+    it('achieves >= 4.5:1 WCAG AA when dark-mode alpha triggers correction', async () => {
       FluidTestUtils.mockTier('crystalline')
-      const fixture = document.createElement('div')
-      fixture.style.backgroundColor = 'rgb(0, 0, 0)'
-      document.body.appendChild(fixture)
 
       const el = document.createElement('fluid-theme') as HTMLElement
+      // Simulate dark.css --fluid-tint-alpha: 0.12. The test-runner does not load the full
+      // token stylesheet, so set it inline. With tint L=1.0 and transparent BG (L≈0):
+      // surfaceL = 0.10, contrast = 3.0 < 4.5 — correction must fire.
+      el.style.setProperty('--fluid-tint-alpha', '0.10')
       el.setAttribute('sampling', 'mount-only')
       const mountedP = waitForEvent(el, 'fluid:mounted')
-      fixture.appendChild(el)
+      document.body.appendChild(el)
       await mountedP
       await nextFrame()
 
       const alphaStr = el.style.getPropertyValue('--fluid-tint-alpha')
       const envLumStr = el.style.getPropertyValue('--fluid-env-luminance')
-      fixture.remove()
+      el.remove()
 
       if (!alphaStr || !envLumStr) {
         throw new Error(
@@ -408,12 +409,11 @@ describe('fluid-theme', () => {
       const alpha = parseFloat(alphaStr)
       const bgLuminance = parseFloat(envLumStr) // component's measured background luminance
 
-      // fluid-theme blends a near-white tint (spec constant: luminance 0.9, §2 surface palette)
-      // over the background. WCAG AA requires ≥ 4.5:1 against black text (foreground L = 0).
-      // Full WCAG contrast formula: (L_lighter + 0.05) / (L_darker + 0.05).
-      // With black text as foreground (L = 0): denominator = 0 + 0.05 = 0.05.
-      const SPEC_TINT_LUMINANCE = 0.9
-      const surfaceL = alpha * SPEC_TINT_LUMINANCE + (1 - alpha) * bgLuminance
+      // --fluid-tint-light is hsl(0 0% 100% / …) = pure white, luminance 1.0 (tokens/themes/default.css).
+      // WCAG AA formula: (L_lighter + 0.05) / (L_darker + 0.05).
+      // Foreground = black text (L=0), so denominator = 0 + 0.05 = 0.05.
+      const TINT_LUMINANCE = 1.0 // pure white, from --fluid-tint-light token
+      const surfaceL = alpha * TINT_LUMINANCE + (1 - alpha) * bgLuminance
       const wcagRatio = (surfaceL + 0.05) / (0 + 0.05)
       if (wcagRatio < 4.5) {
         throw new Error(
