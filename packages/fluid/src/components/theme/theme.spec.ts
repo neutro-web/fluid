@@ -395,16 +395,31 @@ describe('fluid-theme', () => {
       await nextFrame()
 
       const alphaStr = el.style.getPropertyValue('--fluid-tint-alpha')
+      const envLumStr = el.style.getPropertyValue('--fluid-env-luminance')
       fixture.remove()
 
-      if (!alphaStr) {
-        throw new Error('Expected --fluid-tint-alpha to be set when background is black')
+      if (!alphaStr || !envLumStr) {
+        throw new Error(
+          `Expected both --fluid-tint-alpha and --fluid-env-luminance to be set, ` +
+          `got alpha="${alphaStr}" lum="${envLumStr}"`
+        )
       }
+
       const alpha = parseFloat(alphaStr)
-      const surfaceL = alpha * 0.9 + (1 - alpha) * 0
-      const contrast = (surfaceL + 0.05) / 0.05
-      if (contrast < 4.5) {
-        throw new Error(`contrast ${contrast.toFixed(2)} < 4.5 with --fluid-tint-alpha=${alpha}`)
+      const bgLuminance = parseFloat(envLumStr) // component's measured background luminance
+
+      // fluid-theme blends a near-white tint (spec constant: luminance 0.9, §2 surface palette)
+      // over the background. WCAG AA requires ≥ 4.5:1 against black text (foreground L = 0).
+      // Full WCAG contrast formula: (L_lighter + 0.05) / (L_darker + 0.05).
+      // With black text as foreground (L = 0): denominator = 0 + 0.05 = 0.05.
+      const SPEC_TINT_LUMINANCE = 0.9
+      const surfaceL = alpha * SPEC_TINT_LUMINANCE + (1 - alpha) * bgLuminance
+      const wcagRatio = (surfaceL + 0.05) / (0 + 0.05)
+      if (wcagRatio < 4.5) {
+        throw new Error(
+          `WCAG AA contrast ${wcagRatio.toFixed(2)} < 4.5 ` +
+          `(alpha=${alpha}, bgLuminance=${bgLuminance.toFixed(4)})`
+        )
       }
     })
 

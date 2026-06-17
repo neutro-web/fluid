@@ -233,6 +233,8 @@ export class FluidTheme extends FluidElement {
   }
 
   private _correctContrast(bgLuminance: number): void {
+    // §2 surface palette: fluid's near-white tint has relative luminance 0.9.
+    // We check WCAG AA (4.5:1) against black text (foreground luminance = 0).
     const tintLuminance = 0.9
     const raw = getComputedStyle(this).getPropertyValue('--fluid-tint-alpha').trim()
     let alpha = parseFloat(raw || '0.15')
