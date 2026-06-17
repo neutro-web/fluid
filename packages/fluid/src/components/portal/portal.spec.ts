@@ -86,6 +86,35 @@ describe('fluid-portal', () => {
     })
   })
 
+  // ─── Test 3b: cascaded token snapshot through display:contents ───────────
+
+  describe('cascaded token snapshot', () => {
+    it('snapshots cascaded (non-inline) --fluid-* defaults through display:contents', async () => {
+      const style = document.createElement('style')
+      style.textContent = 'fluid-theme { --fluid-test-token: 42; }'
+      document.head.appendChild(style)
+
+      const theme = document.createElement('fluid-theme')
+      const portal = document.createElement('fluid-portal')
+      portal.innerHTML = '<span>c</span>'
+      const mountedP = waitForEvent(portal, 'fluid:mounted')
+      theme.appendChild(portal)
+      document.body.appendChild(theme)
+      await mountedP
+
+      const root = document.body.querySelector('fluid-portal-root')
+      const val = root ? root.style.getPropertyValue('--fluid-test-token') : ''
+
+      style.remove()
+      theme.remove()
+      document.querySelectorAll('fluid-portal-root').forEach(el => el.remove())
+
+      if (val.trim() !== '42') {
+        throw new Error(`cascaded token lost through display:contents: got "${val}"`)
+      }
+    })
+  })
+
   // ─── Test 4: MutationObserver re-snapshot ────────────────────────────────
 
   describe('MutationObserver re-snapshot', () => {
