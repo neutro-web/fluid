@@ -4,29 +4,9 @@ import type { FluidLayer } from '../../core/z-index'
 import { zIndex } from '../../core/z-index'
 import type { SpringConfig } from '../../core/spring'
 import { SPRING_PRESETS } from '../../core/spring'
+import { FluidTheme } from '../theme'
 
 const HOST_CSS = ':host { display: contents; }'
-
-// TODO: Replace with FluidTheme.snapshotTokens(el) once packages/fluid/src/components/theme/index.ts
-// is implemented. That will be the canonical snapshot path; this local copy will be removed.
-function snapshotTokens(el: Element): Record<string, string> {
-  const result: Record<string, string> = {}
-  const inlineStyle = (el as HTMLElement).style
-  for (let i = 0; i < inlineStyle.length; i++) {
-    const name = inlineStyle.item(i)
-    if (name.startsWith('--fluid-')) {
-      result[name] = inlineStyle.getPropertyValue(name).trim()
-    }
-  }
-  const computed = getComputedStyle(el)
-  for (let i = 0; i < computed.length; i++) {
-    const name = computed.item(i)
-    if (name.startsWith('--fluid-') && !(name in result)) {
-      result[name] = computed.getPropertyValue(name).trim()
-    }
-  }
-  return result
-}
 
 export class FluidPortal extends FluidElement {
   protected get layer(): FluidLayer {
@@ -108,7 +88,7 @@ export class FluidPortal extends FluidElement {
       const name = style.item(i)
       if (name.startsWith('--fluid-')) before.add(name)
     }
-    const tokens = snapshotTokens(themeEl)
+    const tokens = FluidTheme.snapshotTokens(themeEl)
     for (const [k, v] of Object.entries(tokens)) {
       style.setProperty(k, v)
     }
