@@ -336,6 +336,103 @@ describe('fluid-theme', () => {
     })
   })
 
+  // ─── AC 11: data-theme scoping (no documentElement mutation) ─────────────
+
+  describe('data-theme scoping', () => {
+    it('does NOT set document.documentElement.dataset.theme when data-theme is set on element', async () => {
+      const el = await FluidTestUtils.mount('<fluid-theme data-theme="dark"></fluid-theme>')
+      await nextFrame()
+      if (document.documentElement.dataset.theme === 'dark') {
+        throw new Error(
+          'fluid-theme data-theme must not propagate to <html> — use FluidTheme.setGlobalMode() for that'
+        )
+      }
+      void el
+    })
+  })
+
+  // ─── AC 12: sampling mode coverage ───────────────────────────────────────
+
+  describe('sampling mode coverage', () => {
+    it('fires debounced sample after ~100ms at Crystalline tier', async () => {
+      FluidTestUtils.mockTier('crystalline')
+      const el = await FluidTestUtils.mount('<fluid-theme></fluid-theme>')
+      // Clear any env prop that may have been set by the initial debounced timer from onMount
+      el.style.removeProperty('--fluid-env-luminance')
+      await new Promise<void>(r => setTimeout(r, 150))
+      const luminance = el.style.getPropertyValue('--fluid-env-luminance')
+      if (!luminance) {
+        throw new Error('Expected --fluid-env-luminance to be set after 100ms debounce at Crystalline tier')
+      }
+    })
+
+    it('sets env props in live mode at Crystalline tier', async () => {
+      FluidTestUtils.mockTier('crystalline')
+      const el = await FluidTestUtils.mount('<fluid-theme sampling="live"></fluid-theme>')
+      await nextFrame()
+      await nextFrame()
+      const luminance = el.style.getPropertyValue('--fluid-env-luminance')
+      if (!luminance) {
+        throw new Error('Expected --fluid-env-luminance to be set in live (rAF) mode at Crystalline tier')
+      }
+    })
+  })
+
+  // ─── AC 13: contrast correction quality ──────────────────────────────────
+
+  describe('contrast correction quality', () => {
+    it('achieves >= 4.5:1 contrast ratio against a black background', async () => {
+      FluidTestUtils.mockTier('crystalline')
+      const fixture = document.createElement('div')
+      fixture.style.backgroundColor = 'rgb(0, 0, 0)'
+      document.body.appendChild(fixture)
+
+      const el = document.createElement('fluid-theme') as HTMLElement
+      el.setAttribute('sampling', 'mount-only')
+      const mountedP = waitForEvent(el, 'fluid:mounted')
+      fixture.appendChild(el)
+      await mountedP
+      await nextFrame()
+
+      const alphaStr = el.style.getPropertyValue('--fluid-tint-alpha')
+      fixture.remove()
+
+      if (!alphaStr) {
+        throw new Error('Expected --fluid-tint-alpha to be set when background is black')
+      }
+      const alpha = parseFloat(alphaStr)
+      const surfaceL = alpha * 0.9 + (1 - alpha) * 0
+      const contrast = (surfaceL + 0.05) / 0.05
+      if (contrast < 4.5) {
+        throw new Error(`contrast ${contrast.toFixed(2)} < 4.5 with --fluid-tint-alpha=${alpha}`)
+      }
+    })
+
+    it('does NOT set --fluid-tint-alpha when contrast is already sufficient (bright background on element)', async () => {
+      FluidTestUtils.mockTier('crystalline')
+
+      const el = document.createElement('fluid-theme') as HTMLElement
+      // Set a bright background directly on the element (not a parent) so getComputedStyle
+      // returns a high-luminance value. fluid-theme uses display:contents so parent bg-color
+      // is not inherited — we must set it on the element itself.
+      el.style.backgroundColor = 'rgb(255, 255, 255)'
+      el.setAttribute('sampling', 'mount-only')
+      const mountedP = waitForEvent(el, 'fluid:mounted')
+      document.body.appendChild(el)
+      await mountedP
+      await nextFrame()
+
+      const alpha = el.style.getPropertyValue('--fluid-tint-alpha')
+      el.remove()
+
+      if (alpha) {
+        throw new Error(
+          `Expected --fluid-tint-alpha NOT to be set against bright background, got "${alpha}"`
+        )
+      }
+    })
+  })
+
   // ─── snapshotTokens static method ─────────────────────────────────────────
 
   describe('FluidTheme.snapshotTokens', () => {

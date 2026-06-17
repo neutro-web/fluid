@@ -18,9 +18,10 @@ export class FluidTheme extends FluidElement {
 
   private _prevBrandHue: string | null = null
   private _mounted = false
-  private _suppressStyleObserver = false
+  private _selfObserver: MutationObserver | null = null
   private _samplingTimer: ReturnType<typeof setTimeout> | null = null
   private _rafId: number | null = null
+  private _tintAlphaCorrected = false
 
   private _onTierChange = (): void => {
     this._stopSampling()
@@ -38,14 +39,22 @@ export class FluidTheme extends FluidElement {
     this._mounted = true
 
     // Watch own style attribute → dispatch fluidtheme:change for external setProperty() calls.
-    // _suppressStyleObserver prevents double-dispatch when we set tokens internally.
-    const selfObserver = new MutationObserver(() => {
-      if (!this._suppressStyleObserver) {
-        this._dispatchChange()
-      }
+    // Disconnect/reconnect instead of a boolean flag: MutationObserver fires as a microtask so
+    // any synchronous flag is already reset to false by the time the callback runs.
+    this._selfObserver = new MutationObserver(() => this._dispatchChange())
+    this._selfObserver.observe(this, { attributes: true, attributeFilter: ['style'] })
+    this.disposers.push(() => {
+      this._selfObserver?.disconnect()
+      this._selfObserver = null
     })
-    selfObserver.observe(this, { attributes: true, attributeFilter: ['style'] })
-    this.disposers.push(() => selfObserver.disconnect())
+
+    // Re-dispatch when OS color scheme changes while no explicit data-theme is set (system mode).
+    const mq = matchMedia('(prefers-color-scheme: dark)')
+    const onColorSchemeChange = (): void => {
+      if (!document.documentElement.dataset.theme) this._dispatchChange()
+    }
+    mq.addEventListener('change', onColorSchemeChange)
+    this.disposers.push(() => mq.removeEventListener('change', onColorSchemeChange))
 
     this._syncAllAttributes()
 
@@ -86,11 +95,22 @@ export class FluidTheme extends FluidElement {
     if (dataTheme !== null) this._handleDataTheme(dataTheme)
   }
 
+  // Temporarily disconnect the style MutationObserver around internal style writes so they
+  // don't trigger a spurious fluidtheme:change event.
+  private _withoutSelfObserver(fn: () => void): void {
+    this._selfObserver?.disconnect()
+    try {
+      fn()
+    } finally {
+      if (this._selfObserver) {
+        this._selfObserver.observe(this, { attributes: true, attributeFilter: ['style'] })
+      }
+    }
+  }
+
   private _handleBrandHue(value: string | null): void {
     if (value === null) {
-      this._suppressStyleObserver = true
-      this.style.removeProperty('--fluid-hue-brand')
-      this._suppressStyleObserver = false
+      this._withoutSelfObserver(() => this.style.removeProperty('--fluid-hue-brand'))
       this._prevBrandHue = null
       return
     }
@@ -98,35 +118,32 @@ export class FluidTheme extends FluidElement {
     if (isNaN(n) || n < 0 || n > 360) {
       if (DEV) {
         console.warn(
-          `[fluid warn] brand-hue "${value}" invalid. Expected 0–360. Keeping previous value.`
+          `[fluid warn]  brand-hue "${value}" invalid. Expected 0–360. Keeping previous value.`
         )
       }
-      if (this._prevBrandHue !== null) {
-        this._suppressStyleObserver = true
-        this.style.setProperty('--fluid-hue-brand', this._prevBrandHue)
-        this._suppressStyleObserver = false
+      const prev = this._prevBrandHue
+      if (prev !== null) {
+        this._withoutSelfObserver(() => this.style.setProperty('--fluid-hue-brand', prev))
       }
       return
     }
-    this._prevBrandHue = String(n)
-    this._suppressStyleObserver = true
-    this.style.setProperty('--fluid-hue-brand', this._prevBrandHue)
-    this._suppressStyleObserver = false
+    const hueStr = String(n)
+    this._prevBrandHue = hueStr
+    this._withoutSelfObserver(() => this.style.setProperty('--fluid-hue-brand', hueStr))
   }
 
   private _handleFontFamily(value: string | null): void {
-    this._suppressStyleObserver = true
-    if (value === null) this.style.removeProperty('--fluid-font-family')
-    else this.style.setProperty('--fluid-font-family', value)
-    this._suppressStyleObserver = false
+    this._withoutSelfObserver(() => {
+      if (value === null) this.style.removeProperty('--fluid-font-family')
+      else this.style.setProperty('--fluid-font-family', value)
+    })
   }
 
-  private _handleDataTheme(value: string | null): void {
-    if (value === null || value === 'system') {
-      delete document.documentElement.dataset.theme
-    } else if (value === 'dark' || value === 'light') {
-      document.documentElement.dataset.theme = value
-    }
+  private _handleDataTheme(_value: string | null): void {
+    // Intentional no-op: the data-theme attribute is already present on this element via the
+    // standard HTML attribute mechanism. CSS selector [data-theme="dark"] on <fluid-theme>
+    // scopes dark tokens to its subtree without touching <html>.
+    // Use FluidTheme.setGlobalMode() to change the entire document's color scheme.
   }
 
   private _dispatchChange(): void {
@@ -141,6 +158,9 @@ export class FluidTheme extends FluidElement {
     if (mode === 'mount-only') {
       this._sampleBackground()
     } else if (mode === 'live') {
+      // §2.7 known gap: live mode reads computed backgroundColor only.
+      // Transparent or gradient surfaces return rgba(0,0,0,0); env values reflect the nearest
+      // solid ancestor rather than the true visual surface. Use mount-only for complex bg.
       const loop = (): void => {
         this._sampleBackground()
         this._rafId = requestAnimationFrame(loop)
@@ -176,10 +196,12 @@ export class FluidTheme extends FluidElement {
       const bg = getComputedStyle(this).backgroundColor
       const match = bg.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/)
       if (!match) return
+      const [, rm, gm, bm] = match
+      if (rm === undefined || gm === undefined || bm === undefined) return
 
-      const r = parseInt(match[1], 10) / 255
-      const g = parseInt(match[2], 10) / 255
-      const b = parseInt(match[3], 10) / 255
+      const r = parseInt(rm, 10) / 255
+      const g = parseInt(gm, 10) / 255
+      const b = parseInt(bm, 10) / 255
 
       // WCAG relative luminance
       const lin = (c: number): number =>
@@ -199,16 +221,14 @@ export class FluidTheme extends FluidElement {
         hue = Math.round(h * 360)
       }
 
-      this._suppressStyleObserver = true
-      try {
+      this._withoutSelfObserver(() => {
         this.style.setProperty('--fluid-env-luminance', luminance.toFixed(4))
         this.style.setProperty('--fluid-env-hue', String(hue))
         this._correctContrast(luminance)
-      } finally {
-        this._suppressStyleObserver = false
-      }
+      })
     } catch {
-      // Silent — prefers-color-scheme fallback (no-op)
+      // Silent — CSS @media (prefers-color-scheme) provides the dark/light fallback;
+      // env vars are an enhancement and their absence does not break theming.
     }
   }
 
@@ -217,6 +237,7 @@ export class FluidTheme extends FluidElement {
     const raw = getComputedStyle(this).getPropertyValue('--fluid-tint-alpha').trim()
     let alpha = parseFloat(raw || '0.15')
     if (isNaN(alpha)) alpha = 0.15
+    const initialAlpha = alpha
 
     for (let i = 0; i < 20; i++) {
       const surfaceL = alpha * tintLuminance + (1 - alpha) * bgLuminance
@@ -226,7 +247,13 @@ export class FluidTheme extends FluidElement {
       alpha = Math.min(alpha + 0.05, 1)
     }
 
-    this.style.setProperty('--fluid-tint-alpha', alpha.toFixed(2))
+    if (alpha !== initialAlpha) {
+      this._tintAlphaCorrected = true
+      this.style.setProperty('--fluid-tint-alpha', alpha.toFixed(2))
+    } else if (this._tintAlphaCorrected) {
+      this._tintAlphaCorrected = false
+      this.style.removeProperty('--fluid-tint-alpha')
+    }
   }
 
   static snapshotTokens(el: HTMLElement): Record<string, string> {
