@@ -173,6 +173,9 @@ license to skip sign-off.
 
 ## FluidRipple Contract (all consuming components must honour this)
 
+> Roadmap entry: **P1-04** (`docs/fluid-roadmap.md`, Phase 1) — full task spec,
+> deliverable path (`packages/fluid/src/core/ripple.ts`), and acceptance criteria.
+
 FluidRipple is a dumb utility — it does not gate itself. Components are responsible for:
 
 1. **Instantiation gating** — only create FluidRipple when:

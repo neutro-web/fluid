@@ -4,6 +4,104 @@
 
 ---
 
+## Status
+
+**Last updated:** Sessions 14–22 complete.
+
+### ✅ Completed
+
+**Phase Init — Initialization**
+- ✅ INIT-01 — Repository and monorepo directory structure
+- ✅ INIT-02 — Agent context files
+- ✅ INIT-03 — Shared TypeScript and ESLint configs
+- ✅ INIT-04 — Foundation documents committed to repo
+- ✅ INIT-05 — Turborepo build pipeline
+- ✅ INIT-06 — `packages/fluid/package.json` subpath exports map
+- ✅ INIT-07 — Component spec files
+- ✅ INIT-08 — Storybook scaffold
+
+**Phase 0 — Core Primitives**
+
+*Track 1 — Physics Engine*
+- ✅ P0-T1-01 — Spring solver: underdamped regime
+- ✅ P0-T1-02 — Spring solver: critically damped and overdamped regimes
+- ✅ P0-T1-03 — Spring config validation
+- ✅ P0-T1-04 — AnimationDriver singleton
+- ✅ P0-T1-05 — Velocity registry and `startSpring()`
+- ✅ P0-T1-06 — WillChangeManager (reference counter)
+- ✅ P0-T1-07 — Reactive spring values
+- ✅ P0-T1-08 — Named spring presets
+
+*Track 2 — Capability Ledger*
+- ✅ P0-T2-01 — Ledger sync phase + SSR defaults
+- ✅ P0-T2-02 — Ledger async phase + tier upgrade
+- ✅ P0-T2-03 — Accessibility media query detection + reactivity
+
+*Track 3 — Utility Primitives*
+- ✅ P0-T3-01 — ZIndexAllocator
+- ✅ P0-T3-02 — ScrollLockManager
+- ✅ P0-T3-03 — `generateFluidId`
+- ✅ P0-T3-04 — Context protocol (WCCG)
+- ✅ P0-T3-05 — FluidI18n translation map
+- ✅ P0-T3-06 — TooltipManager singleton
+- ✅ P0-T3-07 — ToastManager singleton
+
+*Track 4 — Gesture System*
+- ✅ P0-T4-01 — Pointer capture pattern
+- ✅ P0-T4-02 — Press + hover gesture
+- ✅ P0-T4-03 — Drag gesture + constraints
+- ✅ P0-T4-04 — Swipe, flick, and inertia
+- ✅ P0-T4-05 — Pinch and long-press
+
+*Track 5 — Motion System*
+- ✅ P0-T5-01 — Named motion primitives
+- ✅ P0-T5-02 — Animation variants + orchestration
+- ✅ P0-T5-03 — Scroll-linked values + FLIP layout animation
+- ✅ P0-T5-04 — View Transitions integration
+
+*Track 6 — CSS Token System*
+- ✅ P0-T6-01 — Base token file (`default.css`)
+- ✅ P0-T6-02 — Tier-aware color tokens (`@supports` enhancement)
+- ✅ P0-T6-03 — Dark, high-contrast, anti-FOUC, print token files
+
+*Track 7 — Build Infrastructure*
+- ✅ P0-T7-01 — pnpm workspace + Turborepo
+- ✅ P0-T7-02 — tsup per-package build config
+- ✅ P0-T7-03 — Test runner configs
+- ✅ P0-T7-04 — Storybook + Chromatic config
+
+*Track 8 — Testing Infrastructure*
+- ✅ P0-T8-01 — FluidSpringUtils (spring test helpers)
+- ✅ P0-T8-02 — FluidTestUtils (component test helpers)
+- ✅ P0-T8-03 — FluidAccessibilityUtils
+
+**Phase 1 — Component Foundation**
+- ✅ P1-01 — FluidElement base class
+- ✅ P1-02 — `fluid-theme` element
+- ✅ P1-03 — `fluid-portal` element
+- ✅ P1-04 — `core/ripple.ts` (FluidRipple canvas primitive)
+
+**Phase 2 — First Components**
+- ✅ P2-01 — `fluid-button`
+- ✅ P2-02 — `fluid-icon-button`
+- ✅ P2-03 — `fluid-card`
+- ✅ P2-04 — `fluid-stack` + `fluid-spacer`
+- ✅ P2-05 — `fluid-visually-hidden`
+- ✅ P2-06 — `fluid-empty-state`
+- ✅ P2-07 — `fluid-skeleton` + `fluid-spinner` + `fluid-progress`
+- ✅ P2-08 — `fluid-fieldset`
+
+### ⬜ Not Started
+
+- ⬜ **Phase 3** — Navigation Components
+- ⬜ **Phase 4** — Inputs
+- ⬜ **Phase 5** — Overlays + Sheets
+- ⬜ **Phase 6** — Data Display + System
+- ⬜ **Phase 7** — Framework Adapters
+- ⬜ **Phase 8** — Compositions
+
+---
+
 ## Agent Agnosticism
 
 This roadmap describes **what to build and what done looks like**. It does not describe how any specific agent tool executes work. The *how* is in each agent's context file:
@@ -981,6 +1079,27 @@ graph TD
   - Content inside portal inherits tokens from portal root
   - Disposers clean up all observers on `disconnectedCallback`
   - Theme snapshot failure → `prefers-color-scheme` fallback (no throw)
+- **Size:** M
+
+---
+
+**P1-04: `core/ripple.ts` — FluidRipple canvas primitive**
+- **Depends on:** P1-01 (FluidElement)
+- **Deliverable:** `packages/fluid/src/core/ripple.ts`
+- **Contract:**
+  ```typescript
+  export class FluidRipple {
+    constructor(shadowRoot: ShadowRoot)
+    trigger(originX: number, originY: number): void
+    destroy(): void
+  }
+  ```
+- **Acceptance criteria:**
+  - Canvas positioned at inset: 0, pointer-events: none inside shadow root
+  - Wavefront model: alpha 0 at origin, peak at expanding ring edge
+  - prefers-reduced-motion: trigger() is a no-op
+  - Caller is responsible for tier gating (Frosted+) and deviceMemoryLow check
+  - destroy() removes canvas and cancels any in-progress rAF loop
 - **Size:** M
 
 ---
