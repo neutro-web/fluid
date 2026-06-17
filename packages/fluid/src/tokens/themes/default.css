@@ -118,6 +118,9 @@
   --fluid-color-neutral-strong:     var(--fluid-color-neutral-700);
   --fluid-color-neutral-on-surface: var(--fluid-color-neutral-900);
 
+  /* General surface foreground — use on any glass/tinted surface for legible text */
+  --fluid-color-on-surface: var(--fluid-color-neutral-900);
+
 
   /* ---------------------------------------------------------------------------
      FREE: Color tokens — Destructive (error / danger)
