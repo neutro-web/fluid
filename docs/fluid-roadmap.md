@@ -77,7 +77,7 @@
 
 **Phase 1 — Component Foundation**
 - ✅ P1-01 — FluidElement base class
-- ⬜ P1-02 — `fluid-theme` element — NOT DONE. No `components/theme/` exists; `core/element.ts` carries a typed placeholder (`export type FluidTheme = HTMLElement`) and `fluid-portal` ships a private `snapshotTokens()` workaround pending this. Blocks P3-01, P3-02. (Status corrected 2026-06-17.)
+- ✅ P1-02 — `fluid-theme` element
 - ✅ P1-03 — `fluid-portal` element
 - ✅ P1-04 — `core/ripple.ts` (FluidRipple canvas primitive)
 
@@ -1060,7 +1060,7 @@ graph TD
   - MutationObserver on own `style` attribute → `fluidtheme:change` dispatched on `setProperty()` calls
   - `attributeChangedCallback` → `fluidtheme:change` dispatched for all declared attributes
   - Background sampling: solid `background-color` → `--fluid-env-luminance` and `--fluid-env-hue` computed
-  - `FluidTheme.setGlobalMode('dark')` → class on `document.documentElement`, components respond
+  - `FluidTheme.setGlobalMode('dark')` → sets `data-theme` attribute on `document.documentElement` (`dark`/`light` set it, `system` removes it); dark tokens activate via the `[data-theme="dark"]` selector, components respond
   - Contrast auto-correction: increases tint alpha until WCAG AA (4.5:1) met
   - axe-core passes in default state
 - **Size:** L

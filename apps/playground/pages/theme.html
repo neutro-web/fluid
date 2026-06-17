@@ -1,0 +1,181 @@
+<article class="pg-page">
+  <header class="pg-page-header">
+    <h1 class="pg-page-title">fluid-theme</h1>
+    <p class="pg-page-desc">
+      Token provider element. Sets <code>--fluid-*</code> custom properties on itself.
+      Dispatches <code>fluidtheme:change</code>. Use <code>FluidTheme.setGlobalMode()</code>
+      to switch dark/light/system globally without needing an element.
+    </p>
+  </header>
+
+  <!-- Variants ─────────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Variants</h2>
+
+    <h3>Default (no attributes)</h3>
+    <p class="pg-desc">Inherits global token defaults.</p>
+    <div class="pg-example">
+      <fluid-theme id="demo-default">
+        <div class="theme-swatch">System defaults</div>
+      </fluid-theme>
+    </div>
+    <pre class="pg-code"><code>&lt;fluid-theme&gt;
+  &lt;!-- children inherit --fluid-* tokens --&gt;
+&lt;/fluid-theme&gt;</code></pre>
+
+    <h3>Custom brand-hue="280" (violet)</h3>
+    <p class="pg-desc">Overrides <code>--fluid-hue-brand</code> to 280.</p>
+    <div class="pg-example">
+      <fluid-theme brand-hue="280" id="demo-violet">
+        <div class="theme-swatch swatch-brand">Violet brand (hue 280)</div>
+      </fluid-theme>
+    </div>
+    <pre class="pg-code"><code>&lt;fluid-theme brand-hue="280"&gt;&lt;/fluid-theme&gt;</code></pre>
+
+    <h3>Custom font-family</h3>
+    <div class="pg-example">
+      <fluid-theme font-family="'Georgia', serif" id="demo-font">
+        <p style="font-family: var(--fluid-font-family, system-ui); margin: 0; font-size: 0.9rem;">
+          Custom font via <code>font-family</code> attribute.
+        </p>
+      </fluid-theme>
+    </div>
+    <pre class="pg-code"><code>&lt;fluid-theme font-family="'Georgia', serif"&gt;&lt;/fluid-theme&gt;</code></pre>
+  </section>
+
+  <!-- States ───────────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>States</h2>
+
+    <h3>Dark mode via data-theme attribute</h3>
+    <div class="pg-example" style="padding: 16px; border-radius: 8px; background: #111; color: #eee;">
+      <fluid-theme data-theme="dark">
+        <div class="theme-swatch" style="background: hsl(220 70% 30%); color: #fff;">
+          data-theme="dark" on fluid-theme
+        </div>
+      </fluid-theme>
+    </div>
+    <pre class="pg-code"><code>&lt;fluid-theme data-theme="dark"&gt;&lt;/fluid-theme&gt;</code></pre>
+  </section>
+
+  <!-- Edge cases ───────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Edge cases</h2>
+
+    <h3>Invalid brand-hue (dev warning)</h3>
+    <p class="pg-desc">
+      Setting <code>brand-hue="banana"</code> logs a <code>[fluid warn]</code> to the console
+      and retains the prior valid value. Open DevTools Console to see it.
+    </p>
+    <div class="pg-example">
+      <fluid-theme brand-hue="220" id="demo-invalid">
+        <div class="theme-swatch swatch-brand">hue=220 (valid)</div>
+      </fluid-theme>
+    </div>
+    <div style="display: flex; gap: 8px; margin-top: 8px;">
+      <button id="try-invalid" class="demo-btn">Set brand-hue="banana" (triggers warning)</button>
+      <button id="restore-valid" class="demo-btn">Restore brand-hue="220"</button>
+    </div>
+  </section>
+
+  <!-- setGlobalMode + live brand-hue demo ──────────────────────────── -->
+  <section class="pg-section">
+    <h2>Live demo — setGlobalMode + brand-hue</h2>
+
+    <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 16px;">
+      <button id="mode-dark" class="demo-btn">setGlobalMode('dark')</button>
+      <button id="mode-light" class="demo-btn">setGlobalMode('light')</button>
+      <button id="mode-system" class="demo-btn">setGlobalMode('system')</button>
+    </div>
+
+    <label style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px; font-family: system-ui; font-size: 0.875rem;">
+      brand-hue
+      <input type="range" id="hue-slider" min="0" max="360" value="220" style="flex: 1; max-width: 300px;">
+      <code id="hue-val">220</code>
+    </label>
+
+    <fluid-theme id="demo-live" brand-hue="220">
+      <div class="theme-swatch swatch-brand" id="swatch-live">Live preview · hue=220</div>
+    </fluid-theme>
+
+    <p class="pg-desc" style="margin-top: 8px;">
+      Current <code>document.documentElement.dataset.theme</code>: <code id="mode-display">—</code>
+    </p>
+  </section>
+</article>
+
+<style>
+  .theme-swatch {
+    display: inline-block;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-family: system-ui, sans-serif;
+    font-size: 0.85rem;
+    background: hsl(220 60% 50%);
+    color: #fff;
+  }
+  .swatch-brand {
+    background: hsl(var(--fluid-hue-brand, 220) 60% 50%);
+    transition: background 0.3s;
+  }
+  .demo-btn {
+    padding: 6px 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: system-ui;
+    font-size: 0.875rem;
+    background: #fff;
+  }
+  .pg-desc { font-size: 0.875rem; color: #666; margin: 4px 0 12px; }
+  .pg-example { min-height: 32px; margin: 8px 0; }
+  .pg-code {
+    background: #f5f5f5;
+    border-radius: 6px;
+    padding: 12px 16px;
+    font-size: 0.8rem;
+    overflow-x: auto;
+    margin: 8px 0 24px;
+  }
+</style>
+
+<script type="module">
+  import '@neutro/fluid/theme'
+
+  const { FluidTheme } = await import('@neutro/fluid/theme')
+
+  // ── Invalid brand-hue demo
+  document.getElementById('try-invalid').addEventListener('click', () => {
+    document.getElementById('demo-invalid').setAttribute('brand-hue', 'banana')
+  })
+  document.getElementById('restore-valid').addEventListener('click', () => {
+    document.getElementById('demo-invalid').setAttribute('brand-hue', '220')
+  })
+
+  // ── setGlobalMode buttons
+  const modeDisplay = document.getElementById('mode-display')
+  const updateDisplay = () => {
+    modeDisplay.textContent = document.documentElement.dataset.theme ?? '(none — system)'
+  }
+  document.getElementById('mode-dark').addEventListener('click', () => {
+    FluidTheme.setGlobalMode('dark'); updateDisplay()
+  })
+  document.getElementById('mode-light').addEventListener('click', () => {
+    FluidTheme.setGlobalMode('light'); updateDisplay()
+  })
+  document.getElementById('mode-system').addEventListener('click', () => {
+    FluidTheme.setGlobalMode('system'); updateDisplay()
+  })
+  updateDisplay()
+
+  // ── Live hue slider
+  const slider = document.getElementById('hue-slider')
+  const hueVal = document.getElementById('hue-val')
+  const swatch = document.getElementById('swatch-live')
+  const demoLive = document.getElementById('demo-live')
+  slider.addEventListener('input', () => {
+    hueVal.textContent = slider.value
+    demoLive.setAttribute('brand-hue', slider.value)
+    swatch.textContent = `Live preview · hue=${slider.value}`
+  })
+</script>

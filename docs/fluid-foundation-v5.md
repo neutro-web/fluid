@@ -1149,9 +1149,9 @@ Two CSS property overrides → 80% branded experience:
 
 Global mode without `fluid-theme`:
 ```javascript
-FluidTheme.setGlobalMode('dark')   // sets class on document.documentElement
-FluidTheme.setGlobalMode('light')
-FluidTheme.setGlobalMode('system') // follows prefers-color-scheme
+FluidTheme.setGlobalMode('dark')   // sets data-theme="dark" on document.documentElement
+FluidTheme.setGlobalMode('light')  // sets data-theme="light"
+FluidTheme.setGlobalMode('system') // removes data-theme; follows prefers-color-scheme
 ```
 
 **Attribute validation:** All `fluid-theme` attributes validated in `attributeChangedCallback` — invalid values kept at previous valid value, dev warning logged.
