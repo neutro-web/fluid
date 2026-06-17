@@ -1154,6 +1154,8 @@ FluidTheme.setGlobalMode('light')  // sets data-theme="light"
 FluidTheme.setGlobalMode('system') // removes data-theme; follows prefers-color-scheme
 ```
 
+**Scoped dark mode via `data-theme` attribute:** `<fluid-theme data-theme="dark">` scopes dark tokens to that element's subtree without touching `<html>`. The mechanism is purely CSS: `dark.css` carries an unscoped `[data-theme="dark"] { … }` rule that matches any element, including `<fluid-theme>` itself. CSS custom properties are inherited properties and propagate through the element tree — including through `display: contents` elements — so every descendant receives the dark token values. `_handleDataTheme` is an intentional no-op because the attribute is already set on the element and the CSS rule fires automatically. `fluidtheme:change` is still dispatched when `data-theme` changes because the token values in the cascade did change. Use `FluidTheme.setGlobalMode()` to switch the entire document; use the `data-theme` attribute directly on `<fluid-theme>` for subtree-scoped theming.
+
 **Attribute validation:** All `fluid-theme` attributes validated in `attributeChangedCallback` — invalid values kept at previous valid value, dev warning logged.
 
 ### 8.11 RTL, i18n, Print

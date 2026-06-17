@@ -140,10 +140,11 @@ export class FluidTheme extends FluidElement {
   }
 
   private _handleDataTheme(_value: string | null): void {
-    // Intentional no-op: the data-theme attribute is already present on this element via the
-    // standard HTML attribute mechanism. CSS selector [data-theme="dark"] on <fluid-theme>
-    // scopes dark tokens to its subtree without touching <html>.
-    // Use FluidTheme.setGlobalMode() to change the entire document's color scheme.
+    // Intentional no-op. Mechanism: dark.css carries an unscoped [data-theme="dark"] rule
+    // that fires as soon as this attribute is set on the element. CSS custom properties are
+    // inherited and propagate through display:contents elements, so every descendant receives
+    // the dark token values. No imperative work is needed — the cascade handles it.
+    // For document-wide mode switching use FluidTheme.setGlobalMode().
   }
 
   private _dispatchChange(): void {
