@@ -104,7 +104,7 @@ export class FluidNavBar extends FluidElement {
       case 'shrink-mode': this._validateAndApplyShrinkMode(next); break
       case 'skip-target': this._syncSkipLink(); break
       case 'aria-label': this._validateAriaLabel(); break
-      case 'shrink-start': this._updateScrollDrivenRange(); this._cachedShrinkStart = this.shrinkStart; break
+      case 'shrink-start': this._cachedShrinkStart = this.shrinkStart; this._updateScrollDrivenRange(); break
       case 'expand-on-scroll-up': this._cachedExpandOnScrollUp = this.expandOnScrollUp; break
     }
   }
@@ -271,7 +271,6 @@ export class FluidNavBar extends FluidElement {
     }
     this._prevShrinkAmount = v
     this._syncShrinkAmount()
-    this._updateScrollDrivenRange()
   }
 
   private _validateAndApplyShrinkMode(next: string | null): void {

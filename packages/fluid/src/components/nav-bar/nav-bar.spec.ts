@@ -549,6 +549,17 @@ describe('fluid-nav-bar', () => {
       assert(val === '100px', `Expected "100px", got "${val}"`)
     })
 
+    it('Crystalline: runtime shrink-start change updates animation-range vars', async () => {
+      FluidTestUtils.mockTier('crystalline')
+      const el = await FluidTestUtils.mount(`<fluid-nav-bar aria-label="Nav" shrink-start="100"></fluid-nav-bar>`)
+      el.setAttribute('shrink-start', '200')
+      await waitFrames(1)
+      const startVal = el.style.getPropertyValue('--fluid-nav-shrink-start-px')
+      const endVal = el.style.getPropertyValue('--fluid-nav-shrink-end-px')
+      assert(startVal === '200px', `Expected "200px" after runtime change, got "${startVal}"`)
+      assert(endVal === '400px', `Expected "400px" (200+200) after runtime change, got "${endVal}"`)
+    })
+
     it('Crystalline: --fluid-nav-shrink-end-px = start + zone (continuous)', async () => {
       FluidTestUtils.mockTier('crystalline')
       const el = await FluidTestUtils.mount(`<fluid-nav-bar aria-label="Nav" shrink-start="100"></fluid-nav-bar>`)
