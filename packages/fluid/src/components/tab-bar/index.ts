@@ -503,6 +503,7 @@ export class FluidTabBar extends FluidElement {
       ctx._notify()
       // Snap indicator to initial position (no animation)
       requestAnimationFrame(() => {
+        if (!this.isConnected || !this._ctx) return
         const activeTab = ctx.tabs.find(t => t.tabId === initial)
         if (activeTab) this._positionIndicator(activeTab)
       })
@@ -529,7 +530,7 @@ export class FluidTabBar extends FluidElement {
 
   private _applyActive(tabId: string, prevId: string): void {
     const ctx = this._ctx
-    const oldId = prevId || ctx.activeId
+    const oldId = prevId
     const changed = ctx.activeId !== tabId
     if (changed) {
       ctx.activeId = tabId
