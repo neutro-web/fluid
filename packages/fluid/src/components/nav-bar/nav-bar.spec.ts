@@ -117,7 +117,7 @@ describe('fluid-nav-bar', () => {
       const err = await errorPromise
       assert(err.name === 'FluidError', `Expected FluidError, got: ${err?.name}`)
       assert(
-        err.message === '[fluid] [fluid error] fluid-nav-bar requires aria-label.',
+        err.message === '[fluid] fluid-nav-bar requires aria-label.',
         `Expected exact error message, got: "${err.message}"`,
       )
     })
@@ -337,10 +337,12 @@ describe('fluid-nav-bar', () => {
   // ─── fluid:shrink-change event ─────────────────────────────────────────────
 
   describe('fluid:shrink-change event', () => {
-    function simulateScroll(scrollTop: number): void {
+    // Async: the scroll handler is rAF-throttled at Frosted — must await the rAF.
+    async function simulateScroll(scrollTop: number): Promise<void> {
       const scrollEl = (document.scrollingElement ?? document.documentElement) as HTMLElement
       Object.defineProperty(scrollEl, 'scrollTop', { value: scrollTop, writable: true, configurable: true })
       scrollEl.dispatchEvent(new Event('scroll'))
+      await waitFrames(1)
     }
 
     afterEach(() => {
@@ -353,9 +355,9 @@ describe('fluid-nav-bar', () => {
       const el = await FluidTestUtils.mount(`<fluid-nav-bar aria-label="Nav" shrink-start="48"></fluid-nav-bar>`)
       const events: CustomEvent[] = []
       el.addEventListener('fluid:shrink-change', e => events.push(e as CustomEvent))
-      simulateScroll(0)
-      simulateScroll(49)
-      simulateScroll(60)
+      await simulateScroll(0)
+      await simulateScroll(49)
+      await simulateScroll(60)
       assert(events.length === 1, `Expected 1 event on crossing, got ${events.length}`)
       assert(events[0]!.detail.shrunk === true, 'Expected shrunk=true')
       assert(typeof events[0]!.detail.progress === 'number', 'Expected detail.progress to be a number')
@@ -367,9 +369,9 @@ describe('fluid-nav-bar', () => {
       const el = await FluidTestUtils.mount(`<fluid-nav-bar aria-label="Nav" shrink-start="48"></fluid-nav-bar>`)
       const events: CustomEvent[] = []
       el.addEventListener('fluid:shrink-change', e => events.push(e as CustomEvent))
-      simulateScroll(49)
-      simulateScroll(0)
-      simulateScroll(0)
+      await simulateScroll(49)
+      await simulateScroll(0)
+      await simulateScroll(0)
       assert(events.length === 2, `Expected 2 events, got ${events.length}`)
       assert(events[1]!.detail.shrunk === false, 'Expected shrunk=false on expand')
       assert(events[1]!.detail.progress === 0, 'Expected detail.progress === 0 on expand event')
@@ -380,10 +382,10 @@ describe('fluid-nav-bar', () => {
       const el = await FluidTestUtils.mount(`<fluid-nav-bar aria-label="Nav" shrink-start="48"></fluid-nav-bar>`)
       const events: CustomEvent[] = []
       el.addEventListener('fluid:shrink-change', e => events.push(e as CustomEvent))
-      simulateScroll(49)
-      simulateScroll(55)
-      simulateScroll(60)
-      simulateScroll(70)
+      await simulateScroll(49)
+      await simulateScroll(55)
+      await simulateScroll(60)
+      await simulateScroll(70)
       assert(events.length === 1, `Expected 1 event (only first crossing), got ${events.length}`)
     })
 
@@ -392,7 +394,7 @@ describe('fluid-nav-bar', () => {
       const el = await FluidTestUtils.mount(`<fluid-nav-bar aria-label="Nav" shrink-start="48"></fluid-nav-bar>`)
       let captured: CustomEvent | null = null
       document.addEventListener('fluid:shrink-change', e => { captured = e as CustomEvent }, { once: true })
-      simulateScroll(49)
+      await simulateScroll(49)
       assert(captured !== null, 'Expected event to bubble to document')
       assert((captured as CustomEvent).composed === true, 'Expected composed=true')
     })
@@ -401,10 +403,12 @@ describe('fluid-nav-bar', () => {
   // ─── shrink threshold and amount ──────────────────────────────────────────
 
   describe('shrink threshold and amount', () => {
-    function simulateScroll(scrollTop: number): void {
+    // Async: the scroll handler is rAF-throttled at Frosted — must await the rAF.
+    async function simulateScroll(scrollTop: number): Promise<void> {
       const scrollEl = (document.scrollingElement ?? document.documentElement) as HTMLElement
       Object.defineProperty(scrollEl, 'scrollTop', { value: scrollTop, writable: true, configurable: true })
       scrollEl.dispatchEvent(new Event('scroll'))
+      await waitFrames(1)
     }
 
     afterEach(() => {
@@ -415,30 +419,30 @@ describe('fluid-nav-bar', () => {
     it('progress=0 when scroll ≤ shrink-start (default 48)', async () => {
       FluidTestUtils.mockTier('frosted')
       const el = await FluidTestUtils.mount(`<fluid-nav-bar aria-label="Nav"></fluid-nav-bar>`) as any
-      simulateScroll(48)
+      await simulateScroll(48)
       assert(el.shrinkProgress.current === 0, `Expected 0 at scroll=48, got ${el.shrinkProgress.current}`)
     })
 
     it('progress>0 when scroll > shrink-start', async () => {
       FluidTestUtils.mockTier('frosted')
       const el = await FluidTestUtils.mount(`<fluid-nav-bar aria-label="Nav"></fluid-nav-bar>`) as any
-      simulateScroll(49)
+      await simulateScroll(49)
       assert(el.shrinkProgress.current > 0, `Expected >0 at scroll=49, got ${el.shrinkProgress.current}`)
     })
 
     it('shrink-start="100" moves threshold to 100px', async () => {
       FluidTestUtils.mockTier('frosted')
       const el = await FluidTestUtils.mount(`<fluid-nav-bar aria-label="Nav" shrink-start="100"></fluid-nav-bar>`) as any
-      simulateScroll(99)
+      await simulateScroll(99)
       assert(el.shrinkProgress.current === 0, `Expected 0 at scroll=99, got ${el.shrinkProgress.current}`)
-      simulateScroll(101)
+      await simulateScroll(101)
       assert(el.shrinkProgress.current > 0, `Expected >0 at scroll=101, got ${el.shrinkProgress.current}`)
     })
 
     it('continuous mode: intermediate progress between 0 and 1', async () => {
       FluidTestUtils.mockTier('frosted')
       const el = await FluidTestUtils.mount(`<fluid-nav-bar aria-label="Nav" shrink-start="100" shrink-mode="continuous"></fluid-nav-bar>`) as any
-      simulateScroll(150) // halfway through 100px zone
+      await simulateScroll(150) // halfway through 100px zone
       const p = el.shrinkProgress.current
       assert(p > 0 && p < 1, `Expected intermediate value, got ${p}`)
     })
@@ -446,9 +450,9 @@ describe('fluid-nav-bar', () => {
     it('stepped mode: progress snaps to 0 or 1 (no intermediates)', async () => {
       FluidTestUtils.mockTier('frosted')
       const el = await FluidTestUtils.mount(`<fluid-nav-bar aria-label="Nav" shrink-start="100" shrink-mode="stepped"></fluid-nav-bar>`) as any
-      simulateScroll(50)
+      await simulateScroll(50)
       assert(el.shrinkProgress.current === 0, `Expected 0 below threshold, got ${el.shrinkProgress.current}`)
-      simulateScroll(150)
+      await simulateScroll(150)
       assert(el.shrinkProgress.current === 1, `Expected 1 above threshold, got ${el.shrinkProgress.current}`)
     })
 
@@ -459,6 +463,7 @@ describe('fluid-nav-bar', () => {
       // zone = shrinkStart = 100, so scroll=200 should be progress=1
       Object.defineProperty(scrollEl, 'scrollTop', { value: 200, writable: true, configurable: true })
       scrollEl.dispatchEvent(new Event('scroll'))
+      await waitFrames(1)
       assert(el.shrinkProgress.current === 1,
         `Expected progress=1 at scroll=200 (start=100, zone=100), got ${el.shrinkProgress.current}`)
       Object.defineProperty(scrollEl, 'scrollTop', { value: 0, writable: true, configurable: true })
@@ -495,11 +500,13 @@ describe('fluid-nav-bar', () => {
   // ─── expand-on-scroll-up ──────────────────────────────────────────────────
 
   describe('expand-on-scroll-up', () => {
-    function simulateScrollSequence(scrollTops: number[]): void {
+    // Async: the scroll handler is rAF-throttled at Frosted — must await each step.
+    async function simulateScrollSequence(scrollTops: number[]): Promise<void> {
       const scrollEl = (document.scrollingElement ?? document.documentElement) as HTMLElement
       for (const top of scrollTops) {
         Object.defineProperty(scrollEl, 'scrollTop', { value: top, writable: true, configurable: true })
         scrollEl.dispatchEvent(new Event('scroll'))
+        await waitFrames(1)
       }
     }
 
@@ -511,7 +518,7 @@ describe('fluid-nav-bar', () => {
     it('without expand-on-scroll-up: stays shrunk when scrolling up mid-page', async () => {
       FluidTestUtils.mockTier('frosted')
       const el = await FluidTestUtils.mount(`<fluid-nav-bar aria-label="Nav" shrink-start="48"></fluid-nav-bar>`) as any
-      simulateScrollSequence([49, 100, 80])
+      await simulateScrollSequence([49, 100, 80])
       assert(el.shrinkProgress.current > 0,
         `Without expand-on-scroll-up, should stay shrunk mid-page. Got ${el.shrinkProgress.current}`)
     })
@@ -519,11 +526,30 @@ describe('fluid-nav-bar', () => {
     it('with expand-on-scroll-up: any upward scroll expands', async () => {
       FluidTestUtils.mockTier('frosted')
       const el = await FluidTestUtils.mount(`<fluid-nav-bar aria-label="Nav" shrink-start="48" expand-on-scroll-up></fluid-nav-bar>`) as any
-      simulateScrollSequence([49, 100])
+      await simulateScrollSequence([49, 100])
       assert(el.shrinkProgress.current > 0, 'Should be shrunk at scroll=100')
-      simulateScrollSequence([99])
+      await simulateScrollSequence([99])
       assert(el.shrinkProgress.current === 0,
         `With expand-on-scroll-up, upward scroll should expand. Got ${el.shrinkProgress.current}`)
+    })
+
+    it('Crystalline: expand-on-scroll-up writes inline override on upward scroll', async () => {
+      FluidTestUtils.mockTier('crystalline')
+      const el = await FluidTestUtils.mount(`<fluid-nav-bar aria-label="Nav" shrink-start="48" expand-on-scroll-up></fluid-nav-bar>`) as any
+      const scrollEl = (document.scrollingElement ?? document.documentElement) as HTMLElement
+      // Scroll down past threshold — rAF will shrink the bar
+      Object.defineProperty(scrollEl, 'scrollTop', { value: 100, writable: true, configurable: true })
+      await waitFrames(2)
+      assert(el.shrinkProgress.current > 0, `Expected shrunk at scroll=100, got ${el.shrinkProgress.current}`)
+      // Scroll up — expand-on-scroll-up must force visual re-expansion via inline override
+      Object.defineProperty(scrollEl, 'scrollTop', { value: 50, writable: true, configurable: true })
+      await waitFrames(2)
+      assert(el.shrinkProgress.current === 0,
+        `Crystalline expand-on-scroll-up: upward scroll should expand. Got ${el.shrinkProgress.current}`)
+      const inlineVar = el.style.getPropertyValue('--fluid-nav-shrink-progress')
+      assert(inlineVar === '0',
+        `Expected inline --fluid-nav-shrink-progress:0 override at Crystalline, got "${inlineVar}"`)
+      Object.defineProperty(scrollEl, 'scrollTop', { value: 0, writable: true, configurable: true })
     })
   })
 
@@ -574,15 +600,20 @@ describe('fluid-nav-bar', () => {
       assert(endVal === '101px', `Expected "101px" for stepped snap, got "${endVal}"`)
     })
 
-    it('Crystalline: JS does NOT write --fluid-nav-shrink-progress inline on scroll', async () => {
+    it('Crystalline: rAF polls progress; no scroll listener; no inline shrink-progress var', async () => {
       FluidTestUtils.mockTier('crystalline')
       const el = await FluidTestUtils.mount(`<fluid-nav-bar aria-label="Nav"></fluid-nav-bar>`)
       const scrollEl = (document.scrollingElement ?? document.documentElement) as HTMLElement
       Object.defineProperty(scrollEl, 'scrollTop', { value: 100, writable: true, configurable: true })
-      scrollEl.dispatchEvent(new Event('scroll'))
-      await waitFrames(1)
+      // Do NOT dispatch a scroll event — at Crystalline+ there is no scroll listener.
+      // Wait for the rAF poller to pick up the new scrollTop.
+      await waitFrames(2)
+      // shrinkProgress should update via rAF
+      const progress = (el as any).shrinkProgress.current
+      assert(progress > 0, `Expected shrinkProgress > 0 after rAF poll at Crystalline, got ${progress}`)
+      // Height is driven by CSS animation-timeline — inline var must NOT be written
       const inlineVar = el.style.getPropertyValue('--fluid-nav-shrink-progress')
-      assert(inlineVar === '', `At Crystalline+, JS should not write progress inline. Got "${inlineVar}"`)
+      assert(inlineVar === '', `At Crystalline+, JS should not write inline shrink-progress. Got "${inlineVar}"`)
       Object.defineProperty(scrollEl, 'scrollTop', { value: 0, writable: true, configurable: true })
     })
   })
@@ -608,7 +639,7 @@ describe('fluid-nav-bar', () => {
       assert(el.hasAttribute('data-scroll-driven'), 'data-scroll-driven should appear after Crystalline')
     })
 
-    it('no duplicate scroll listeners after repeated tier transitions', async () => {
+    it('no duplicate mechanism disposers after repeated tier transitions', async () => {
       FluidTestUtils.mockTier('frosted')
       const el = await FluidTestUtils.mount(`<fluid-nav-bar aria-label="Nav"></fluid-nav-bar>`) as any
       FluidTestUtils.mockTier('crystalline')
@@ -695,13 +726,26 @@ describe('fluid-nav-bar', () => {
       assert(el._scrollDisposers.length === 0, 'Scroll disposers should be cleared on disconnect')
     })
 
-    it('leading/trailing parts exist for RTL logical property test', async () => {
-      const el = await FluidTestUtils.mount(`<fluid-nav-bar aria-label="Nav"></fluid-nav-bar>`)
+    it('logical properties mirror layout under dir="rtl"', async () => {
+      // In LTR: leading (margin-inline-end:auto) is at the left; trailing is at the right.
+      // In RTL: inline directions flip — leading moves to the visual right, trailing to the left.
+      const el = await FluidTestUtils.mount(`
+        <fluid-nav-bar aria-label="Nav" dir="rtl" style="width:400px;">
+          <span slot="leading">Logo</span>
+          <span slot="trailing">Button</span>
+        </fluid-nav-bar>
+      `)
       const leading = el.shadowRoot!.querySelector('[part="leading"]') as HTMLElement
       const trailing = el.shadowRoot!.querySelector('[part="trailing"]') as HTMLElement
       assert(leading !== null && trailing !== null, 'Expected leading and trailing parts')
-      assert(window.getComputedStyle(leading).display !== 'none', 'leading should be visible')
-      assert(window.getComputedStyle(trailing).display !== 'none', 'trailing should be visible')
+      const leadingRect = leading.getBoundingClientRect()
+      const trailingRect = trailing.getBoundingClientRect()
+      // In RTL: leading (margin-inline-end:auto) is at inline-end — visual right.
+      // Its left offset should be greater than trailing's left offset.
+      assert(
+        leadingRect.left > trailingRect.left,
+        `In RTL: leading should be at the inline-end (visual right). Got leading.left=${leadingRect.left.toFixed(0)}, trailing.left=${trailingRect.left.toFixed(0)}`,
+      )
     })
   })
 })

@@ -218,6 +218,40 @@
       if (a) e.preventDefault()
     })
   })
+
+  // ─── Wire overflow-scroll containers to drive nav-bar height ──────────────
+  // The component listens to document.scrollingElement (the root scroller).
+  // These embedded demo containers use overflow-y:scroll, so scroll events don't
+  // reach the root. We drive height directly via --fluid-nav-shrink-progress.
+  const wireDemoContainer = ({ containerId, navId, shrinkStart = 48, mode = 'continuous' }) => {
+    const container = document.getElementById(containerId)
+    const nav = document.getElementById(navId)
+    if (!container || !nav) return
+    let lastTop = 0
+
+    container.addEventListener('scroll', () => {
+      const top = container.scrollTop
+      const delta = top - lastTop
+      let progress
+
+      if (mode === 'stepped') {
+        progress = top > shrinkStart ? 1 : 0
+      } else {
+        progress = Math.max(0, Math.min(1, (top - shrinkStart) / Math.max(1, shrinkStart)))
+      }
+
+      if (mode === 'expand' && delta < 0 && parseFloat(nav.style.getPropertyValue('--fluid-nav-shrink-progress') || '0') > 0) {
+        progress = 0
+      }
+
+      nav.style.setProperty('--fluid-nav-shrink-progress', String(progress))
+      lastTop = top
+    }, { passive: true })
+  }
+
+  wireDemoContainer({ containerId: 'pg-continuous-scroll', navId: 'pg-nav-continuous', mode: 'continuous' })
+  wireDemoContainer({ containerId: 'pg-stepped-scroll', navId: 'pg-nav-stepped', mode: 'stepped' })
+  wireDemoContainer({ containerId: 'pg-expand-scroll', navId: 'pg-nav-expand', mode: 'expand' })
 </script>
 
 <style>

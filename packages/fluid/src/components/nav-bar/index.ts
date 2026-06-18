@@ -20,6 +20,7 @@ class NavShrinkProgress implements ReactiveValue {
   get current() { return this._current }
 
   _set(value: number): void {
+    if (this._current === value) return  // skip no-op; guards rAF hot path at Crystalline+
     this._current = value
     this._subs.forEach(fn => fn(value))
   }
@@ -62,9 +63,14 @@ export class FluidNavBar extends FluidElement {
   private _preventAttrLoop = false
   private _prevShrinkAmount = 0.6
   private _prevShrinkMode: 'continuous' | 'stepped' = 'continuous'
+  // Hot-path cached fields (avoids DOM reads at 60 Hz)
   private _cachedShrinkStart: number = 48
   private _cachedShrinkMode: 'continuous' | 'stepped' = 'continuous'
   private _cachedExpandOnScrollUp: boolean = false
+  // Tracks whether expand-on-scroll-up has written an inline override at Crystalline+.
+  // Required because CSS animation-timeline: scroll() is monotonic — it cannot re-expand
+  // on upward scroll by itself. The inline override takes precedence; cleared on downward scroll.
+  private _expandOverrideActive = false
 
   get shrinkStart(): number {
     const v = parseFloat(this.getAttribute('shrink-start') ?? '48')
@@ -157,13 +163,34 @@ export class FluidNavBar extends FluidElement {
     if (crystalline) {
       this.setAttribute('data-scroll-driven', '')
       this._updateScrollDrivenRange()
+
+      // At Crystalline+: CSS animation-timeline: scroll() drives height — no JS scroll listener.
+      // A rAF loop polls scroll position post-paint (not in the scroll event hot path) to update
+      // shrinkProgress, dispatch fluid:shrink-change events, and support expand-on-scroll-up.
+      let rafId: number | null = null
+      const poll = (): void => {
+        this._handleScroll(scrollEl, true)
+        rafId = requestAnimationFrame(poll)
+      }
+      rafId = requestAnimationFrame(poll)
+      this._scrollDisposers.push(() => {
+        if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null }
+      })
     } else {
       this.removeAttribute('data-scroll-driven')
+      // At Frosted/Matte: passive scroll listener with rAF batching to avoid layout thrash.
+      let pending = false
+      const onScroll = (): void => {
+        if (pending) return
+        pending = true
+        requestAnimationFrame(() => {
+          pending = false
+          this._handleScroll(scrollEl, false)
+        })
+      }
+      scrollEl.addEventListener('scroll', onScroll, { passive: true } as AddEventListenerOptions)
+      this._scrollDisposers.push(() => scrollEl.removeEventListener('scroll', onScroll))
     }
-
-    const onScroll = (): void => { this._handleScroll(scrollEl, crystalline) }
-    scrollEl.addEventListener('scroll', onScroll, { passive: true } as AddEventListenerOptions)
-    this._scrollDisposers.push(() => scrollEl.removeEventListener('scroll', onScroll))
   }
 
   private _teardownScrollMechanism(): void {
@@ -171,6 +198,7 @@ export class FluidNavBar extends FluidElement {
     this._scrollDisposers = []
     this.removeAttribute('data-scroll-driven')
     this.style.removeProperty('--fluid-nav-shrink-progress')
+    this._expandOverrideActive = false
   }
 
   private _handleScroll(scrollEl: HTMLElement, crystallinePlus: boolean): void {
@@ -179,7 +207,7 @@ export class FluidNavBar extends FluidElement {
     this._lastScrollTop = scrollTop
 
     const start = this._cachedShrinkStart
-    // zone = shrink range; using shrinkStart px gives a natural 2× threshold feel
+    // zone = shrinkStart px gives a natural 2× threshold feel
     const zone = start
 
     let progress: number
@@ -191,6 +219,21 @@ export class FluidNavBar extends FluidElement {
 
     if (this._cachedExpandOnScrollUp && delta < 0 && this._shrunk) {
       progress = 0
+      if (crystallinePlus) {
+        // CSS animation-timeline: scroll() is monotonic — it cannot re-expand on upward scroll.
+        // Write an inline override so the bar visually re-expands. Cleared on next downward scroll.
+        this._expandOverrideActive = true
+        this.style.setProperty('--fluid-nav-shrink-progress', '0')
+      }
+    } else if (this._expandOverrideActive) {
+      if (delta > 0) {
+        // Scrolling down: clear the override so CSS animation-timeline (or JS at Frosted) resumes.
+        this._expandOverrideActive = false
+        if (crystallinePlus) this.style.removeProperty('--fluid-nav-shrink-progress')
+      } else {
+        // Override is active but no downward scroll yet — sustain progress=0 across rAF polls.
+        progress = 0
+      }
     }
 
     this._setProgress(progress, crystallinePlus)
@@ -235,11 +278,11 @@ export class FluidNavBar extends FluidElement {
     const label = this.getAttribute('aria-label')
     if (!label || label.trim() === '') {
       if (DEV) {
-        throw new FluidError('[fluid error] fluid-nav-bar requires aria-label.')
+        throw new FluidError('fluid-nav-bar requires aria-label.')
       }
       if (!this._ariaLabelWarned) {
         this._ariaLabelWarned = true
-        console.warn('[fluid error] fluid-nav-bar requires aria-label.')
+        console.warn('[fluid warn] fluid-nav-bar requires aria-label.')
       }
     }
   }
