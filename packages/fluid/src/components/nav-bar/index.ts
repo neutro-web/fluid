@@ -120,6 +120,10 @@ export class FluidNavBar extends FluidElement {
     this._cachedShrinkStart = this.shrinkStart
     this._cachedShrinkMode = this.shrinkMode
     this._cachedExpandOnScrollUp = this.expandOnScrollUp
+    // Seed _prevShrinkAmount / _prevShrinkMode from whatever attribute was set
+    // before onMount() ran (attributeChangedCallback returns early when root is absent).
+    this._prevShrinkAmount = this.shrinkAmount
+    this._prevShrinkMode = this.shrinkMode
 
     const measured = this.offsetHeight
     this._fullHeight = measured > 0 ? measured : 64
