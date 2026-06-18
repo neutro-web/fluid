@@ -1,0 +1,223 @@
+<article class="pg-page">
+  <header class="pg-page-header">
+    <h1 class="pg-page-title">Tab Bar</h1>
+    <p class="pg-page-desc">
+      ARIA-compliant tablist compound component. Composed of
+      <code>fluid-tab-bar</code>, <code>fluid-tab</code>, and <code>fluid-tab-panel</code>.
+      Supports horizontal and vertical orientations, automatic and manual activation,
+      disabled tabs, and controlled mode via <code>active-tab</code>.
+    </p>
+  </header>
+
+  <!-- ─── Horizontal (default) ─────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Horizontal (default)</h2>
+    <p>Default orientation. Arrow keys navigate between tabs; the selected tab's panel is shown below the tab list.</p>
+
+    <div class="pg-example">
+      <div class="pg-preview">
+        <fluid-tab-bar aria-label="Example tabs">
+          <fluid-tab tab-id="t1" panel="p1">Overview</fluid-tab>
+          <fluid-tab tab-id="t2" panel="p2">Details</fluid-tab>
+          <fluid-tab tab-id="t3" panel="p3">Settings</fluid-tab>
+          <fluid-tab-panel slot="panel" panel-id="p1">
+            <div class="tab-panel-content">Overview panel — Fluid is a tier-aware design system that adapts its motion fidelity to available device resources.</div>
+          </fluid-tab-panel>
+          <fluid-tab-panel slot="panel" panel-id="p2">
+            <div class="tab-panel-content">Details panel — Components expose design tokens as CSS custom properties, ensuring full theme-ability without shadow-piercing hacks.</div>
+          </fluid-tab-panel>
+          <fluid-tab-panel slot="panel" panel-id="p3">
+            <div class="tab-panel-content">Settings panel — The FluidLedger measures frame-rate and device memory to automatically select the appropriate motion tier at runtime.</div>
+          </fluid-tab-panel>
+        </fluid-tab-bar>
+      </div>
+      <pre class="pg-code">&lt;fluid-tab-bar aria-label="Example tabs"&gt;
+  &lt;fluid-tab tab-id="t1" panel="p1"&gt;Overview&lt;/fluid-tab&gt;
+  &lt;fluid-tab tab-id="t2" panel="p2"&gt;Details&lt;/fluid-tab&gt;
+  &lt;fluid-tab tab-id="t3" panel="p3"&gt;Settings&lt;/fluid-tab&gt;
+  &lt;fluid-tab-panel slot="panel" panel-id="p1"&gt;Overview panel content.&lt;/fluid-tab-panel&gt;
+  &lt;fluid-tab-panel slot="panel" panel-id="p2"&gt;Details panel content.&lt;/fluid-tab-panel&gt;
+  &lt;fluid-tab-panel slot="panel" panel-id="p3"&gt;Settings panel content.&lt;/fluid-tab-panel&gt;
+&lt;/fluid-tab-bar&gt;</pre>
+    </div>
+  </section>
+
+  <!-- ─── Vertical ─────────────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Vertical</h2>
+    <p>Set <code>orientation="vertical"</code> to render the tab list along the side. Up/Down arrow keys navigate; Left/Right are not used.</p>
+
+    <div class="pg-example">
+      <div class="pg-preview">
+        <div class="vertical-demo">
+          <fluid-tab-bar aria-label="Vertical example" orientation="vertical">
+            <fluid-tab tab-id="v1" panel="vp1">Overview</fluid-tab>
+            <fluid-tab tab-id="v2" panel="vp2">Details</fluid-tab>
+            <fluid-tab tab-id="v3" panel="vp3">Settings</fluid-tab>
+            <fluid-tab-panel slot="panel" panel-id="vp1">
+              <div class="tab-panel-content">Overview — Fluid adapts its motion fidelity to available device resources in real time.</div>
+            </fluid-tab-panel>
+            <fluid-tab-panel slot="panel" panel-id="vp2">
+              <div class="tab-panel-content">Details — CSS custom properties carry design tokens from a portal outward to all descendant components.</div>
+            </fluid-tab-panel>
+            <fluid-tab-panel slot="panel" panel-id="vp3">
+              <div class="tab-panel-content">Settings — FluidLedger benchmarks paint timings on first render and re-evaluates on subsequent idle callbacks.</div>
+            </fluid-tab-panel>
+          </fluid-tab-bar>
+        </div>
+      </div>
+      <pre class="pg-code">&lt;fluid-tab-bar aria-label="Vertical example" orientation="vertical"&gt;
+  &lt;fluid-tab tab-id="v1" panel="vp1"&gt;Overview&lt;/fluid-tab&gt;
+  &lt;fluid-tab tab-id="v2" panel="vp2"&gt;Details&lt;/fluid-tab&gt;
+  &lt;fluid-tab tab-id="v3" panel="vp3"&gt;Settings&lt;/fluid-tab&gt;
+  &lt;fluid-tab-panel slot="panel" panel-id="vp1"&gt;...&lt;/fluid-tab-panel&gt;
+  &lt;fluid-tab-panel slot="panel" panel-id="vp2"&gt;...&lt;/fluid-tab-panel&gt;
+  &lt;fluid-tab-panel slot="panel" panel-id="vp3"&gt;...&lt;/fluid-tab-panel&gt;
+&lt;/fluid-tab-bar&gt;</pre>
+    </div>
+  </section>
+
+  <!-- ─── Manual Activation ─────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Manual activation</h2>
+    <p>With <code>activation="manual"</code>, arrow keys move focus without selecting. Press <kbd>Enter</kbd> or <kbd>Space</kbd> to activate the focused tab.</p>
+
+    <div class="pg-example">
+      <div class="pg-preview">
+        <fluid-tab-bar aria-label="Manual activation example" activation="manual">
+          <fluid-tab tab-id="m1" panel="mp1">Overview</fluid-tab>
+          <fluid-tab tab-id="m2" panel="mp2">Details</fluid-tab>
+          <fluid-tab tab-id="m3" panel="mp3">Settings</fluid-tab>
+          <fluid-tab-panel slot="panel" panel-id="mp1">
+            <div class="tab-panel-content">Manual mode — focus tabs with Arrow keys, activate with Enter or Space.</div>
+          </fluid-tab-panel>
+          <fluid-tab-panel slot="panel" panel-id="mp2">
+            <div class="tab-panel-content">Manual mode — focus tabs with Arrow keys, activate with Enter or Space.</div>
+          </fluid-tab-panel>
+          <fluid-tab-panel slot="panel" panel-id="mp3">
+            <div class="tab-panel-content">Manual mode — focus tabs with Arrow keys, activate with Enter or Space.</div>
+          </fluid-tab-panel>
+        </fluid-tab-bar>
+      </div>
+      <pre class="pg-code">&lt;fluid-tab-bar aria-label="Manual activation example" activation="manual"&gt;
+  &lt;fluid-tab tab-id="m1" panel="mp1"&gt;Overview&lt;/fluid-tab&gt;
+  &lt;fluid-tab tab-id="m2" panel="mp2"&gt;Details&lt;/fluid-tab&gt;
+  &lt;fluid-tab tab-id="m3" panel="mp3"&gt;Settings&lt;/fluid-tab&gt;
+  &lt;fluid-tab-panel slot="panel" panel-id="mp1"&gt;...&lt;/fluid-tab-panel&gt;
+  &lt;fluid-tab-panel slot="panel" panel-id="mp2"&gt;...&lt;/fluid-tab-panel&gt;
+  &lt;fluid-tab-panel slot="panel" panel-id="mp3"&gt;...&lt;/fluid-tab-panel&gt;
+&lt;/fluid-tab-bar&gt;</pre>
+    </div>
+  </section>
+
+  <!-- ─── Disabled Tab ──────────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Disabled tab</h2>
+    <p>A tab with the <code>disabled</code> attribute is skipped during keyboard navigation and cannot be activated.</p>
+
+    <div class="pg-example">
+      <div class="pg-preview">
+        <fluid-tab-bar aria-label="Disabled tab example">
+          <fluid-tab tab-id="d1" panel="dp1">Overview</fluid-tab>
+          <fluid-tab tab-id="d2" panel="dp2" disabled>Details (disabled)</fluid-tab>
+          <fluid-tab tab-id="d3" panel="dp3">Settings</fluid-tab>
+          <fluid-tab-panel slot="panel" panel-id="dp1">
+            <div class="tab-panel-content">Overview — navigate with arrow keys; the disabled Details tab is skipped.</div>
+          </fluid-tab-panel>
+          <fluid-tab-panel slot="panel" panel-id="dp2">
+            <div class="tab-panel-content">Details — this panel is unreachable while its tab is disabled.</div>
+          </fluid-tab-panel>
+          <fluid-tab-panel slot="panel" panel-id="dp3">
+            <div class="tab-panel-content">Settings — you jumped here directly from Overview.</div>
+          </fluid-tab-panel>
+        </fluid-tab-bar>
+      </div>
+      <pre class="pg-code">&lt;fluid-tab-bar aria-label="Disabled tab example"&gt;
+  &lt;fluid-tab tab-id="d1" panel="dp1"&gt;Overview&lt;/fluid-tab&gt;
+  &lt;fluid-tab tab-id="d2" panel="dp2" disabled&gt;Details (disabled)&lt;/fluid-tab&gt;
+  &lt;fluid-tab tab-id="d3" panel="dp3"&gt;Settings&lt;/fluid-tab&gt;
+  &lt;fluid-tab-panel slot="panel" panel-id="dp1"&gt;...&lt;/fluid-tab-panel&gt;
+  &lt;fluid-tab-panel slot="panel" panel-id="dp2"&gt;...&lt;/fluid-tab-panel&gt;
+  &lt;fluid-tab-panel slot="panel" panel-id="dp3"&gt;...&lt;/fluid-tab-panel&gt;
+&lt;/fluid-tab-bar&gt;</pre>
+    </div>
+  </section>
+
+  <!-- ─── Controlled Mode ───────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Controlled mode</h2>
+    <p>Pass <code>active-tab</code> to own the active state. Listen to <code>fluid:change</code> and update the attribute to keep it in sync. The event log below shows the emitted detail.</p>
+
+    <div class="pg-example">
+      <div class="pg-preview" style="flex-direction: column; align-items: stretch;">
+        <fluid-tab-bar id="controlled-bar" aria-label="Controlled mode example" active-tab="c1">
+          <fluid-tab tab-id="c1" panel="cp1">Overview</fluid-tab>
+          <fluid-tab tab-id="c2" panel="cp2">Details</fluid-tab>
+          <fluid-tab tab-id="c3" panel="cp3">Settings</fluid-tab>
+          <fluid-tab-panel slot="panel" panel-id="cp1">
+            <div class="tab-panel-content">Overview — the parent controls which tab is active via the <code>active-tab</code> attribute.</div>
+          </fluid-tab-panel>
+          <fluid-tab-panel slot="panel" panel-id="cp2">
+            <div class="tab-panel-content">Details — on tab change, <code>fluid:change</code> fires and the host updates <code>active-tab</code> to match.</div>
+          </fluid-tab-panel>
+          <fluid-tab-panel slot="panel" panel-id="cp3">
+            <div class="tab-panel-content">Settings — controlled mode is useful when you need to persist or validate the active tab externally.</div>
+          </fluid-tab-panel>
+        </fluid-tab-bar>
+        <p class="pg-demo-label" style="margin-top:12px;">fluid:change event detail</p>
+        <pre id="event-log" class="event-log">— no event yet —</pre>
+      </div>
+      <pre class="pg-code">&lt;fluid-tab-bar id="controlled-bar" active-tab="c1"
+               aria-label="Controlled mode example"&gt;
+  &lt;fluid-tab tab-id="c1" panel="cp1"&gt;Overview&lt;/fluid-tab&gt;
+  &lt;fluid-tab tab-id="c2" panel="cp2"&gt;Details&lt;/fluid-tab&gt;
+  &lt;fluid-tab tab-id="c3" panel="cp3"&gt;Settings&lt;/fluid-tab&gt;
+  &lt;fluid-tab-panel slot="panel" panel-id="cp1"&gt;...&lt;/fluid-tab-panel&gt;
+  &lt;fluid-tab-panel slot="panel" panel-id="cp2"&gt;...&lt;/fluid-tab-panel&gt;
+  &lt;fluid-tab-panel slot="panel" panel-id="cp3"&gt;...&lt;/fluid-tab-panel&gt;
+&lt;/fluid-tab-bar&gt;
+
+&lt;script type="module"&gt;
+  const bar = document.getElementById('controlled-bar')
+  bar.addEventListener('fluid:change', (e) =&gt; {
+    bar.setAttribute('active-tab', e.detail.activeId)
+  })
+&lt;/script&gt;</pre>
+    </div>
+  </section>
+</article>
+
+<script type="module">
+  import '@neutro/fluid/tab-bar'
+
+  const controlledBar = document.getElementById('controlled-bar')
+  const eventLog = document.getElementById('event-log')
+  if (controlledBar && eventLog) {
+    controlledBar.addEventListener('fluid:change', (e) => {
+      controlledBar.setAttribute('active-tab', e.detail.activeId)
+      eventLog.textContent = JSON.stringify(e.detail, null, 2)
+    })
+  }
+</script>
+
+<style>
+  .tab-panel-content {
+    padding: 16px;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--fluid-color-text, inherit);
+  }
+  .event-log {
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: var(--pg-code-bg, rgba(0 0 0 / 0.06));
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-family: monospace;
+    min-height: 40px;
+    white-space: pre;
+  }
+  .vertical-demo {
+    width: 100%;
+  }
+</style>
