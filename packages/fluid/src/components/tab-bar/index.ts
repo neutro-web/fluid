@@ -3,6 +3,9 @@ import type { FluidMaterial } from '../../core/element'
 import type { FluidLayer } from '../../core/z-index'
 import type { SpringConfig } from '../../core/spring'
 import { SPRING_PRESETS } from '../../core/spring'
+import { stepSpring } from '../../core/spring'
+import type { SpringState } from '../../core/spring'
+import { driver } from '../../core/driver'
 import { FluidRipple } from '../../core/ripple'
 import { motion } from '../../core/motion'
 import { requestContext, provideContext } from '../../core/context'
@@ -361,7 +364,15 @@ export class FluidTab extends FluidElement {
   }
 }
 
-// ─── FluidTabBar placeholder (replaced in Task 5) ────────────────────────────
+// ─── FluidTabBar ──────────────────────────────────────────────────────────────
+
+// Module-level: tracks in-flight indicator animations per tab-bar element
+interface IndicatorAnim {
+  id: symbol
+  stateX: SpringState
+  stateY: SpringState
+}
+const _indicatorAnims = new WeakMap<FluidTabBar, IndicatorAnim>()
 
 export class FluidTabBar extends FluidElement {
   protected readonly layer: FluidLayer = 'raised'
@@ -372,7 +383,9 @@ export class FluidTabBar extends FluidElement {
     return ['active-tab', 'orientation', 'activation']
   }
 
-  private _ctx: TabsCtx | null = null
+  private _indicator!: HTMLElement
+  private _tablist!: HTMLElement
+  private _ctx!: TabsCtx
 
   get tabs(): readonly FluidTab[] { return this._ctx?.tabs ?? [] }
 
@@ -386,8 +399,28 @@ export class FluidTabBar extends FluidElement {
 
   get activeTab(): string { return this.getAttribute('active-tab') ?? '' }
 
-  attributeChangedCallback(_name: string, _old: string | null, _next: string | null): void {
-    // handled in Task 5
+  private get _isControlled(): boolean {
+    return this.hasAttribute('active-tab')
+  }
+
+  attributeChangedCallback(name: string, old: string | null, next: string | null): void {
+    if (!this._ctx) return
+    if (name === 'active-tab' && old !== next) {
+      const target = next ?? ''
+      const firstEnabled = this._ctx.tabs.find(t => !t.disabled)?.tabId ?? ''
+      const resolved = (target && this._ctx.tabs.some(t => t.tabId === target)) ? target : firstEnabled
+      if (resolved && resolved !== this._ctx.activeId) {
+        this._applyActive(resolved, this._ctx.activeId)
+      }
+    }
+    if (name === 'orientation') {
+      this._ctx.orientation = this.orientation
+      this._ctx._notify()
+      this._syncTablistAria()
+    }
+    if (name === 'activation') {
+      this._ctx.activation = this.activation
+    }
   }
 
   protected override onMount(): void {
@@ -398,11 +431,12 @@ export class FluidTabBar extends FluidElement {
       <span part="indicator"></span>
     `
 
-    const tablist = this.root.querySelector('[part="tablist"]') as HTMLElement
-    tablist.innerHTML = /* html */ `<slot></slot>`
+    this._tablist = this.root.querySelector('[part="tablist"]') as HTMLElement
+    this._tablist.innerHTML = /* html */ `<slot></slot>`
+    this._indicator = this.root.querySelector('[part="indicator"]') as HTMLElement
 
     this.internals.role = 'tablist'
-    tablist.setAttribute('aria-orientation', this.orientation)
+    this._syncTablistAria()
 
     if (DEV && !this.getAttribute('aria-label') && !this.getAttribute('aria-labelledby')) {
       console.warn('[fluid warn] fluid-tab-bar should have aria-label or aria-labelledby (unnamed tablist).')
@@ -415,7 +449,7 @@ export class FluidTabBar extends FluidElement {
       activation: this.activation,
       tabs: [],
       panels: [],
-      activate: (_tabId: string) => { /* Task 5 */ },
+      activate: (tabId: string) => this._onActivate(tabId),
       subscribe: (fn) => {
         subscribers.add(fn)
         fn(ctx)
@@ -427,12 +461,32 @@ export class FluidTabBar extends FluidElement {
 
     this.disposers.push(provideContext(this, TABS_CONTEXT_KEY, ctx))
 
-    // Two-path init: if children already present, init immediately; else defer one rAF
-    if (this.children.length > 0) {
-      this._initActive()
-    } else {
-      requestAnimationFrame(() => this._initActive())
+    // Always defer: child fluid-tab elements register via context events fired
+    // from their own connectedCallback, which runs after this onMount returns.
+    // A single rAF ensures all children have connected and registered before
+    // we set the initial active tab.
+    requestAnimationFrame(() => this._initActive())
+
+    const onTierChange = (): void => {
+      const anim = _indicatorAnims.get(this)
+      if (anim) {
+        driver.deregister(anim.id)
+        _indicatorAnims.delete(this)
+        this._indicator.style.transform = ''
+      }
     }
+    document.addEventListener('fluidledger:tier-change', onTierChange)
+    this.disposers.push(() => document.removeEventListener('fluidledger:tier-change', onTierChange))
+  }
+
+  private _syncTablistAria(): void {
+    const tablist = this.root?.querySelector('[part="tablist"]')
+    if (!tablist) return
+    tablist.setAttribute('aria-orientation', this.orientation)
+    const label = this.getAttribute('aria-label')
+    const labelledby = this.getAttribute('aria-labelledby')
+    if (label) tablist.setAttribute('aria-label', label)
+    if (labelledby) tablist.setAttribute('aria-labelledby', labelledby)
   }
 
   private _initActive(): void {
@@ -447,7 +501,126 @@ export class FluidTabBar extends FluidElement {
     if (initial) {
       ctx.activeId = initial
       ctx._notify()
+      // Snap indicator to initial position (no animation)
+      requestAnimationFrame(() => {
+        const activeTab = ctx.tabs.find(t => t.tabId === initial)
+        if (activeTab) this._positionIndicator(activeTab)
+      })
     }
+  }
+
+  private _onActivate(tabId: string): void {
+    const ctx = this._ctx
+    const prev = ctx.activeId
+
+    if (this._isControlled) {
+      // Controlled: fire change event but do NOT update selection
+      this.dispatchEvent(new CustomEvent('fluid:change', {
+        detail: { activeId: tabId, previousId: prev || null },
+        bubbles: true,
+        composed: true,
+      }))
+      return
+    }
+
+    // Uncontrolled: update selection
+    this._applyActive(tabId, prev)
+  }
+
+  private _applyActive(tabId: string, prevId: string): void {
+    const ctx = this._ctx
+    const oldId = prevId || ctx.activeId
+    const changed = ctx.activeId !== tabId
+    if (changed) {
+      ctx.activeId = tabId
+      ctx._notify()
+    }
+    this.dispatchEvent(new CustomEvent('fluid:change', {
+      detail: { activeId: tabId, previousId: oldId || null },
+      bubbles: true,
+      composed: true,
+    }))
+    if (changed) {
+      const activeTab = ctx.tabs.find(t => t.tabId === tabId)
+      if (activeTab) this._slideIndicator(activeTab)
+    }
+  }
+
+  private _positionIndicator(tab: FluidTab): void {
+    const barRect = this.getBoundingClientRect()
+    const tabRect = tab.getBoundingClientRect()
+    if (tabRect.width === 0 && tabRect.height === 0) return
+    const isH = this.orientation !== 'vertical'
+    if (isH) {
+      this._indicator.style.left = `${tabRect.left - barRect.left}px`
+      this._indicator.style.top = 'auto'
+      this._indicator.style.width = `${tabRect.width}px`
+      this._indicator.style.height = '2px'
+      this._indicator.style.bottom = '0'
+      this._indicator.style.right = 'auto'
+    } else {
+      this._indicator.style.top = `${tabRect.top - barRect.top}px`
+      this._indicator.style.left = 'auto'
+      this._indicator.style.height = `${tabRect.height}px`
+      this._indicator.style.width = '2px'
+      this._indicator.style.bottom = 'auto'
+      this._indicator.style.insetInlineEnd = '0'
+    }
+  }
+
+  private _slideIndicator(newTab: FluidTab): void {
+    if (this.caps.tier === 'matte') {
+      this._positionIndicator(newTab)
+      return
+    }
+
+    const before = this._indicator.getBoundingClientRect()
+    this._positionIndicator(newTab)
+    const after = this._indicator.getBoundingClientRect()
+
+    const dx = before.left - after.left
+    const dy = before.top - after.top
+
+    if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) return
+
+    // Cancel existing animation, carry velocity forward
+    const existing = _indicatorAnims.get(this)
+    const initVx = existing?.stateX.velocity ?? 0
+    const initVy = existing?.stateY.velocity ?? 0
+    if (existing) driver.deregister(existing.id)
+
+    const config = SPRING_PRESETS.smooth
+    let stateX: SpringState = { value: dx, velocity: initVx }
+    let stateY: SpringState = { value: dy, velocity: initVy }
+    const threshX = Math.max(Math.abs(dx) * 0.001, 0.1)
+    const threshY = Math.max(Math.abs(dy) * 0.001, 0.1)
+
+    this._indicator.style.transform = `translate(${dx}px,${dy}px)`
+
+    const id = Symbol()
+    const anim: IndicatorAnim = { id, stateX, stateY }
+    _indicatorAnims.set(this, anim)
+
+    const indicator = this._indicator
+    const bar = this
+
+    driver.register(id, {
+      advance(dt: number): boolean {
+        stateX = stepSpring(config, stateX, 0, dt)
+        stateY = stepSpring(config, stateY, 0, dt)
+        anim.stateX = stateX
+        anim.stateY = stateY
+        const sx = Math.abs(stateX.value) < threshX && Math.abs(stateX.velocity) < threshX * 2
+        const sy = Math.abs(stateY.value) < threshY && Math.abs(stateY.velocity) < threshY * 2
+        if (sx && sy) {
+          indicator.style.transform = ''
+          _indicatorAnims.delete(bar)
+          return true
+        }
+        indicator.style.transform = `translate(${stateX.value}px,${stateY.value}px)`
+        return false
+      },
+    })
   }
 }
 
