@@ -62,6 +62,9 @@ export class FluidNavBar extends FluidElement {
   private _preventAttrLoop = false
   private _prevShrinkAmount = 0.6
   private _prevShrinkMode: 'continuous' | 'stepped' = 'continuous'
+  private _cachedShrinkStart: number = 48
+  private _cachedShrinkMode: 'continuous' | 'stepped' = 'continuous'
+  private _cachedExpandOnScrollUp: boolean = false
 
   get shrinkStart(): number {
     const v = parseFloat(this.getAttribute('shrink-start') ?? '48')
@@ -101,7 +104,8 @@ export class FluidNavBar extends FluidElement {
       case 'shrink-mode': this._validateAndApplyShrinkMode(next); break
       case 'skip-target': this._syncSkipLink(); break
       case 'aria-label': this._validateAriaLabel(); break
-      case 'shrink-start': this._updateScrollDrivenRange(); break
+      case 'shrink-start': this._updateScrollDrivenRange(); this._cachedShrinkStart = this.shrinkStart; break
+      case 'expand-on-scroll-up': this._cachedExpandOnScrollUp = this.expandOnScrollUp; break
     }
   }
 
@@ -113,6 +117,9 @@ export class FluidNavBar extends FluidElement {
     this._syncSkipLink()
     this._syncShrinkAmount()
     this._syncShrinkMode()
+    this._cachedShrinkStart = this.shrinkStart
+    this._cachedShrinkMode = this.shrinkMode
+    this._cachedExpandOnScrollUp = this.expandOnScrollUp
 
     const measured = this.offsetHeight
     this._fullHeight = measured > 0 ? measured : 64
@@ -167,17 +174,18 @@ export class FluidNavBar extends FluidElement {
     const delta = scrollTop - this._lastScrollTop
     this._lastScrollTop = scrollTop
 
-    const start = this.shrinkStart
+    const start = this._cachedShrinkStart
+    // zone = shrink range; using shrinkStart px gives a natural 2× threshold feel
     const zone = start
 
     let progress: number
-    if (this.shrinkMode === 'stepped') {
+    if (this._cachedShrinkMode === 'stepped') {
       progress = scrollTop > start ? 1 : 0
     } else {
       progress = Math.max(0, Math.min(1, (scrollTop - start) / Math.max(1, zone)))
     }
 
-    if (this.expandOnScrollUp && delta < 0 && this._shrunk) {
+    if (this._cachedExpandOnScrollUp && delta < 0 && this._shrunk) {
       progress = 0
     }
 
@@ -205,8 +213,9 @@ export class FluidNavBar extends FluidElement {
 
   private _updateScrollDrivenRange(): void {
     if (!this._isCrystallinePlus()) return
-    const start = this.shrinkStart
-    const stepped = this.shrinkMode === 'stepped'
+    const start = this._cachedShrinkStart
+    const stepped = this._cachedShrinkMode === 'stepped'
+    // zone: 1px for stepped snap, shrinkStart px for smooth continuous transition
     const zone = stepped ? 1 : start
     this.style.setProperty('--fluid-nav-shrink-start-px', `${start}px`)
     this.style.setProperty('--fluid-nav-shrink-end-px', `${start + zone}px`)
@@ -270,6 +279,7 @@ export class FluidNavBar extends FluidElement {
       return
     }
     this._prevShrinkMode = next
+    this._cachedShrinkMode = next
     this._syncShrinkMode()
     this._updateScrollDrivenRange()
   }
