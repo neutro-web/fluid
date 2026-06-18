@@ -164,16 +164,38 @@ export class FluidNavBar extends FluidElement {
       this.setAttribute('data-scroll-driven', '')
       this._updateScrollDrivenRange()
 
-      // At Crystalline+: CSS animation-timeline: scroll() drives height — no JS scroll listener.
-      // A rAF loop polls scroll position post-paint (not in the scroll event hot path) to update
-      // shrinkProgress, dispatch fluid:shrink-change events, and support expand-on-scroll-up.
+      // At Crystalline+: CSS animation-timeline: scroll() drives height on the compositor.
+      // A rAF chain polls scroll position post-paint to update shrinkProgress, dispatch
+      // fluid:shrink-change events, and support expand-on-scroll-up. The chain starts on
+      // mount and on each scroll event, then idles out after a few stable frames — avoiding
+      // a permanent 60 fps loop when the page is not scrolling.
       let rafId: number | null = null
+      let idleFrames = 0
+
       const poll = (): void => {
+        const prevTop = this._lastScrollTop
         this._handleScroll(scrollEl, true)
+        idleFrames = scrollEl.scrollTop !== prevTop ? 0 : idleFrames + 1
+        if (idleFrames < 4) {
+          rafId = requestAnimationFrame(poll)
+        } else {
+          rafId = null
+        }
+      }
+
+      const startPoll = (): void => {
+        idleFrames = 0
+        if (rafId !== null) return
         rafId = requestAnimationFrame(poll)
       }
-      rafId = requestAnimationFrame(poll)
+
+      // Kick on mount to apply initial scroll state
+      startPoll()
+
+      // Restart on each scroll — no DOM reads in this handler, only a cheap rAF schedule
+      scrollEl.addEventListener('scroll', startPoll, { passive: true } as AddEventListenerOptions)
       this._scrollDisposers.push(() => {
+        scrollEl.removeEventListener('scroll', startPoll)
         if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null }
       })
     } else {
@@ -221,9 +243,10 @@ export class FluidNavBar extends FluidElement {
       progress = 0
       if (crystallinePlus) {
         // CSS animation-timeline: scroll() is monotonic — it cannot re-expand on upward scroll.
-        // Write an inline override so the bar visually re-expands. Cleared on next downward scroll.
+        // Write an inline !important override so it beats the running CSS animation. Cleared on
+        // next downward scroll, at which point the animation resumes control.
         this._expandOverrideActive = true
-        this.style.setProperty('--fluid-nav-shrink-progress', '0')
+        this.style.setProperty('--fluid-nav-shrink-progress', '0', 'important')
       }
     } else if (this._expandOverrideActive) {
       if (delta > 0) {
@@ -278,7 +301,7 @@ export class FluidNavBar extends FluidElement {
     const label = this.getAttribute('aria-label')
     if (!label || label.trim() === '') {
       if (DEV) {
-        throw new FluidError('fluid-nav-bar requires aria-label.')
+        throw new FluidError('[fluid error] fluid-nav-bar requires aria-label.')
       }
       if (!this._ariaLabelWarned) {
         this._ariaLabelWarned = true

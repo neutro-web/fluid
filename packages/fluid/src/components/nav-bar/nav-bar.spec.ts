@@ -117,7 +117,7 @@ describe('fluid-nav-bar', () => {
       const err = await errorPromise
       assert(err.name === 'FluidError', `Expected FluidError, got: ${err?.name}`)
       assert(
-        err.message === '[fluid] fluid-nav-bar requires aria-label.',
+        err.message === '[fluid] [fluid error] fluid-nav-bar requires aria-label.',
         `Expected exact error message, got: "${err.message}"`,
       )
     })
@@ -533,16 +533,18 @@ describe('fluid-nav-bar', () => {
         `With expand-on-scroll-up, upward scroll should expand. Got ${el.shrinkProgress.current}`)
     })
 
-    it('Crystalline: expand-on-scroll-up writes inline override on upward scroll', async () => {
+    it('Crystalline: expand-on-scroll-up writes !important inline override on upward scroll', async () => {
       FluidTestUtils.mockTier('crystalline')
       const el = await FluidTestUtils.mount(`<fluid-nav-bar aria-label="Nav" shrink-start="48" expand-on-scroll-up></fluid-nav-bar>`) as any
       const scrollEl = (document.scrollingElement ?? document.documentElement) as HTMLElement
-      // Scroll down past threshold — rAF will shrink the bar
+      // Scroll down past threshold
       Object.defineProperty(scrollEl, 'scrollTop', { value: 100, writable: true, configurable: true })
+      scrollEl.dispatchEvent(new Event('scroll'))
       await waitFrames(2)
       assert(el.shrinkProgress.current > 0, `Expected shrunk at scroll=100, got ${el.shrinkProgress.current}`)
-      // Scroll up — expand-on-scroll-up must force visual re-expansion via inline override
+      // Scroll up — expand-on-scroll-up must write !important override (CSS animation is monotonic)
       Object.defineProperty(scrollEl, 'scrollTop', { value: 50, writable: true, configurable: true })
+      scrollEl.dispatchEvent(new Event('scroll'))
       await waitFrames(2)
       assert(el.shrinkProgress.current === 0,
         `Crystalline expand-on-scroll-up: upward scroll should expand. Got ${el.shrinkProgress.current}`)
@@ -600,18 +602,17 @@ describe('fluid-nav-bar', () => {
       assert(endVal === '101px', `Expected "101px" for stepped snap, got "${endVal}"`)
     })
 
-    it('Crystalline: rAF polls progress; no scroll listener; no inline shrink-progress var', async () => {
+    it('Crystalline: scroll kicks rAF chain; heavy work in rAF not scroll handler; no inline shrink-progress var', async () => {
       FluidTestUtils.mockTier('crystalline')
       const el = await FluidTestUtils.mount(`<fluid-nav-bar aria-label="Nav"></fluid-nav-bar>`)
       const scrollEl = (document.scrollingElement ?? document.documentElement) as HTMLElement
       Object.defineProperty(scrollEl, 'scrollTop', { value: 100, writable: true, configurable: true })
-      // Do NOT dispatch a scroll event — at Crystalline+ there is no scroll listener.
-      // Wait for the rAF poller to pick up the new scrollTop.
+      // Dispatch scroll event — kicks the rAF chain at Crystalline+ (no DOM reads in handler)
+      scrollEl.dispatchEvent(new Event('scroll'))
       await waitFrames(2)
-      // shrinkProgress should update via rAF
       const progress = (el as any).shrinkProgress.current
       assert(progress > 0, `Expected shrinkProgress > 0 after rAF poll at Crystalline, got ${progress}`)
-      // Height is driven by CSS animation-timeline — inline var must NOT be written
+      // Height is driven by CSS animation-timeline — inline var must NOT be written (unless expand override active)
       const inlineVar = el.style.getPropertyValue('--fluid-nav-shrink-progress')
       assert(inlineVar === '', `At Crystalline+, JS should not write inline shrink-progress. Got "${inlineVar}"`)
       Object.defineProperty(scrollEl, 'scrollTop', { value: 0, writable: true, configurable: true })
