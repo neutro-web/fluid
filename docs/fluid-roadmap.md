@@ -1180,36 +1180,46 @@ Each follows the same pattern — only divergences from the base pattern are not
 **P2-09: `fluid-link`**
 - **Depends on:** P1-01
 - **Key acceptance criteria:** `<a>` semantics with Fluid token application. `fluid:activate` event. `aria-current="page"` when active in a navigation context (this is where `aria-current="page"` belongs — on a link in a `<nav>`, not on a tab in a tabpanel). No glass surface, no spring interaction — foundational link primitive.
+- **Spec:** `docs/components/link/link.spec.md`
+- **Blocks:** P3-03 (`fluid-breadcrumb` composes `fluid-link`).
 - **Size:** S
 
 ---
 
 ## Phase 3: Navigation Components
 
-**All parallel after Phase 1 + 2 (nav-bar and tab-bar may share some patterns).**
+**Ordering (not fully parallel):**
+1. **P2-09 `fluid-link` must merge first** — P3-03 `fluid-breadcrumb` composes it. P2-09 is Size S and unblocked now; run it before any P3-03 session.
+2. All four Phase 3 specs are written (see each entry's Spec path) and were reviewed by the Design Authority 2026-06-17.
+3. Once P2-09 is merged, P3-01, P3-02, and P3-04 are fully parallel. P3-03 is parallel with them *after* P2-09.
+4. Each session reads its Spec file first; the spec outranks the session brief on any conflict (AGENTS.md spec-precedence rule).
 
 ---
 
 **P3-01: `fluid-nav-bar`**
 - **Key acceptance criteria:** Shrink-on-scroll contract (see §XI). Skip link rendered as first child. Scroll-driven animation at Crystalline+, JS fallback at Frosted.
+- **Spec:** `docs/components/nav-bar/nav-bar.spec.md`
 - **Size:** L
 
 ---
 
 **P3-02: `fluid-tab-bar` + `fluid-tab` + `fluid-tab-panel`**
 - **Key acceptance criteria:** Context protocol (`WCCG`) across all three: `fluid-tab-bar` provides context, `fluid-tab` requests it and owns activation, `fluid-tab-panel` requests it and owns visibility. `tablist`/`tab`/`tabpanel` ARIA. Active tab `aria-selected="true"` (not `aria-current`); each tab has `aria-controls` pointing to its panel. Roving tabindex for arrow-key selection.
+- **Spec:** `docs/components/tab-bar/tab-bar.spec.md` (covers `fluid-tab-bar` + `fluid-tab` + `fluid-tab-panel`)
 - **Size:** L
 
 ---
 
 **P3-03: `fluid-sidebar`, `fluid-breadcrumb`, `fluid-back-button`**
 - **Key acceptance criteria:** `navigation` landmark roles. RTL: separator and arrow directions flip.
+- **Spec:** `docs/components/sidebar/` — `sidebar.spec.md`, `breadcrumb.spec.md`, `back-button.spec.md` (authored together as one document; split per component at implementation)
 - **Size:** M each
 
 ---
 
 **P3-04: `fluid-scroll-view`**
 - **Key acceptance criteria:** Frosted: CSS scrollbar styling. Crystalline+: custom JS scrollbar with inertia + elastic. Keyboard navigation (arrow, page, home/end). `snap` coordination. `native` attribute forces native scroll.
+- **Spec:** `docs/components/scroll-view/scroll-view.spec.md`
 - **Size:** L
 
 ---
