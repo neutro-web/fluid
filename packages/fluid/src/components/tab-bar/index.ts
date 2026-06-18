@@ -75,6 +75,10 @@ export class FluidTabPanel extends FluidElement {
       this._ctx = ctx
       ctx.panels.push(this)
       this._unsubCtx = ctx.subscribe((c) => this._onContextChange(c))
+      this.disposers.push(() => {
+        const idx = ctx.panels.indexOf(this)
+        if (idx !== -1) ctx.panels.splice(idx, 1)
+      })
     })
 
     this.disposers.push(
@@ -232,7 +236,10 @@ export class FluidTab extends FluidElement {
       this._ctx = ctx
       ctx.tabs.push(this)
       const unsub = ctx.subscribe((c) => this._onContextChange(c))
-      this.disposers.push(unsub)
+      this.disposers.push(unsub, () => {
+        const idx = ctx.tabs.indexOf(this)
+        if (idx !== -1) ctx.tabs.splice(idx, 1)
+      })
     })
     this.disposers.push(unsubReq, () => { this._ctx = null })
   }
