@@ -37,7 +37,7 @@ const meta: Meta = {
     },
   },
   args: {
-    href: '/about',
+    href: '#about',
     target: '',
     current: false,
     disabled: false,
@@ -64,11 +64,11 @@ export const Default: Story = {
 
 export const WithIcon: Story = {
   render: () => html`
-    <fluid-link href="https://example.com" target="_blank">
+    <fluid-link href="https://www.google.com" target="_blank">
       <svg slot="icon" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
         <path d="M5 2H2v10h10V9M9 2h3m0 0v3m0-3L6 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
-      External link
+      Open Google
     </fluid-link>
   `,
 }
@@ -78,9 +78,9 @@ export const WithIcon: Story = {
 export const Current: Story = {
   render: () => html`
     <nav aria-label="Site navigation" style="display:flex;gap:16px">
-      <fluid-link href="/" current>Home</fluid-link>
-      <fluid-link href="/about">About</fluid-link>
-      <fluid-link href="/contact">Contact</fluid-link>
+      <fluid-link href="#home" current>Home</fluid-link>
+      <fluid-link href="#about">About</fluid-link>
+      <fluid-link href="#contact">Contact</fluid-link>
     </nav>
   `,
   parameters: {
@@ -97,7 +97,7 @@ export const Current: Story = {
 
 export const Disabled: Story = {
   render: () => html`
-    <fluid-link href="/premium" disabled>Premium features</fluid-link>
+    <fluid-link href="#premium" disabled>Premium features</fluid-link>
   `,
 }
 
@@ -106,8 +106,8 @@ export const Disabled: Story = {
 export const ExternalBlank: Story = {
   name: 'External (target="_blank")',
   render: () => html`
-    <fluid-link href="https://example.com" target="_blank">
-      Open in new tab
+    <fluid-link href="https://www.google.com" target="_blank">
+      Open Google in new tab
     </fluid-link>
   `,
   parameters: {
@@ -124,9 +124,9 @@ export const ExternalBlank: Story = {
 export const InNavContext: Story = {
   render: () => html`
     <nav aria-label="Breadcrumb" style="display:flex;gap:8px;align-items:center">
-      <fluid-link href="/">Home</fluid-link>
+      <fluid-link href="#home">Home</fluid-link>
       <span aria-hidden="true">/</span>
-      <fluid-link href="/products">Products</fluid-link>
+      <fluid-link href="#products">Products</fluid-link>
       <span aria-hidden="true">/</span>
       <fluid-link current>Widgets</fluid-link>
     </nav>
