@@ -37,7 +37,7 @@ const meta: Meta = {
     },
   },
   args: {
-    href: '#about',
+    href: '#',
     target: '',
     current: false,
     disabled: false,
@@ -78,9 +78,9 @@ export const WithIcon: Story = {
 export const Current: Story = {
   render: () => html`
     <nav aria-label="Site navigation" style="display:flex;gap:16px">
-      <fluid-link href="#home" current>Home</fluid-link>
-      <fluid-link href="#about">About</fluid-link>
-      <fluid-link href="#contact">Contact</fluid-link>
+      <fluid-link href="#" current>Home</fluid-link>
+      <fluid-link href="#">About</fluid-link>
+      <fluid-link href="#">Contact</fluid-link>
     </nav>
   `,
   parameters: {
@@ -97,7 +97,7 @@ export const Current: Story = {
 
 export const Disabled: Story = {
   render: () => html`
-    <fluid-link href="#premium" disabled>Premium features</fluid-link>
+    <fluid-link href="#" disabled>Premium features</fluid-link>
   `,
 }
 
@@ -124,9 +124,9 @@ export const ExternalBlank: Story = {
 export const InNavContext: Story = {
   render: () => html`
     <nav aria-label="Breadcrumb" style="display:flex;gap:8px;align-items:center">
-      <fluid-link href="#home">Home</fluid-link>
+      <fluid-link href="#">Home</fluid-link>
       <span aria-hidden="true">/</span>
-      <fluid-link href="#products">Products</fluid-link>
+      <fluid-link href="#">Products</fluid-link>
       <span aria-hidden="true">/</span>
       <fluid-link current>Widgets</fluid-link>
     </nav>

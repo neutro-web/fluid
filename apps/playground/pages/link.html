@@ -14,7 +14,7 @@
 
     <div class="pg-example">
       <div class="pg-preview">
-        <fluid-link href="#default">Default link</fluid-link>
+        <fluid-link href="#">Default link</fluid-link>
       </div>
       <pre class="pg-code">&lt;fluid-link href="/about"&gt;About us&lt;/fluid-link&gt;</pre>
     </div>
@@ -41,8 +41,8 @@
 
     <div class="pg-example">
       <div class="pg-preview" style="gap: 16px; flex-wrap: wrap; align-items: center">
-        <fluid-link href="#default">Default</fluid-link>
-        <fluid-link href="#current" current>Current page</fluid-link>
+        <fluid-link href="#">Default</fluid-link>
+        <fluid-link href="#" current>Current page</fluid-link>
         <fluid-link disabled>Disabled</fluid-link>
       </div>
       <pre class="pg-code">&lt;fluid-link href="/"&gt;Default&lt;/fluid-link&gt;
@@ -59,10 +59,10 @@
     <div class="pg-example">
       <div class="pg-preview">
         <nav aria-label="Site navigation" style="display:flex;gap:16px">
-          <fluid-link href="#home">Home</fluid-link>
-          <fluid-link href="#products">Products</fluid-link>
-          <fluid-link href="#link" current>Link</fluid-link>
-          <fluid-link href="#contact">Contact</fluid-link>
+          <fluid-link href="#">Home</fluid-link>
+          <fluid-link href="#">Products</fluid-link>
+          <fluid-link href="#" current>Link</fluid-link>
+          <fluid-link href="#">Contact</fluid-link>
         </nav>
       </div>
       <pre class="pg-code">&lt;nav aria-label="Site navigation"&gt;
@@ -80,7 +80,7 @@
     <div class="pg-example">
       <p><strong>Icon-only with aria-label</strong> — no text, explicit label for screen readers.</p>
       <div class="pg-preview">
-        <fluid-link href="#home" aria-label="Home">
+        <fluid-link href="#" aria-label="Home">
           <svg slot="icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <path d="M1 7L8 1l7 6v7a1 1 0 01-1 1H2a1 1 0 01-1-1V7z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
           </svg>
@@ -116,7 +116,7 @@
     <div class="pg-example">
       <p><strong>RTL</strong> — icon and text mirror under <code>dir="rtl"</code>.</p>
       <div class="pg-preview" dir="rtl">
-        <fluid-link href="#rtl">
+        <fluid-link href="#">
           <svg slot="icon" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
             <path d="M5 2H2v10h10V9M9 2h3m0 0v3m0-3L6 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
@@ -124,7 +124,7 @@
         </fluid-link>
       </div>
       <pre class="pg-code">&lt;div dir="rtl"&gt;
-  &lt;fluid-link href="#rtl"&gt;
+  &lt;fluid-link href="#"&gt;
     &lt;svg slot="icon" ...&gt;&lt;/svg&gt;
     رابط خارجي
   &lt;/fluid-link&gt;
