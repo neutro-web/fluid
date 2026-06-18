@@ -1,5 +1,8 @@
 import { FluidElement } from '../../core/element'
+import type { FluidMaterial } from '../../core/element'
 import type { FluidLayer } from '../../core/z-index'
+import type { SpringConfig } from '../../core/spring'
+import { SPRING_PRESETS } from '../../core/spring'
 import linkStyles from './styles'
 
 const DEV: boolean =
@@ -16,6 +19,10 @@ template.innerHTML = /* html */ `
 
 export class FluidLink extends FluidElement {
   protected readonly layer: FluidLayer = 'raised'
+  // Spec: material = none, spring = none. FluidMaterial/SpringConfig have no 'none' variant,
+  // so these are inert declarations to satisfy the abstract base. Neither is ever read by this component.
+  protected readonly material: FluidMaterial = 'thin'
+  protected readonly spring: SpringConfig = SPRING_PRESETS.gentle
 
   static get observedAttributes(): string[] {
     return ['href', 'target', 'current', 'disabled', 'aria-label']
@@ -164,9 +171,9 @@ export class FluidLink extends FluidElement {
 
   private _onKeyDown = (e: KeyboardEvent): void => {
     if (this.disabled) return
-    if (e.key === 'Enter') {
-      this._dispatchActivate()
-    }
+    // href links: browser synthesizes a click on Enter, so _onClick handles activation.
+    // no-href links: no click synthesis, so we dispatch explicitly here.
+    if (e.key === 'Enter' && !this.href) this._dispatchActivate()
   }
 
   private _dispatchActivate(): void {

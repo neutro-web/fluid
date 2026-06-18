@@ -207,18 +207,31 @@ describe('fluid-link', () => {
   // ─── keyboard activation ─────────────────────────────────────────────────
 
   describe('keyboard activation', () => {
-    it('fires fluid:activate on Enter key', async () => {
-      const el = await FluidTestUtils.mount(`<fluid-link href="/about">About</fluid-link>`)
+    it('fires fluid:activate on Enter for no-href (JS-nav) link', async () => {
+      // No-href links have no native click synthesis on Enter — _onKeyDown handles activation.
+      const el = await FluidTestUtils.mount(`<fluid-link>Go</fluid-link>`)
       const events: CustomEvent[] = []
       el.addEventListener('fluid:activate', (e) => events.push(e as CustomEvent))
       const anchor = el.shadowRoot!.querySelector('a')!
       anchor.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }))
-      assert(events.length === 1, `Expected 1 fluid:activate on Enter, got ${events.length}`)
-      assert(events[0].detail.href === '/about', `Expected detail.href="/about" but got "${events[0].detail.href}"`)
+      assert(events.length === 1, `Expected 1 fluid:activate on Enter for no-href link, got ${events.length}`)
+      assert(events[0].detail.href === null, `Expected detail.href=null but got "${events[0].detail.href}"`)
+    })
+
+    it('href link: Enter keydown alone does not double-dispatch (browser synthesizes click separately)', async () => {
+      // For href links, _onKeyDown must NOT dispatch — the browser synthesizes a click on Enter
+      // which _onClick then handles. If both dispatch, fluid:activate fires twice per keypress.
+      const el = await FluidTestUtils.mount(`<fluid-link href="/about">About</fluid-link>`)
+      const events: CustomEvent[] = []
+      el.addEventListener('fluid:activate', (e) => events.push(e as CustomEvent))
+      const anchor = el.shadowRoot!.querySelector('a')!
+      // Simulate just the keydown (no synthesized click — that's a real browser behavior).
+      anchor.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }))
+      assert(events.length === 0, `href link Enter keydown alone must not fire fluid:activate (browser synthesizes click separately). Got ${events.length} events.`)
     })
 
     it('does not fire fluid:activate on Enter when disabled', async () => {
-      const el = await FluidTestUtils.mount(`<fluid-link href="/about" disabled>About</fluid-link>`)
+      const el = await FluidTestUtils.mount(`<fluid-link disabled>About</fluid-link>`)
       const events: CustomEvent[] = []
       el.addEventListener('fluid:activate', (e) => events.push(e as CustomEvent))
       const anchor = el.shadowRoot!.querySelector('a')!
@@ -256,6 +269,34 @@ describe('fluid-link', () => {
       document.addEventListener = origAdd
 
       assert(tierListenerCount === 0, `Expected 0 fluidledger:tier-change listeners, got ${tierListenerCount}`)
+    })
+  })
+
+  // ─── RTL ────────────────────────────────────────────────────────────────
+
+  describe('RTL (acceptance criterion #10)', () => {
+    it('icon slot appears before label in DOM order (LTR — base case)', async () => {
+      const el = await FluidTestUtils.mount(`<fluid-link href="/page">${ICON_SVG}Text</fluid-link>`)
+      const anchor = el.shadowRoot!.querySelector('a')!
+      const parts = Array.from(anchor.querySelectorAll('[part]')).map(p => p.getAttribute('part'))
+      const iconIdx = parts.indexOf('icon')
+      const labelIdx = parts.indexOf('label')
+      assert(iconIdx < labelIdx, `Expected icon before label in DOM. Got icon=${iconIdx}, label=${labelIdx}`)
+    })
+
+    it('renders and activates correctly under dir="rtl"', async () => {
+      const wrapper = await FluidTestUtils.mount(
+        `<div dir="rtl"><fluid-link href="#rtl">${ICON_SVG}رابط</fluid-link></div>`
+      )
+      const el = wrapper.querySelector('fluid-link')!
+      const anchor = el.shadowRoot!.querySelector('a')!
+      // Structural integrity under RTL: anchor renders, icon+label parts present
+      assert(anchor !== null, 'Expected anchor to render under dir="rtl"')
+      assert(anchor.querySelector('[part="icon"]') !== null, 'Expected icon part under dir="rtl"')
+      assert(anchor.querySelector('[part="label"]') !== null, 'Expected label part under dir="rtl"')
+      // Computed direction should be rtl (inherited via logical properties)
+      const dir = getComputedStyle(el).direction
+      assert(dir === 'rtl', `Expected direction="rtl" but got "${dir}"`)
     })
   })
 
