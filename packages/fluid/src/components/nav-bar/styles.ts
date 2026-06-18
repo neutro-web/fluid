@@ -43,8 +43,13 @@ const navBarStyles = /* css */ `
   animation-timing-function: step-start;
 }
 
+:host([data-expanding]) {
+  transition: --fluid-nav-shrink-progress 200ms ease-out;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  :host {
+  :host,
+  :host([data-expanding]) {
     transition: none;
   }
 }

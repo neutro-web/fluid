@@ -11,6 +11,10 @@ import navBarStyles from './styles'
 const DEV: boolean =
   typeof process !== 'undefined' && process.env.NODE_ENV !== 'production'
 
+// Spec §5.3 proposes motion.scrollProgress + motion.bind for progress tracking, but
+// motion.scrollProgress gives the whole-page scroll fraction (0→1 over the entire document
+// height), not the shrink-zone fraction (shrinkStart → shrinkStart+zone). The zone-specific
+// calculation requires custom logic, so NavShrinkProgress is used instead.
 class NavShrinkProgress implements ReactiveValue {
   private _current: number
   private _subs = new Set<(v: number) => void>()
@@ -219,6 +223,7 @@ export class FluidNavBar extends FluidElement {
     this._scrollDisposers.forEach(d => d())
     this._scrollDisposers = []
     this.removeAttribute('data-scroll-driven')
+    this.removeAttribute('data-expanding')
     this.style.removeProperty('--fluid-nav-shrink-progress')
     this._expandOverrideActive = false
   }
@@ -241,6 +246,7 @@ export class FluidNavBar extends FluidElement {
 
     if (this._cachedExpandOnScrollUp && delta < 0 && this._shrunk) {
       progress = 0
+      this.setAttribute('data-expanding', '')  // triggers 200ms ease-out CSS transition
       if (crystallinePlus) {
         // CSS animation-timeline: scroll() is monotonic — it cannot re-expand on upward scroll.
         // Write an inline !important override so it beats the running CSS animation. Cleared on
@@ -250,8 +256,9 @@ export class FluidNavBar extends FluidElement {
       }
     } else if (this._expandOverrideActive) {
       if (delta > 0) {
-        // Scrolling down: clear the override so CSS animation-timeline (or JS at Frosted) resumes.
+        // Scrolling down: clear override before removing property so no transition on re-shrink.
         this._expandOverrideActive = false
+        this.removeAttribute('data-expanding')
         if (crystallinePlus) this.style.removeProperty('--fluid-nav-shrink-progress')
       } else {
         // Override is active but no downward scroll yet — sustain progress=0 across rAF polls.
@@ -272,6 +279,8 @@ export class FluidNavBar extends FluidElement {
     const nowShrunk = progress > 0
     if (nowShrunk !== this._shrunk) {
       this._shrunk = nowShrunk
+      // Re-shrinking after expand-on-scroll-up: remove expand transition so scroll tracking is immediate.
+      if (nowShrunk) this.removeAttribute('data-expanding')
       this.dispatchEvent(new CustomEvent('fluid:shrink-change', {
         detail: { shrunk: nowShrunk, progress },
         bubbles: true,
