@@ -1,0 +1,188 @@
+<article class="pg-page">
+  <header class="pg-page-header">
+    <h1 class="pg-page-title">Link</h1>
+    <p class="pg-page-desc">
+      A styled, token-aware anchor primitive. No glass surface, no spring interaction —
+      intentionally minimal for composability (breadcrumb, sidebar, nav). Uses a shadow
+      <code>&lt;a&gt;</code> for native link semantics, keyboard behavior, and "open in new tab".
+    </p>
+  </header>
+
+  <!-- ─── Variants ─────────────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Variants</h2>
+
+    <div class="pg-example">
+      <div class="pg-preview">
+        <fluid-link href="#default">Default link</fluid-link>
+      </div>
+      <pre class="pg-code">&lt;fluid-link href="/about"&gt;About us&lt;/fluid-link&gt;</pre>
+    </div>
+
+    <div class="pg-example">
+      <div class="pg-preview">
+        <fluid-link href="#with-icon">
+          <svg slot="icon" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <path d="M5 2H2v10h10V9M9 2h3m0 0v3m0-3L6 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Link with icon
+        </fluid-link>
+      </div>
+      <pre class="pg-code">&lt;fluid-link href="https://example.com" target="_blank"&gt;
+  &lt;svg slot="icon" ...&gt;&lt;/svg&gt;
+  External resource
+&lt;/fluid-link&gt;</pre>
+    </div>
+  </section>
+
+  <!-- ─── States ───────────────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>States</h2>
+
+    <div class="pg-example">
+      <div class="pg-preview" style="gap: 16px; flex-wrap: wrap; align-items: center">
+        <fluid-link href="#default">Default</fluid-link>
+        <fluid-link href="#current" current>Current page</fluid-link>
+        <fluid-link disabled>Disabled</fluid-link>
+      </div>
+      <pre class="pg-code">&lt;fluid-link href="/"&gt;Default&lt;/fluid-link&gt;
+&lt;fluid-link href="/" current&gt;Current page&lt;/fluid-link&gt;
+&lt;fluid-link disabled&gt;Disabled&lt;/fluid-link&gt;</pre>
+    </div>
+  </section>
+
+  <!-- ─── In a nav context ─────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>In a nav context</h2>
+    <p>Link-based navigation: <code>aria-current="page"</code> on the active crumb.</p>
+
+    <div class="pg-example">
+      <div class="pg-preview">
+        <nav aria-label="Site navigation" style="display:flex;gap:16px">
+          <fluid-link href="#home">Home</fluid-link>
+          <fluid-link href="#products">Products</fluid-link>
+          <fluid-link href="#link" current>Link</fluid-link>
+          <fluid-link href="#contact">Contact</fluid-link>
+        </nav>
+      </div>
+      <pre class="pg-code">&lt;nav aria-label="Site navigation"&gt;
+  &lt;fluid-link href="/"&gt;Home&lt;/fluid-link&gt;
+  &lt;fluid-link href="/products"&gt;Products&lt;/fluid-link&gt;
+  &lt;fluid-link href="/link" current&gt;Link&lt;/fluid-link&gt;
+&lt;/nav&gt;</pre>
+    </div>
+  </section>
+
+  <!-- ─── Edge cases ───────────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Edge cases</h2>
+
+    <div class="pg-example">
+      <p><strong>Icon-only with aria-label</strong> — no text, explicit label for screen readers.</p>
+      <div class="pg-preview">
+        <fluid-link href="#home" aria-label="Home">
+          <svg slot="icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M1 7L8 1l7 6v7a1 1 0 01-1 1H2a1 1 0 01-1-1V7z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+          </svg>
+        </fluid-link>
+      </div>
+      <pre class="pg-code">&lt;fluid-link href="/" aria-label="Home"&gt;
+  &lt;svg slot="icon" aria-hidden="true"&gt;...&lt;/svg&gt;
+&lt;/fluid-link&gt;</pre>
+    </div>
+
+    <div class="pg-example">
+      <p><strong>External link (target="_blank")</strong> — <code>rel="noopener noreferrer"</code> applied automatically.</p>
+      <div class="pg-preview">
+        <fluid-link href="https://example.com" target="_blank">
+          Open example.com
+        </fluid-link>
+      </div>
+      <pre class="pg-code">&lt;fluid-link href="https://example.com" target="_blank"&gt;
+  Open example.com
+&lt;/fluid-link&gt;
+&lt;!-- rel="noopener noreferrer" applied automatically --&gt;</pre>
+    </div>
+
+    <div class="pg-example">
+      <p><strong>JS-driven navigation</strong> — no href, still focusable.</p>
+      <div class="pg-preview">
+        <fluid-link id="pg-js-link">Navigate via JS</fluid-link>
+      </div>
+      <pre class="pg-code">&lt;fluid-link&gt;Navigate via JS&lt;/fluid-link&gt;
+&lt;!-- tabindex="0" and role="link" applied automatically --&gt;</pre>
+    </div>
+
+    <div class="pg-example">
+      <p><strong>RTL</strong> — icon and text mirror under <code>dir="rtl"</code>.</p>
+      <div class="pg-preview" dir="rtl">
+        <fluid-link href="#rtl">
+          <svg slot="icon" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <path d="M5 2H2v10h10V9M9 2h3m0 0v3m0-3L6 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          رابط خارجي
+        </fluid-link>
+      </div>
+      <pre class="pg-code">&lt;div dir="rtl"&gt;
+  &lt;fluid-link href="#rtl"&gt;
+    &lt;svg slot="icon" ...&gt;&lt;/svg&gt;
+    رابط خارجي
+  &lt;/fluid-link&gt;
+&lt;/div&gt;</pre>
+    </div>
+  </section>
+
+  <!-- ─── Event log ─────────────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Event log</h2>
+    <p>Click any link above to see <code>fluid:activate</code> events here.</p>
+    <div class="pg-preview">
+      <output id="pg-link-log" style="font-family:monospace;font-size:0.8125rem;white-space:pre-wrap;min-height:2em">
+        (no events yet)
+      </output>
+    </div>
+  </section>
+</article>
+
+<script type="module">
+  import '@neutro/fluid/link'
+
+  const log = document.getElementById('pg-link-log')
+  document.addEventListener('fluid:activate', (e) => {
+    if (e.target?.tagName?.toLowerCase() !== 'fluid-link') return
+    const ts = new Date().toLocaleTimeString()
+    log.textContent = `[${ts}] fluid:activate — href: ${JSON.stringify(e.detail.href)}\n` + log.textContent
+  })
+
+  const jsLink = document.getElementById('pg-js-link')
+  if (jsLink) {
+    jsLink.addEventListener('fluid:activate', () => {
+      jsLink.textContent = 'Activated via fluid:activate!'
+      setTimeout(() => { jsLink.textContent = 'Navigate via JS' }, 1500)
+    })
+  }
+</script>
+
+<style>
+  .pg-example {
+    margin-bottom: 24px;
+  }
+  .pg-preview {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 24px;
+    background: var(--pg-surface, rgba(0 0 0 / 0.04));
+    border-radius: 8px;
+    margin-bottom: 8px;
+  }
+  .pg-code {
+    margin: 0;
+    padding: 12px 16px;
+    background: var(--pg-code-bg, rgba(0 0 0 / 0.06));
+    border-radius: 6px;
+    font-size: 0.8125rem;
+    overflow-x: auto;
+    white-space: pre;
+  }
+</style>
