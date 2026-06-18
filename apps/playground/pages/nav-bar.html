@@ -1,0 +1,249 @@
+<article class="pg-page">
+  <header class="pg-page-header">
+    <h1 class="pg-page-title">Nav Bar</h1>
+    <p class="pg-page-desc">
+      A sticky glass navigation bar with scroll-linked shrink. Uses a CSS
+      <code>animation-timeline: scroll()</code> at Crystalline+ and a JS scroll-listener
+      fallback at Frosted/Matte. Shrink is structural (all tiers, including reduced-motion);
+      depth cue (<code>elevate</code>/<code>flatten</code>) is suppressed under reduced motion.
+      A shadow skip link targets <code>#fluid-main-content</code>.
+    </p>
+  </header>
+
+  <!-- ─── Skip link demo ────────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Skip link</h2>
+    <p>
+      Tab into the demo below. The first focus stop is the hidden skip link inside
+      <code>fluid-nav-bar</code>'s shadow root. Pressing Enter jumps focus to
+      <code>#fluid-main-content</code>.
+    </p>
+    <div class="pg-example">
+      <div class="pg-preview pg-preview--fullwidth" style="padding:0;overflow:hidden;height:200px;position:relative;">
+        <fluid-nav-bar
+          id="pg-nav-skiplink"
+          aria-label="Primary navigation"
+          style="--fluid-nav-full-height:56px;position:absolute;top:0;left:0;right:0;"
+        >
+          <span slot="leading" style="font-weight:600">Fluid</span>
+          <a href="#" style="text-decoration:none;color:inherit">Home</a>
+          <a href="#" style="text-decoration:none;color:inherit">About</a>
+        </fluid-nav-bar>
+        <div style="padding:72px 24px 24px;">
+          <div id="fluid-main-content" tabindex="-1" style="padding:8px;border:1px dashed currentColor;border-radius:4px;font-size:0.875rem;">
+            Skip link target — <code>#fluid-main-content</code>
+          </div>
+        </div>
+      </div>
+      <pre class="pg-code">&lt;!-- Shadow DOM skip link automatically links to #fluid-main-content --&gt;
+&lt;fluid-nav-bar aria-label="Primary navigation"&gt;...&lt;/fluid-nav-bar&gt;
+&lt;div id="fluid-main-content" tabindex="-1"&gt;Main content&lt;/div&gt;</pre>
+    </div>
+  </section>
+
+  <!-- ─── Continuous shrink ────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Continuous shrink mode</h2>
+    <p>
+      Height interpolates linearly with scroll — no snapping. Scroll inside the preview
+      to see the bar shrink.
+    </p>
+    <div class="pg-example">
+      <div
+        class="pg-preview pg-preview--fullwidth"
+        style="padding:0;overflow-y:scroll;height:300px;position:relative;"
+        id="pg-continuous-scroll"
+      >
+        <div style="height:300vh;padding-top:0;">
+          <fluid-nav-bar
+            id="pg-nav-continuous"
+            aria-label="Primary navigation"
+            shrink-mode="continuous"
+            shrink-start="48"
+            shrink-amount="0.6"
+            style="--fluid-nav-full-height:56px;position:sticky;top:0;"
+          >
+            <span slot="leading" style="font-weight:600">Fluid</span>
+            <a href="#" style="text-decoration:none;color:inherit">Home</a>
+            <a href="#" style="text-decoration:none;color:inherit">About</a>
+            <a href="#" style="text-decoration:none;color:inherit">Docs</a>
+            <span slot="trailing">
+              <button style="border:none;background:none;cursor:pointer;font-size:1rem">⚙</button>
+            </span>
+          </fluid-nav-bar>
+          <div style="padding:80px 24px;font-size:0.9rem;color:var(--fluid-text-muted,#666)">
+            Scroll down to see the bar shrink continuously with scroll position.
+          </div>
+        </div>
+      </div>
+      <pre class="pg-code">&lt;fluid-nav-bar shrink-mode="continuous" shrink-start="48" shrink-amount="0.6"&gt;
+  ...
+&lt;/fluid-nav-bar&gt;</pre>
+    </div>
+  </section>
+
+  <!-- ─── Stepped shrink ───────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Stepped shrink mode</h2>
+    <p>
+      Height snaps between full and shrunk at the <code>shrink-start</code> threshold.
+    </p>
+    <div class="pg-example">
+      <div
+        class="pg-preview pg-preview--fullwidth"
+        style="padding:0;overflow-y:scroll;height:300px;position:relative;"
+        id="pg-stepped-scroll"
+      >
+        <div style="height:300vh;padding-top:0;">
+          <fluid-nav-bar
+            id="pg-nav-stepped"
+            aria-label="Primary navigation"
+            shrink-mode="stepped"
+            shrink-start="48"
+            shrink-amount="0.6"
+            style="--fluid-nav-full-height:56px;position:sticky;top:0;"
+          >
+            <span slot="leading" style="font-weight:600">Fluid</span>
+            <a href="#" style="text-decoration:none;color:inherit">Home</a>
+            <a href="#" style="text-decoration:none;color:inherit">About</a>
+            <span slot="trailing">
+              <button style="border:none;background:none;cursor:pointer;font-size:1rem">⚙</button>
+            </span>
+          </fluid-nav-bar>
+          <div style="padding:80px 24px;font-size:0.9rem;color:var(--fluid-text-muted,#666)">
+            Scroll past 48 px to snap the bar into its shrunk state.
+          </div>
+        </div>
+      </div>
+      <pre class="pg-code">&lt;fluid-nav-bar shrink-mode="stepped" shrink-start="48" shrink-amount="0.6"&gt;
+  ...
+&lt;/fluid-nav-bar&gt;</pre>
+    </div>
+  </section>
+
+  <!-- ─── Expand on scroll up ──────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>expand-on-scroll-up</h2>
+    <p>
+      Bar re-expands on any upward scroll, even when mid-page.
+    </p>
+    <div class="pg-example">
+      <div
+        class="pg-preview pg-preview--fullwidth"
+        style="padding:0;overflow-y:scroll;height:300px;position:relative;"
+        id="pg-expand-scroll"
+      >
+        <div style="height:300vh;padding-top:0;">
+          <fluid-nav-bar
+            id="pg-nav-expand"
+            aria-label="Primary navigation"
+            shrink-start="48"
+            expand-on-scroll-up
+            style="--fluid-nav-full-height:56px;position:sticky;top:0;"
+          >
+            <span slot="leading" style="font-weight:600">Fluid</span>
+            <a href="#" style="text-decoration:none;color:inherit">Home</a>
+            <a href="#" style="text-decoration:none;color:inherit">About</a>
+          </fluid-nav-bar>
+          <div style="padding:80px 24px;font-size:0.9rem;color:var(--fluid-text-muted,#666)">
+            Scroll down to shrink, then scroll up anywhere to re-expand.
+          </div>
+        </div>
+      </div>
+      <pre class="pg-code">&lt;fluid-nav-bar shrink-start="48" expand-on-scroll-up&gt;
+  ...
+&lt;/fluid-nav-bar&gt;</pre>
+    </div>
+  </section>
+
+  <!-- ─── Static states ────────────────────────────────────────────────────── -->
+  <section class="pg-section">
+    <h2>Static states</h2>
+    <p>
+      Progress forced via inline CSS custom properties — useful for visual snapshots and
+      design review without scrolling.
+    </p>
+
+    <div class="pg-example">
+      <p><strong>Expanded</strong> — <code>--fluid-nav-shrink-progress: 0</code></p>
+      <div class="pg-preview pg-preview--fullwidth" style="padding:0;background:var(--fluid-surface-bg,#f5f5f5);overflow:hidden;">
+        <fluid-nav-bar
+          aria-label="Primary navigation"
+          style="--fluid-nav-full-height:64px;--fluid-nav-shrink-progress:0"
+        >
+          <span slot="leading" style="font-weight:600;font-size:18px">Fluid</span>
+          <a href="#" style="text-decoration:none;color:inherit">Home</a>
+          <a href="#" style="text-decoration:none;color:inherit">About</a>
+          <a href="#" style="text-decoration:none;color:inherit">Docs</a>
+          <span slot="trailing">
+            <button style="border:none;background:none;cursor:pointer;font-size:1rem">⚙</button>
+          </span>
+        </fluid-nav-bar>
+      </div>
+      <pre class="pg-code">&lt;fluid-nav-bar style="--fluid-nav-full-height:64px;--fluid-nav-shrink-progress:0"&gt;
+  ...
+&lt;/fluid-nav-bar&gt;</pre>
+    </div>
+
+    <div class="pg-example">
+      <p><strong>Shrunk</strong> — <code>--fluid-nav-shrink-progress: 1</code></p>
+      <div class="pg-preview pg-preview--fullwidth" style="padding:0;background:var(--fluid-surface-bg,#f5f5f5);overflow:hidden;">
+        <fluid-nav-bar
+          aria-label="Primary navigation"
+          style="--fluid-nav-full-height:64px;--fluid-nav-shrink-progress:1;--fluid-nav-shrink-amount:0.6"
+        >
+          <span slot="leading" style="font-weight:600;font-size:18px">Fluid</span>
+          <a href="#" style="text-decoration:none;color:inherit">Home</a>
+          <a href="#" style="text-decoration:none;color:inherit">About</a>
+          <a href="#" style="text-decoration:none;color:inherit">Docs</a>
+          <span slot="trailing">
+            <button style="border:none;background:none;cursor:pointer;font-size:1rem">⚙</button>
+          </span>
+        </fluid-nav-bar>
+      </div>
+      <pre class="pg-code">&lt;fluid-nav-bar style="--fluid-nav-full-height:64px;--fluid-nav-shrink-progress:1;--fluid-nav-shrink-amount:0.6"&gt;
+  ...
+&lt;/fluid-nav-bar&gt;</pre>
+    </div>
+  </section>
+</article>
+
+<script type="module">
+  import '@neutro/fluid/nav-bar'
+
+  // Prevent demo links (href="#") from navigating the playground SPA.
+  document.querySelectorAll('.pg-preview').forEach(preview => {
+    preview.addEventListener('click', e => {
+      const a = e.target.closest('a[href="#"]')
+      if (a) e.preventDefault()
+    })
+  })
+</script>
+
+<style>
+  .pg-example {
+    margin-bottom: 24px;
+  }
+  .pg-preview {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 24px;
+    background: var(--pg-surface, rgba(0 0 0 / 0.04));
+    border-radius: 8px;
+    margin-bottom: 8px;
+  }
+  .pg-preview--fullwidth {
+    padding: 0;
+    display: block;
+  }
+  .pg-code {
+    margin: 0;
+    padding: 12px 16px;
+    background: var(--pg-code-bg, rgba(0 0 0 / 0.06));
+    border-radius: 6px;
+    font-size: 0.8125rem;
+    overflow-x: auto;
+    white-space: pre;
+  }
+</style>
