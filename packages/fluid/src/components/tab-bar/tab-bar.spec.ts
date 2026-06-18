@@ -151,6 +151,13 @@ describe('fluid-tab-bar', () => {
       const t3 = bar.querySelector('fluid-tab[tab-id="t3"]')!
       if (t3.getAttribute('tabindex') !== '-1') throw new Error('disabled tab must have tabindex=-1')
     })
+    it('non-active enabled tab (t2) has tabindex=-1 when t1 is active', async () => {
+      const bar = await mountTabs()
+      const t2 = bar.querySelector('fluid-tab[tab-id="t2"]')!
+      if (t2.getAttribute('tabindex') !== '-1') {
+        throw new Error('Non-active, non-disabled tab must have tabindex=-1')
+      }
+    })
   })
 
   // ─── Criterion 7: panel visibility ────────────────────────────────────────
