@@ -147,6 +147,15 @@
 <script type="module">
   import '@neutro/fluid/link'
 
+  // Prevent demo links (href="#") from navigating the playground SPA.
+  // target="_blank" links are excluded — they should open externally as intended.
+  document.querySelectorAll('.pg-preview').forEach(preview => {
+    preview.addEventListener('click', e => {
+      const link = e.target.closest('fluid-link')
+      if (link && link.getAttribute('target') !== '_blank') e.preventDefault()
+    })
+  })
+
   const log = document.getElementById('pg-link-log')
   document.addEventListener('fluid:activate', (e) => {
     if (e.target?.tagName?.toLowerCase() !== 'fluid-link') return
