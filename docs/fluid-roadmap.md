@@ -90,6 +90,7 @@
 - ✅ P2-06 — `fluid-empty-state`
 - ✅ P2-07 — `fluid-skeleton` + `fluid-spinner` + `fluid-progress`
 - ✅ P2-08 — `fluid-fieldset`
+- ⬜ P2-09 — `fluid-link`
 
 ### ⬜ Not Started
 
@@ -1176,6 +1177,13 @@ Each follows the same pattern — only divergences from the base pattern are not
 
 ---
 
+**P2-09: `fluid-link`**
+- **Depends on:** P1-01
+- **Key acceptance criteria:** `<a>` semantics with Fluid token application. `fluid:activate` event. `aria-current="page"` when active in a navigation context (this is where `aria-current="page"` belongs — on a link in a `<nav>`, not on a tab in a tabpanel). No glass surface, no spring interaction — foundational link primitive.
+- **Size:** S
+
+---
+
 ## Phase 3: Navigation Components
 
 **All parallel after Phase 1 + 2 (nav-bar and tab-bar may share some patterns).**
@@ -1188,8 +1196,8 @@ Each follows the same pattern — only divergences from the base pattern are not
 
 ---
 
-**P3-02: `fluid-tab-bar` + `fluid-tab`**
-- **Key acceptance criteria:** Context protocol between bar and tabs. `tablist`/`tab` ARIA. Active tab `aria-current="page"`.
+**P3-02: `fluid-tab-bar` + `fluid-tab` + `fluid-tab-panel`**
+- **Key acceptance criteria:** Context protocol (`WCCG`) across all three: `fluid-tab-bar` provides context, `fluid-tab` requests it and owns activation, `fluid-tab-panel` requests it and owns visibility. `tablist`/`tab`/`tabpanel` ARIA. Active tab `aria-selected="true"` (not `aria-current`); each tab has `aria-controls` pointing to its panel. Roving tabindex for arrow-key selection.
 - **Size:** L
 
 ---

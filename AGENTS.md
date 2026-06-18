@@ -283,6 +283,19 @@ When a brief says "use CSS for X" or "no JS spring needed for Y," that guidance 
 
 ---
 
+## Tab Patterns
+
+`fluid-tab-bar` is the **tabpanel pattern** — `aria-selected`, roving tabindex, arrow-key navigation, controls `fluid-tab-panel`. It is NOT link-based navigation.
+
+Link-based navigation tabs use `fluid-link` elements inside a `<nav>` landmark with `aria-current="page"` on the active link. That is a composition pattern, not a separate component.
+
+- `aria-selected="true"` → active tab in a `tablist`
+- `aria-current="page"` → active link in a `<nav>`
+
+Never use `aria-current` on a `<tab>` role element.
+
+---
+
 ## Tool-Specific Sections
 
 ### For Claude Code
