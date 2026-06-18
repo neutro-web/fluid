@@ -132,32 +132,12 @@ describe('fluid-nav-bar', () => {
       assert(!threw, 'Should not throw when aria-label is present')
     })
 
-    it('prod warn path: _ariaLabelWarned guard deduplicates warns; message format verified', async () => {
-      // In prod (DEV=false), _validateAriaLabel() console.warns exactly once — _ariaLabelWarned
-      // prevents subsequent calls from double-logging. DEV always throws, so we simulate the guard
-      // directly to verify the message format and deduplication logic.
-      const el = await FluidTestUtils.mount(`<fluid-nav-bar aria-label="Nav"></fluid-nav-bar>`) as any
-      assert(el._ariaLabelWarned === false, 'Expected _ariaLabelWarned=false after valid-label mount')
-
-      const warns: string[] = []
-      const origWarn = console.warn
-      console.warn = (...args: unknown[]) => warns.push(String(args[0]))
-
-      // Simulate the prod warn path (guard → warn → set flag) twice:
-      if (!el._ariaLabelWarned) {
-        el._ariaLabelWarned = true
-        console.warn('[fluid warn] fluid-nav-bar requires aria-label.')
-      }
-      if (!el._ariaLabelWarned) {
-        console.warn('[fluid warn] fluid-nav-bar requires aria-label.')  // must NOT fire
-      }
-      console.warn = origWarn
-
-      assert(warns.length === 1, `Expected exactly 1 warn (guard deduplicates), got ${warns.length}`)
-      assert(
-        warns[0]!.includes('[fluid warn]') && warns[0]!.includes('fluid-nav-bar requires aria-label.'),
-        `Expected prod warn format, got: "${warns[0]}"`,
-      )
+    it('prod warn path covered by Vitest unit test (nav-bar.prod.test.ts)', () => {
+      // The console.warn branch of _validateAriaLabel (DEV=false) cannot be reached here:
+      // @web/test-runner sets window.process.env.NODE_ENV='development' before any module
+      // is imported, so DEV is always true and the component throws instead of warns.
+      // The prod path — including exact message format and _ariaLabelWarned dedup — is
+      // verified in src/components/nav-bar/nav-bar.prod.test.ts (Vitest + jsdom, NODE_ENV='production').
     })
   })
 
