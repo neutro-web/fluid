@@ -48,13 +48,18 @@
       Height interpolates linearly with scroll — no snapping. Scroll inside the preview
       to see the bar shrink.
     </p>
+    <p style="font-size:0.875rem;color:var(--fluid-text-muted,#888)">
+      Use the tier toolbar to see tier differences: <strong>Matte</strong> renders a solid opaque background
+      with no blur; <strong>Frosted</strong> and <strong>Crystalline</strong> show a glass backdrop-filter
+      blur effect — the colorful gradient behind the nav will appear frosted when the bar overlaps it.
+    </p>
     <div class="pg-example">
       <div
         class="pg-preview pg-preview--fullwidth"
         style="padding:0;overflow-y:scroll;height:300px;position:relative;"
         id="pg-continuous-scroll"
       >
-        <div style="height:300vh;padding-top:0;">
+        <div style="height:300vh;padding-top:0;background:linear-gradient(160deg,#6366f1 0%,#ec4899 30%,#f59e0b 60%,#10b981 100%);">
           <fluid-nav-bar
             id="pg-nav-continuous"
             aria-label="Primary navigation"
@@ -71,8 +76,12 @@
               <button style="border:none;background:none;cursor:pointer;font-size:1rem">⚙</button>
             </span>
           </fluid-nav-bar>
-          <div style="padding:80px 24px;font-size:0.9rem;color:var(--fluid-text-muted,#666)">
-            Scroll down to see the bar shrink continuously with scroll position.
+          <div style="padding:80px 24px;font-size:0.9rem;color:rgba(255,255,255,0.9)">
+            <p style="margin:0 0 8px;">Scroll down to see the bar shrink continuously.</p>
+            <p style="margin:0;font-size:0.8rem;opacity:0.8;">
+              <strong>Matte:</strong> solid background, no blur &nbsp;·&nbsp;
+              <strong>Frosted/Crystalline:</strong> glass blur visible through the gradient
+            </p>
           </div>
         </div>
       </div>
@@ -94,7 +103,7 @@
         style="padding:0;overflow-y:scroll;height:300px;position:relative;"
         id="pg-stepped-scroll"
       >
-        <div style="height:300vh;padding-top:0;">
+        <div style="height:300vh;padding-top:0;background:linear-gradient(160deg,#0ea5e9 0%,#8b5cf6 50%,#f43f5e 100%);">
           <fluid-nav-bar
             id="pg-nav-stepped"
             aria-label="Primary navigation"
@@ -110,7 +119,7 @@
               <button style="border:none;background:none;cursor:pointer;font-size:1rem">⚙</button>
             </span>
           </fluid-nav-bar>
-          <div style="padding:80px 24px;font-size:0.9rem;color:var(--fluid-text-muted,#666)">
+          <div style="padding:80px 24px;font-size:0.9rem;color:rgba(255,255,255,0.9)">
             Scroll past 48 px to snap the bar into its shrunk state.
           </div>
         </div>
@@ -133,7 +142,7 @@
         style="padding:0;overflow-y:scroll;height:300px;position:relative;"
         id="pg-expand-scroll"
       >
-        <div style="height:300vh;padding-top:0;">
+        <div style="height:300vh;padding-top:0;background:linear-gradient(160deg,#14b8a6 0%,#f59e0b 40%,#ef4444 100%);">
           <fluid-nav-bar
             id="pg-nav-expand"
             aria-label="Primary navigation"
@@ -145,7 +154,7 @@
             <a href="#" style="text-decoration:none;color:inherit">Home</a>
             <a href="#" style="text-decoration:none;color:inherit">About</a>
           </fluid-nav-bar>
-          <div style="padding:80px 24px;font-size:0.9rem;color:var(--fluid-text-muted,#666)">
+          <div style="padding:80px 24px;font-size:0.9rem;color:rgba(255,255,255,0.9)">
             Scroll down to shrink, then scroll up anywhere to re-expand.
           </div>
         </div>
@@ -166,7 +175,7 @@
 
     <div class="pg-example">
       <p><strong>Expanded</strong> — <code>--fluid-nav-shrink-progress: 0</code></p>
-      <div class="pg-preview pg-preview--fullwidth" style="padding:0;background:var(--fluid-surface-bg,#f5f5f5);overflow:hidden;">
+      <div class="pg-preview pg-preview--fullwidth" style="padding:0;overflow:hidden;">
         <fluid-nav-bar
           aria-label="Primary navigation"
           style="--fluid-nav-full-height:64px;--fluid-nav-shrink-progress:0"
@@ -187,7 +196,7 @@
 
     <div class="pg-example">
       <p><strong>Shrunk</strong> — <code>--fluid-nav-shrink-progress: 1</code></p>
-      <div class="pg-preview pg-preview--fullwidth" style="padding:0;background:var(--fluid-surface-bg,#f5f5f5);overflow:hidden;">
+      <div class="pg-preview pg-preview--fullwidth" style="padding:0;overflow:hidden;">
         <fluid-nav-bar
           aria-label="Primary navigation"
           style="--fluid-nav-full-height:64px;--fluid-nav-shrink-progress:1;--fluid-nav-shrink-amount:0.6"
@@ -229,9 +238,10 @@
     if (!container || !nav) return
     let lastTop = 0
 
-    container.addEventListener('scroll', () => {
+    const applyProgress = () => {
       const top = container.scrollTop
       const delta = top - lastTop
+      lastTop = top
       let progress
 
       if (mode === 'stepped') {
@@ -245,8 +255,10 @@
       }
 
       nav.style.setProperty('--fluid-nav-shrink-progress', String(progress), 'important')
-      lastTop = top
-    }, { passive: true })
+    }
+
+    applyProgress()
+    container.addEventListener('scroll', applyProgress, { passive: true })
   }
 
   wireDemoContainer({ containerId: 'pg-continuous-scroll', navId: 'pg-nav-continuous', mode: 'continuous' })
