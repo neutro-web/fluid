@@ -155,6 +155,7 @@
     "@web/test-runner-playwright": "^0.11.1",
     "axe-core": "^4.12.1",
     "fast-check": "^4.8.0",
+    "jsdom": "^29.1.1",
     "lightningcss": "^1.32.0",
     "size-limit": "^11.0.0",
     "tsup": "^8.5.1",
