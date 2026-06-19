@@ -3,9 +3,6 @@ import type { FluidMaterial } from '../../core/element'
 import type { FluidLayer } from '../../core/z-index'
 import type { SpringConfig } from '../../core/spring'
 import { SPRING_PRESETS } from '../../core/spring'
-import { stepSpring } from '../../core/spring'
-import type { SpringState } from '../../core/spring'
-import { driver } from '../../core/driver'
 import { FluidRipple } from '../../core/ripple'
 import { motion } from '../../core/motion'
 import { requestContext, provideContext } from '../../core/context'
@@ -254,6 +251,8 @@ export class FluidTab extends FluidElement {
     this.setAttribute('aria-disabled', this.disabled ? 'true' : 'false')
     const panelId = this.getAttribute('panel')
     if (panelId) this.setAttribute('aria-controls', panelId)
+    const tabId = this.tabId
+    if (tabId) this.id = tabId
   }
 
   private _onPointerDown = (e: PointerEvent): void => {
@@ -373,14 +372,6 @@ export class FluidTab extends FluidElement {
 
 // ─── FluidTabBar ──────────────────────────────────────────────────────────────
 
-// Module-level: tracks in-flight indicator animations per tab-bar element
-interface IndicatorAnim {
-  id: symbol
-  stateX: SpringState
-  stateY: SpringState
-}
-const _indicatorAnims = new WeakMap<FluidTabBar, IndicatorAnim>()
-
 export class FluidTabBar extends FluidElement {
   protected readonly layer: FluidLayer = 'raised'
   protected readonly material: FluidMaterial = 'regular'
@@ -433,13 +424,11 @@ export class FluidTabBar extends FluidElement {
   protected override onMount(): void {
     this.root.innerHTML = /* html */ `
       <style>${styles}</style>
-      <div part="tablist" role="tablist"></div>
+      <div part="tablist" role="tablist"><slot></slot><span part="indicator"></span></div>
       <div part="panels"><slot name="panel"></slot></div>
-      <span part="indicator"></span>
     `
 
     this._tablist = this.root.querySelector('[part="tablist"]') as HTMLElement
-    this._tablist.innerHTML = /* html */ `<slot></slot>`
     this._indicator = this.root.querySelector('[part="indicator"]') as HTMLElement
 
     this.internals.role = 'tablist'
@@ -475,12 +464,8 @@ export class FluidTabBar extends FluidElement {
     requestAnimationFrame(() => this._initActive())
 
     const onTierChange = (): void => {
-      const anim = _indicatorAnims.get(this)
-      if (anim) {
-        driver.deregister(anim.id)
-        _indicatorAnims.delete(this)
-        this._indicator.style.transform = ''
-      }
+      const activeTab = this._ctx?.tabs.find(t => t.tabId === this._ctx?.activeId)
+      if (activeTab) this._slideIndicator(activeTab)
     }
     document.addEventListener('fluidledger:tier-change', onTierChange)
     this.disposers.push(() => document.removeEventListener('fluidledger:tier-change', onTierChange))
@@ -537,37 +522,32 @@ export class FluidTabBar extends FluidElement {
 
   private _applyActive(tabId: string, prevId: string): void {
     const ctx = this._ctx
-    const oldId = prevId
-    const changed = ctx.activeId !== tabId
-    if (changed) {
-      ctx.activeId = tabId
-      ctx._notify()
-    }
+    if (ctx.activeId === tabId) return
+    ctx.activeId = tabId
+    ctx._notify()
     this.dispatchEvent(new CustomEvent('fluid:change', {
-      detail: { activeId: tabId, previousId: oldId || null },
+      detail: { activeId: tabId, previousId: prevId || null },
       bubbles: true,
       composed: true,
     }))
-    if (changed) {
-      const activeTab = ctx.tabs.find(t => t.tabId === tabId)
-      if (activeTab) this._slideIndicator(activeTab)
-    }
+    const activeTab = ctx.tabs.find(t => t.tabId === tabId)
+    if (activeTab) this._slideIndicator(activeTab)
   }
 
   private _positionIndicator(tab: FluidTab): void {
-    const barRect = this.getBoundingClientRect()
+    const listRect = this._tablist.getBoundingClientRect()
     const tabRect = tab.getBoundingClientRect()
     if (tabRect.width === 0 && tabRect.height === 0) return
     const isH = this.orientation !== 'vertical'
     if (isH) {
-      this._indicator.style.left = `${tabRect.left - barRect.left}px`
+      this._indicator.style.left = `${tabRect.left - listRect.left + this._tablist.scrollLeft}px`
       this._indicator.style.top = 'auto'
       this._indicator.style.width = `${tabRect.width}px`
       this._indicator.style.height = '2px'
       this._indicator.style.bottom = '0'
       this._indicator.style.right = 'auto'
     } else {
-      this._indicator.style.top = `${tabRect.top - barRect.top}px`
+      this._indicator.style.top = `${tabRect.top - listRect.top + this._tablist.scrollTop}px`
       this._indicator.style.left = 'auto'
       this._indicator.style.height = `${tabRect.height}px`
       this._indicator.style.width = '2px'
@@ -577,58 +557,11 @@ export class FluidTabBar extends FluidElement {
   }
 
   private _slideIndicator(newTab: FluidTab): void {
-    if (this.caps.tier === 'matte') {
+    if (this.caps.tier === 'matte' || this.caps.prefersReducedMotion) {
       this._positionIndicator(newTab)
       return
     }
-
-    const before = this._indicator.getBoundingClientRect()
-    this._positionIndicator(newTab)
-    const after = this._indicator.getBoundingClientRect()
-
-    const dx = before.left - after.left
-    const dy = before.top - after.top
-
-    if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) return
-
-    // Cancel existing animation, carry velocity forward
-    const existing = _indicatorAnims.get(this)
-    const initVx = existing?.stateX.velocity ?? 0
-    const initVy = existing?.stateY.velocity ?? 0
-    if (existing) driver.deregister(existing.id)
-
-    const config = SPRING_PRESETS.smooth
-    let stateX: SpringState = { value: dx, velocity: initVx }
-    let stateY: SpringState = { value: dy, velocity: initVy }
-    const threshX = Math.max(Math.abs(dx) * 0.001, 0.1)
-    const threshY = Math.max(Math.abs(dy) * 0.001, 0.1)
-
-    this._indicator.style.transform = `translate(${dx}px,${dy}px)`
-
-    const id = Symbol()
-    const anim: IndicatorAnim = { id, stateX, stateY }
-    _indicatorAnims.set(this, anim)
-
-    const indicator = this._indicator
-    const bar = this
-
-    driver.register(id, {
-      advance(dt: number): boolean {
-        stateX = stepSpring(config, stateX, 0, dt)
-        stateY = stepSpring(config, stateY, 0, dt)
-        anim.stateX = stateX
-        anim.stateY = stateY
-        const sx = Math.abs(stateX.value) < threshX && Math.abs(stateX.velocity) < threshX * 2
-        const sy = Math.abs(stateY.value) < threshY && Math.abs(stateY.velocity) < threshY * 2
-        if (sx && sy) {
-          indicator.style.transform = ''
-          _indicatorAnims.delete(bar)
-          return true
-        }
-        indicator.style.transform = `translate(${stateX.value}px,${stateY.value}px)`
-        return false
-      },
-    })
+    motion.flip(this._indicator, () => this._positionIndicator(newTab))
   }
 }
 

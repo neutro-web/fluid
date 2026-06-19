@@ -306,6 +306,9 @@ describe('fluid-tab-bar', () => {
     it('Home focuses first enabled tab (t1) and activates in automatic mode', async () => {
       const bar = await mountTabs({ activation: 'automatic' })
       const t2 = bar.querySelector('fluid-tab[tab-id="t2"]') as HTMLElement
+      // First activate t2 so that pressing Home causes an actual change to t1
+      t2.click()
+      await waitFrames(2)
       t2.focus()
       let detail: any = null
       bar.addEventListener('fluid:change', (e: Event) => { detail = (e as CustomEvent).detail })
