@@ -1,4 +1,5 @@
 import { FluidTestUtils } from '../../testing/utils'
+import { ledger } from '../../core/ledger'
 // Registers all three elements — must happen before first test
 import './index'
 
@@ -388,6 +389,25 @@ describe('fluid-tab-bar', () => {
         throw new Error('t1 and t2 should be in bar.tabs')
       }
     })
+    it('tab in foreign shadow root does not register with or fire changes on bar (criterion 1)', async () => {
+      const bar = await mountTabs()
+      let fired = false
+      bar.addEventListener('fluid:change', () => { fired = true })
+      const host = document.createElement('div')
+      const shadow = host.attachShadow({ mode: 'open' })
+      const orphanTab = document.createElement('fluid-tab') as HTMLElement
+      orphanTab.setAttribute('tab-id', 'orphan')
+      orphanTab.setAttribute('panel', 'orphan-panel')
+      shadow.appendChild(orphanTab)
+      document.body.appendChild(host)
+      await waitFrames(4)
+      orphanTab.click()
+      await waitFrames(4)
+      host.remove()
+      if (fired) {
+        throw new Error('Tab in foreign shadow root must not trigger fluid:change on bar')
+      }
+    })
   })
 
   // ─── Criterion 2: nearest-provider ────────────────────────────────────────
@@ -459,6 +479,129 @@ describe('fluid-tab-bar', () => {
       await mountTabs()
       FluidTestUtils.cleanup()
       // If disposers throw, this will throw. Passing = no leaks.
+    })
+  })
+
+  // ─── Criterion 17: RTL arrow key direction ────────────────────────────────
+
+  describe('RTL arrow key direction (criterion 17)', () => {
+    async function mountRtlTabs(): Promise<HTMLElement> {
+      const bar = await FluidTestUtils.mount(
+        `<fluid-tab-bar aria-label="RTL test" style="--fluid-dir: -1">` +
+        `<fluid-tab tab-id="r1" panel="rp1">Tab 1</fluid-tab>` +
+        `<fluid-tab tab-id="r2" panel="rp2">Tab 2</fluid-tab>` +
+        `<fluid-tab tab-id="r3" panel="rp3">Tab 3</fluid-tab>` +
+        `<fluid-tab-panel slot="panel" panel-id="rp1">Panel 1</fluid-tab-panel>` +
+        `<fluid-tab-panel slot="panel" panel-id="rp2">Panel 2</fluid-tab-panel>` +
+        `<fluid-tab-panel slot="panel" panel-id="rp3">Panel 3</fluid-tab-panel>` +
+        `</fluid-tab-bar>`
+      )
+      await waitFrames(4)
+      return bar
+    }
+
+    it('RTL: ArrowLeft from r1 moves forward to r2', async () => {
+      const bar = await mountRtlTabs()
+      const r1 = bar.querySelector('fluid-tab[tab-id="r1"]') as HTMLElement
+      r1.focus()
+      r1.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }))
+      await waitFrames(2)
+      if (document.activeElement !== bar.querySelector('fluid-tab[tab-id="r2"]')) {
+        throw new Error('RTL: ArrowLeft should move forward to r2')
+      }
+    })
+
+    it('RTL: ArrowRight from r1 moves backward (wraps to r3)', async () => {
+      const bar = await mountRtlTabs()
+      const r1 = bar.querySelector('fluid-tab[tab-id="r1"]') as HTMLElement
+      r1.focus()
+      r1.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }))
+      await waitFrames(2)
+      if (document.activeElement !== bar.querySelector('fluid-tab[tab-id="r3"]')) {
+        throw new Error('RTL: ArrowRight should move backward (wrap) to r3')
+      }
+    })
+  })
+
+  // ─── Criteria 18–20: Indicator animation ──────────────────────────────────
+
+  describe('indicator animation (criteria 18–20)', () => {
+    it('indicator left changes after clicking a different tab at Frosted (criterion 18)', async () => {
+      FluidTestUtils.mockTier('frosted')
+      const bar = await mountTabs()
+      const indicator = bar.shadowRoot!.querySelector('[part="indicator"]') as HTMLElement
+      const leftBefore = indicator.style.left
+      ;(bar.querySelector('fluid-tab[tab-id="t2"]') as HTMLElement).click()
+      await waitFrames(4)
+      const leftAfter = indicator.style.left
+      if (!leftAfter || leftAfter === leftBefore) {
+        throw new Error(`Indicator left must change: was "${leftBefore}", now "${leftAfter}"`)
+      }
+    })
+
+    it('indicator has no transform at Matte tier (criterion 19)', async () => {
+      FluidTestUtils.mockTier('matte')
+      const bar = await mountTabs()
+      const indicator = bar.shadowRoot!.querySelector('[part="indicator"]') as HTMLElement
+      ;(bar.querySelector('fluid-tab[tab-id="t2"]') as HTMLElement).click()
+      await waitFrames(4)
+      const tx = indicator.style.transform
+      if (tx && tx !== 'none' && tx !== '') {
+        throw new Error(`Matte tier must not animate indicator (got "${tx}")`)
+      }
+    })
+
+    it('tier-change during slide snaps indicator transform to identity (criterion 19)', async () => {
+      FluidTestUtils.mockTier('frosted')
+      const bar = await mountTabs()
+      const indicator = bar.shadowRoot!.querySelector('[part="indicator"]') as HTMLElement
+      // Start a FLIP animation
+      ;(bar.querySelector('fluid-tab[tab-id="t2"]') as HTMLElement).click()
+      // Switch to Matte before animation settles, firing the tier-change event
+      FluidTestUtils.mockTier('matte')
+      document.dispatchEvent(new CustomEvent('fluidledger:tier-change'))
+      await waitFrames(4)
+      const tx = indicator.style.transform
+      if (tx && tx !== 'none' && tx !== '') {
+        throw new Error(`After tier change, indicator transform must be cleared (got "${tx}")`)
+      }
+    })
+
+    it('indicator has no transform when prefers-reduced-motion (criterion 20)', async () => {
+      FluidTestUtils.mockTier('frosted')
+      const bar = await mountTabs()
+      const indicator = bar.shadowRoot!.querySelector('[part="indicator"]') as HTMLElement
+      ledger.prefersReducedMotion = true
+      try {
+        ;(bar.querySelector('fluid-tab[tab-id="t2"]') as HTMLElement).click()
+        await waitFrames(4)
+        const tx = indicator.style.transform
+        if (tx && tx !== 'none' && tx !== '') {
+          throw new Error(`Reduced motion: indicator must not animate (got "${tx}")`)
+        }
+      } finally {
+        ledger.prefersReducedMotion = false
+      }
+    })
+  })
+
+  // ─── Criterion 3: DOM move ────────────────────────────────────────────────
+
+  describe('DOM move (criterion 3)', () => {
+    it('clicking still works after bar is removed and re-added to DOM', async () => {
+      const bar = await mountTabs()
+      const parent = bar.parentElement!
+      parent.removeChild(bar)
+      await waitFrames(2)
+      parent.appendChild(bar)
+      await waitFrames(4)
+      let detail: any = null
+      bar.addEventListener('fluid:change', (e: Event) => { detail = (e as CustomEvent).detail })
+      ;(bar.querySelector('fluid-tab[tab-id="t2"]') as HTMLElement).click()
+      await waitFrames(4)
+      if (!detail || detail.activeId !== 't2') {
+        throw new Error('After DOM move, clicking t2 must still fire fluid:change')
+      }
     })
   })
 })

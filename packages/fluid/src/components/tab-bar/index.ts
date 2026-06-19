@@ -464,8 +464,9 @@ export class FluidTabBar extends FluidElement {
     requestAnimationFrame(() => this._initActive())
 
     const onTierChange = (): void => {
+      motion.cancelFlip(this._indicator)
       const activeTab = this._ctx?.tabs.find(t => t.tabId === this._ctx?.activeId)
-      if (activeTab) this._slideIndicator(activeTab)
+      if (activeTab) this._positionIndicator(activeTab)
     }
     document.addEventListener('fluidledger:tier-change', onTierChange)
     this.disposers.push(() => document.removeEventListener('fluidledger:tier-change', onTierChange))
