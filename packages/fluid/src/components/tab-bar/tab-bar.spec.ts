@@ -389,23 +389,30 @@ describe('fluid-tab-bar', () => {
         throw new Error('t1 and t2 should be in bar.tabs')
       }
     })
-    it('tab in foreign shadow root does not register with or fire changes on bar (criterion 1)', async () => {
+    it('tab inside inner shadow root (child of bar) does not register with bar (criterion 1)', async () => {
+      // Host lives INSIDE bar's light DOM so that, if composed were true, the
+      // fluid:context-request event would bubble out to bar's own listener —
+      // making this test discriminating against composed:false semantics.
       const bar = await mountTabs()
-      let fired = false
-      bar.addEventListener('fluid:change', () => { fired = true })
       const host = document.createElement('div')
+      bar.appendChild(host)
       const shadow = host.attachShadow({ mode: 'open' })
       const orphanTab = document.createElement('fluid-tab') as HTMLElement
       orphanTab.setAttribute('tab-id', 'orphan')
       orphanTab.setAttribute('panel', 'orphan-panel')
       shadow.appendChild(orphanTab)
-      document.body.appendChild(host)
       await waitFrames(4)
+      const registeredIds = ((bar as any).tabs as any[]).map((t: any) => t.getAttribute('tab-id'))
+      if (registeredIds.includes('orphan')) {
+        throw new Error('composed:false must prevent inner-shadow tab from registering with bar')
+      }
+      let fired = false
+      bar.addEventListener('fluid:change', () => { fired = true })
       orphanTab.click()
       await waitFrames(4)
       host.remove()
       if (fired) {
-        throw new Error('Tab in foreign shadow root must not trigger fluid:change on bar')
+        throw new Error('Tab in inner shadow root must not trigger fluid:change on bar')
       }
     })
   })

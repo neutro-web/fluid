@@ -564,6 +564,7 @@ export const motion = {
         const track = map.get(key)
         if (track?.taskId != null) {
           driver.deregister(track.taskId)
+          WillChangeManager.release(el)
           track.taskId = null
           track.value = 0
           track.velocity = 0
