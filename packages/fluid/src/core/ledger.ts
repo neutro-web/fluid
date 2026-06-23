@@ -229,6 +229,11 @@ function initAsyncPhase(): void {
 // ---- FluidLedger API (P0-T2-02) ----
 
 export const FluidLedger = {
+  forceReducedMotion(enabled: boolean): void {
+    if (!DEV) return
+    ledger.prefersReducedMotion = enabled
+  },
+
   forceTier(tier: FluidTier): void {
     if (!DEV) return
     const previousTier = ledger.tier

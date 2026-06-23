@@ -33,6 +33,7 @@ export function initToolbar(navigateCurrent) {
     input.addEventListener('change', () => {
       const reduced = input.value === 'reduced'
       document.documentElement.classList.toggle('reduced-motion', reduced)
+      window.FluidLedger?.forceReducedMotion(reduced)
     })
   })
 }

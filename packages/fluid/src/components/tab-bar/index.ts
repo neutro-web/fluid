@@ -128,7 +128,7 @@ tabTemplate.innerHTML = /* html */ `
   border-radius: 4px 4px 0 0;
   flex-shrink: 0;
   white-space: nowrap;
-  color: var(--fluid-color-text-secondary, rgba(255 255 255 / 0.6));
+  color: color-mix(in srgb, var(--fluid-color-on-surface, #111827) 54%, transparent);
   font: inherit;
   font-size: 0.875rem;
   font-weight: 500;
@@ -259,8 +259,10 @@ export class FluidTab extends FluidElement {
     if (this.disabled || this._activePointerId !== null) return
     this._activePointerId = e.pointerId
     motion.animate(this._surface, motion.depress('secondary'))
-    const rect = this.getBoundingClientRect()
-    this._ripple?.trigger(e.clientX - rect.left, e.clientY - rect.top)
+    if (!this.caps.prefersReducedMotion) {
+      const rect = this.getBoundingClientRect()
+      this._ripple?.trigger(e.clientX - rect.left, e.clientY - rect.top)
+    }
   }
 
   private _onPointerUp = (e: PointerEvent): void => {

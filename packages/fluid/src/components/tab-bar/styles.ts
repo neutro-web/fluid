@@ -17,7 +17,7 @@ const styles = /* css */ `
   align-items: stretch;
   gap: 0;
   position: relative;
-  border-bottom: 1px solid var(--fluid-color-border, rgba(255 255 255 / 0.12));
+  border-bottom: 1px solid var(--fluid-color-border, color-mix(in srgb, var(--fluid-color-on-surface, #111827) 15%, transparent));
   overflow-x: auto;
   scrollbar-width: none;
 }
@@ -26,7 +26,7 @@ const styles = /* css */ `
 :host([orientation="vertical"]) [part="tablist"] {
   flex-direction: column;
   border-bottom: none;
-  border-inline-end: 1px solid var(--fluid-color-border, rgba(255 255 255 / 0.12));
+  border-inline-end: 1px solid var(--fluid-color-border, color-mix(in srgb, var(--fluid-color-on-surface, #111827) 15%, transparent));
 }
 
 /* ─── Active indicator (FLIP-animated, absolutely positioned) ───────────────── */
