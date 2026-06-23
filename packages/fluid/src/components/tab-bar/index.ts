@@ -128,7 +128,7 @@ tabTemplate.innerHTML = /* html */ `
   border-radius: 4px 4px 0 0;
   flex-shrink: 0;
   white-space: nowrap;
-  color: color-mix(in srgb, var(--fluid-color-on-surface, #111827) 54%, transparent);
+  color: var(--fluid-color-neutral-600, rgba(0, 0, 0, 0.54));
   font: inherit;
   font-size: 0.875rem;
   font-weight: 500;

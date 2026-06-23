@@ -17,7 +17,7 @@ const styles = /* css */ `
   align-items: stretch;
   gap: 0;
   position: relative;
-  border-bottom: 1px solid var(--fluid-color-border, color-mix(in srgb, var(--fluid-color-on-surface, #111827) 15%, transparent));
+  border-bottom: 1px solid var(--fluid-color-border, var(--fluid-color-neutral-200, rgba(0, 0, 0, 0.12)));
   overflow-x: auto;
   scrollbar-width: none;
 }
@@ -26,7 +26,7 @@ const styles = /* css */ `
 :host([orientation="vertical"]) [part="tablist"] {
   flex-direction: column;
   border-bottom: none;
-  border-inline-end: 1px solid var(--fluid-color-border, color-mix(in srgb, var(--fluid-color-on-surface, #111827) 15%, transparent));
+  border-inline-end: 1px solid var(--fluid-color-border, var(--fluid-color-neutral-200, rgba(0, 0, 0, 0.12)));
 }
 
 /* ─── Active indicator (FLIP-animated, absolutely positioned) ───────────────── */
