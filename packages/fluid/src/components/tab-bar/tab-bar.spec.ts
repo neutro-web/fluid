@@ -2,6 +2,7 @@ import { FluidTestUtils } from '../../testing/utils'
 import { ledger } from '../../core/ledger'
 // Registers all three elements — must happen before first test
 import './index'
+import type { FluidTabBar } from './index'
 
 function waitFrames(n = 30): Promise<void> {
   return new Promise(resolve => {
@@ -185,8 +186,8 @@ describe('fluid-tab-bar', () => {
       ;(bar.querySelector('fluid-tab[tab-id="t2"]') as HTMLElement).click()
       await waitFrames(4)
       if (!detail) throw new Error('fluid:change did not fire')
-      if ((detail as any).activeId !== 't2') throw new Error(`Expected activeId="t2"`)
-      if ((detail as any).previousId !== 't1') throw new Error(`Expected previousId="t1"`)
+      if (detail.activeId !== 't2') throw new Error(`Expected activeId="t2"`)
+      if (detail.previousId !== 't1') throw new Error(`Expected previousId="t1"`)
       const p2 = bar.querySelector('fluid-tab-panel[panel-id="p2"]')!
       if (p2.hasAttribute('hidden')) throw new Error('Panel 2 should be visible after activation')
       if (!bar.querySelector('fluid-tab-panel[panel-id="p1"]')!.hasAttribute('hidden')) {
@@ -272,7 +273,7 @@ describe('fluid-tab-bar', () => {
     })
     it('automatic: ArrowRight activates t2', async () => {
       const bar = await mountTabs({ activation: 'automatic' })
-      let detail: any = null
+      let detail: { activeId: string; previousId: string | null } | null = null
       bar.addEventListener('fluid:change', (e: Event) => { detail = (e as CustomEvent).detail })
       const t1 = bar.querySelector('fluid-tab[tab-id="t1"]') as HTMLElement
       t1.focus()
@@ -294,7 +295,7 @@ describe('fluid-tab-bar', () => {
     })
     it('manual: Enter on focused tab activates it', async () => {
       const bar = await mountTabs({ activation: 'manual' })
-      let detail: any = null
+      let detail: { activeId: string; previousId: string | null } | null = null
       bar.addEventListener('fluid:change', (e: Event) => { detail = (e as CustomEvent).detail })
       const t2 = bar.querySelector('fluid-tab[tab-id="t2"]') as HTMLElement
       t2.focus()
@@ -311,7 +312,7 @@ describe('fluid-tab-bar', () => {
       t2.click()
       await waitFrames(2)
       t2.focus()
-      let detail: any = null
+      let detail: { activeId: string; previousId: string | null } | null = null
       bar.addEventListener('fluid:change', (e: Event) => { detail = (e as CustomEvent).detail })
       t2.dispatchEvent(new KeyboardEvent('keydown', { key: 'Home', bubbles: true }))
       await waitFrames(2)
@@ -326,7 +327,7 @@ describe('fluid-tab-bar', () => {
       const bar = await mountTabs({ activation: 'automatic' })
       const t1 = bar.querySelector('fluid-tab[tab-id="t1"]') as HTMLElement
       t1.focus()
-      let detail: any = null
+      let detail: { activeId: string; previousId: string | null } | null = null
       bar.addEventListener('fluid:change', (e: Event) => { detail = (e as CustomEvent).detail })
       t1.dispatchEvent(new KeyboardEvent('keydown', { key: 'End', bubbles: true }))
       await waitFrames(2)
@@ -382,9 +383,9 @@ describe('fluid-tab-bar', () => {
       outer.remove()
     })
     it('bar.tabs reflects registered tabs', async () => {
-      const bar = await mountTabs() as any
+      const bar = await mountTabs() as unknown as FluidTabBar
       if (!Array.isArray(bar.tabs)) throw new Error('bar.tabs must be an array')
-      const ids = (bar.tabs as any[]).map((t: any) => t.getAttribute('tab-id'))
+      const ids = bar.tabs.map(t => t.getAttribute('tab-id'))
       if (!ids.includes('t1') || !ids.includes('t2')) {
         throw new Error('t1 and t2 should be in bar.tabs')
       }
@@ -402,7 +403,7 @@ describe('fluid-tab-bar', () => {
       orphanTab.setAttribute('panel', 'orphan-panel')
       shadow.appendChild(orphanTab)
       await waitFrames(4)
-      const registeredIds = ((bar as any).tabs as any[]).map((t: any) => t.getAttribute('tab-id'))
+      const registeredIds = (bar as unknown as FluidTabBar).tabs.map(t => t.getAttribute('tab-id'))
       if (registeredIds.includes('orphan')) {
         throw new Error('composed:false must prevent inner-shadow tab from registering with bar')
       }
@@ -433,8 +434,8 @@ describe('fluid-tab-bar', () => {
         `</fluid-tab-bar>`
       )
       await waitFrames(8)
-      const innerBar = outer.querySelector('#inner-bar') as any
-      const ids = ((innerBar.tabs as any[]) ?? []).map((t: any) => t.getAttribute('tab-id'))
+      const innerBar = outer.querySelector('#inner-bar') as unknown as FluidTabBar
+      const ids = innerBar.tabs.map(t => t.getAttribute('tab-id'))
       if (ids.includes('outer-tab')) throw new Error('outer-tab should not be in inner bar.tabs')
       if (!ids.includes('inner-tab')) throw new Error('inner-tab should be in inner bar.tabs')
     })
@@ -602,7 +603,7 @@ describe('fluid-tab-bar', () => {
       await waitFrames(2)
       parent.appendChild(bar)
       await waitFrames(4)
-      let detail: any = null
+      let detail: { activeId: string; previousId: string | null } | null = null
       bar.addEventListener('fluid:change', (e: Event) => { detail = (e as CustomEvent).detail })
       ;(bar.querySelector('fluid-tab[tab-id="t2"]') as HTMLElement).click()
       await waitFrames(4)

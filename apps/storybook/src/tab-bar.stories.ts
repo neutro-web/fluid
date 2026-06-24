@@ -105,6 +105,10 @@ export const ManualActivation: Story = {
 // ─── With Disabled Tab ─────────────────────────────────────────────────────────
 
 export const WithDisabledTab: Story = {
+  args: {
+    orientation: "horizontal"
+  },
+
   render: () => html`
     <fluid-tab-bar aria-label="Tabs with disabled option">
       <fluid-tab tab-id="tab-1" panel="panel-1">Alpha</fluid-tab>
@@ -125,7 +129,7 @@ export const WithDisabledTab: Story = {
         <p style="margin:0">Delta content.</p>
       </fluid-tab-panel>
     </fluid-tab-bar>
-  `,
+  `
 }
 
 // ─── Controlled ────────────────────────────────────────────────────────────────

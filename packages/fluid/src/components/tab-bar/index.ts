@@ -30,7 +30,6 @@ export interface TabsCtx {
 
 // ─── Forward declarations (classes reference each other) ──────────────────────
 
-// eslint-disable-next-line @typescript-eslint/no-use-before-define
 export class FluidTabPanel extends FluidElement {
   protected readonly layer: FluidLayer = 'surface'
   protected readonly material: FluidMaterial = 'none' as FluidMaterial
@@ -570,6 +569,6 @@ export class FluidTabBar extends FluidElement {
 
 // ─── Register ─────────────────────────────────────────────────────────────────
 
-FluidTabPanel.define('fluid-tab-panel')
-FluidTab.define('fluid-tab')
 FluidTabBar.define('fluid-tab-bar')
+FluidTab.define('fluid-tab')
+FluidTabPanel.define('fluid-tab-panel')
