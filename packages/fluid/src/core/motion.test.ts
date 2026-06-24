@@ -1094,6 +1094,45 @@ describe('P0-T5-03: motion.flip()', () => {
   })
 })
 
+describe('motion.cancelFlip()', () => {
+  it('releases WillChangeManager ref for a single in-flight axis', () => {
+    const el = makeMockEl()
+    // Only horizontal movement — ty task never created
+    el.getBoundingClientRect
+      .mockReturnValueOnce({ top: 0, left: 0, width: 100, height: 50 })
+      .mockReturnValueOnce({ top: 0, left: 50, width: 100, height: 50 })
+
+    motion.flip(el as unknown as Element, () => {})
+    expect(el.style.getPropertyValue('will-change')).not.toBe('')
+
+    motion.cancelFlip(el as unknown as Element)
+    expect(el.style.getPropertyValue('will-change')).toBe('')
+    expect(el.style.transform).toBe('')
+  })
+
+  it('releases both WillChangeManager refs when tx and ty are both in-flight', () => {
+    const el = makeMockEl()
+    // Both axes move
+    el.getBoundingClientRect
+      .mockReturnValueOnce({ top: 0, left: 0, width: 100, height: 50 })
+      .mockReturnValueOnce({ top: 80, left: 30, width: 100, height: 50 })
+
+    motion.flip(el as unknown as Element, () => {})
+    expect(el.style.getPropertyValue('will-change')).not.toBe('')
+
+    motion.cancelFlip(el as unknown as Element)
+    expect(el.style.getPropertyValue('will-change')).toBe('')
+    expect(el.style.transform).toBe('')
+  })
+
+  it('is a no-op when no flip is in-flight', () => {
+    const el = makeMockEl()
+    expect(() => motion.cancelFlip(el as unknown as Element)).not.toThrow()
+    expect(el.style.getPropertyValue('will-change')).toBe('')
+    expect(el.style.transform).toBe('')
+  })
+})
+
 // =============================================================================
 // P0-T5-04: View Transitions
 // =============================================================================

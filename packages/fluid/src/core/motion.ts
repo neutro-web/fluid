@@ -555,6 +555,28 @@ export const motion = {
 
     return promises.length > 0 ? Promise.all(promises).then(() => {}) : Promise.resolve()
   },
+
+  /** Cancel any in-flight flip animation on `el` and snap transform to identity. */
+  cancelFlip(el: Element): void {
+    const map = motionRegistry.get(el)
+    if (map) {
+      for (const key of ['tx', 'ty']) {
+        const track = map.get(key)
+        if (track?.taskId != null) {
+          driver.deregister(track.taskId)
+          WillChangeManager.release(el)
+          track.taskId = null
+          track.value = 0
+          track.velocity = 0
+        }
+      }
+    }
+    const ts = getTransform(el)
+    ts.tx = 0
+    ts.ty = 0
+    transformCache.set(el, ts)
+    applyTransform(el, ts)
+  },
 }
 
 // ─── SimpleReactiveValue ──────────────────────────────────────────────────────
